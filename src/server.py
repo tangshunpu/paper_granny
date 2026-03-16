@@ -265,6 +265,9 @@ def _format_tool_call(tool_name: str, tool_input: dict) -> str:
         return f"📖 {tool_input.get('path', '')}"
     elif tool_name == "write_file":
         return f"✏️ {tool_input.get('path', '')}"
+    elif tool_name == "edit_file":
+        edits = tool_input.get('edits', [])
+        return f"📝 {tool_input.get('path', '')} ({len(edits)} edits)"
     elif tool_name == "list_dir":
         return f"📂 {tool_input.get('path', '.')}"
     elif tool_name == "read_skill":

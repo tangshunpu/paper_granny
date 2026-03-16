@@ -130,6 +130,117 @@ def write_file(path: str, content: str) -> str:
         return f"[ERROR] 写入失败: {e}"
 
 
+# ─── 文件编辑工具 ────────────────────────────────────────────
+
+@tool
+def edit_file(path: str, edits: list[dict]) -> str:
+    """对文件进行局部编辑，不需要重写整个文件。修复编译错误时优先使用此工具。
+
+    支持两种编辑模式，可在一次调用中混合使用：
+
+    1. 行号范围替换（适合编译错误修复，log 已给出行号）：
+       {"start_line": 42, "end_line": 42, "new_content": "修复后的内容"}
+       - start_line 和 end_line 均为 1-indexed，包含两端
+       - 删除行：new_content 设为 ""
+       - 插入行：start_line 设为插入位置，end_line 设为 start_line - 1
+
+    2. 字符串匹配替换（适合修改特定代码片段）：
+       {"old_string": "要替换的文本", "new_string": "替换后的文本"}
+       - old_string 必须在文件中唯一匹配
+       - 可包含多行（用 \\n 分隔）
+
+    Args:
+        path: 文件路径（相对于项目根目录，或绝对路径）
+        edits: 编辑操作列表，每个元素是上述两种格式之一
+    """
+    file_path = _resolve_path(path)
+    if not file_path.exists():
+        return f"[ERROR] 文件不存在: {file_path}"
+
+    try:
+        content = file_path.read_text(encoding="utf-8")
+    except Exception as e:
+        return f"[ERROR] 读取失败: {e}"
+
+    lines = content.split("\n")
+    results = []
+
+    # 按行号倒序处理行范围编辑（从后往前改，避免行号偏移）
+    line_edits = []
+    string_edits = []
+
+    for i, edit in enumerate(edits):
+        if "start_line" in edit:
+            line_edits.append((i, edit))
+        elif "old_string" in edit:
+            string_edits.append((i, edit))
+        else:
+            results.append(f"编辑 #{i+1}: [跳过] 格式不正确，需要 start_line/end_line 或 old_string/new_string")
+
+    # 先处理字符串替换（在行编辑之前，因为行号可能改变）
+    for i, edit in string_edits:
+        old = edit["old_string"]
+        new = edit.get("new_string", "")
+        count = content.count(old)
+
+        if count == 0:
+            # 容错：尝试忽略前后空白匹配
+            old_stripped = old.strip()
+            found = False
+            for line_idx, line in enumerate(lines):
+                if old_stripped in line.strip():
+                    # 替换整行
+                    old_line = lines[line_idx]
+                    lines[line_idx] = line.replace(old_stripped, new.strip())
+                    results.append(f"编辑 #{i+1}: ✅ 模糊匹配替换行 {line_idx+1}")
+                    found = True
+                    break
+            if not found:
+                results.append(f"编辑 #{i+1}: [失败] 未找到匹配: {old[:60]}...")
+        elif count > 1:
+            results.append(f"编辑 #{i+1}: [失败] 匹配到 {count} 处，需要唯一匹配: {old[:60]}...")
+        else:
+            content = content.replace(old, new, 1)
+            lines = content.split("\n")
+            results.append(f"编辑 #{i+1}: ✅ 字符串替换成功")
+
+    # 再处理行范围编辑（倒序，避免行号偏移）
+    line_edits.sort(key=lambda x: x[1].get("start_line", 0), reverse=True)
+    for i, edit in line_edits:
+        start = edit["start_line"]
+        end = edit.get("end_line", start)
+        new_content = edit.get("new_content", "")
+
+        if start < 1 or end < 0 or start > len(lines) + 1:
+            results.append(f"编辑 #{i+1}: [失败] 行号越界 (start={start}, end={end}, 文件共 {len(lines)} 行)")
+            continue
+
+        # 转为 0-indexed
+        start_idx = start - 1
+        end_idx = end  # lines[start_idx:end_idx] 包含 start 到 end
+
+        new_lines = new_content.split("\n") if new_content else []
+        old_preview = " | ".join(lines[start_idx:min(end_idx, start_idx + 3)])
+        lines[start_idx:end_idx] = new_lines
+
+        if new_content:
+            results.append(f"编辑 #{i+1}: ✅ 替换行 {start}-{end} ({end - start + 1} 行 → {len(new_lines)} 行)")
+        elif end >= start:
+            results.append(f"编辑 #{i+1}: ✅ 删除行 {start}-{end}")
+        else:
+            results.append(f"编辑 #{i+1}: ✅ 在行 {start} 前插入 {len(new_lines)} 行")
+
+    # 写回文件
+    content = "\n".join(lines)
+    try:
+        file_path.write_text(content, encoding="utf-8")
+    except Exception as e:
+        return f"[ERROR] 写回失败: {e}"
+
+    total_lines = len(lines)
+    return f"📝 已编辑 {file_path} ({total_lines} 行)\n" + "\n".join(results)
+
+
 # ─── 目录列出工具 ────────────────────────────────────────────
 
 @tool
@@ -481,6 +592,7 @@ ALL_TOOLS = [
     run_shell,
     read_file,
     write_file,
+    edit_file,
     list_dir,
     list_templates,
     read_template,
