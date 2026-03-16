@@ -8,7 +8,7 @@
 
 > **arXiv Paper Interpretation Agent** — Autonomous paper analysis system powered by LangGraph ReAct
 
-Scholar Granny is an AI Agent that automatically downloads arXiv paper LaTeX source code, performs deep reading comprehension, and generates beautifully formatted Chinese interpretation report PDFs.
+Paper Granny is an AI Agent that automatically downloads arXiv paper LaTeX source code, performs deep reading comprehension, and generates beautifully formatted Chinese interpretation report PDFs.
 
 ## ✨ Features
 
@@ -184,10 +184,6 @@ Place `.tex` template files in the `latex_template/` directory — the Agent wil
 
 - Python 3.10+
 - XeLaTeX (TeX Live or MacTeX)
-- Chinese fonts: **No extra installation needed** — templates auto-detect system fonts
-  - macOS: Songti SC / Heiti SC (built-in)
-  - Windows: SimSun / SimHei / Microsoft YaHei (built-in)
-  - Linux: Fandol fonts (included in TeX Live)
 
 ## 📄 License
 

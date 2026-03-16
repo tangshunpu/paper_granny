@@ -28,6 +28,7 @@ Thumbs.db
 # latex
 *.aux
 *.log
+*.bbl
 *.out
 *.toc
 *.synctex.gz
