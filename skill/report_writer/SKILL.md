@@ -20,9 +20,23 @@ description: 如何使用 LaTeX 模板写解读报告。Agent 准备写报告时
 
 ## 模板使用规则
 
-**报告必须使用模板的 preamble**（通过 `read_template` 获取）。
+### .cls 模板（推荐，大幅减少生成量）
 
-### 组装方式
+先用 `read_template` 查看模板提供的盒子和命令，然后只需写：
+
+```latex
+\documentclass{ModernColorful}
+
+\hypersetup{pdftitle={论文标题 深度解读}}
+
+\begin{document}
+% 标题页 + 目录 + 正文
+\end{document}
+```
+
+**不需要复制任何 preamble 内容！** `compile_pdf` 会自动将 .cls 和 logo.png 复制到报告目录。
+
+### .tex 模板（兼容旧模板）
 
 1. 用 `read_template` 获取模板 preamble
 2. 修改 preamble 中的标题、作者、日期、pdftitle
@@ -32,6 +46,8 @@ description: 如何使用 LaTeX 模板写解读报告。Agent 准备写报告时
 
 ```latex
 \begin{titlepage}
+  \AddTitlePageLogo
+  \thispagestyle{empty}
   \centering
   \vspace*{2cm}
   \begin{titlebox}
@@ -102,4 +118,7 @@ description: 如何使用 LaTeX 模板写解读报告。Agent 准备写报告时
 compile_pdf("papers/{arxiv_id}/report.tex")
 ```
 
-编译失败时工具会自动提取错误摘要，根据提示修改 .tex 文件后重新调用即可。
+`compile_pdf` 会自动：
+- 复制 .cls 模板文件到报告目录
+- 复制 logo.png 到报告目录
+- 编译并提取错误摘要

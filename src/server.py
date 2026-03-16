@@ -121,7 +121,7 @@ async def run_agent_sse(request: Request):
         "api_key": "sk-xxx",
         "base_url": null,
         "temperature": 0.3,
-        "template": "Modern Colorful",
+        "template": "ModernColorful",
         "language": "中文"
     }
     """
@@ -133,7 +133,7 @@ async def run_agent_sse(request: Request):
     api_key = body.get("api_key", "")
     base_url = body.get("base_url") or None
     temperature = float(body.get("temperature", 0.3))
-    template_name = body.get("template", "Modern Colorful")
+    template_name = body.get("template", "ModernColorful")
     language = body.get("language", "中文")
 
     if not arxiv_url:
@@ -216,8 +216,20 @@ async def run_agent_sse(request: Request):
 
                 elif kind == "on_chat_model_stream":
                     chunk = event.get("data", {}).get("chunk")
-                    if chunk and hasattr(chunk, "content") and chunk.content:
-                        yield _sse_event("thinking", {"content": chunk.content})
+                    if chunk:
+                        # 普通文本流（agent 的推理过程）
+                        if hasattr(chunk, "content") and chunk.content:
+                            yield _sse_event("thinking", {"content": chunk.content})
+                        # tool call 流（生成 write_file 等工具参数时的流式输出）
+                        if hasattr(chunk, "tool_call_chunks") and chunk.tool_call_chunks:
+                            for tc_chunk in chunk.tool_call_chunks:
+                                args_text = tc_chunk.get("args", "")
+                                tool_name = tc_chunk.get("name", "")
+                                if args_text:
+                                    yield _sse_event("tool_streaming", {
+                                        "tool": tool_name or "",
+                                        "content": args_text,
+                                    })
 
             # 完成
             # 检查是否生成了 PDF

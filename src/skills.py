@@ -5,12 +5,36 @@ Skill 加载与注入模块
 详细的解读原则、报告写法等内容由子 skill 按需加载。
 """
 
+import platform
+import shutil
 from pathlib import Path
 from typing import Optional
 
 
 def _project_root() -> Path:
     return Path(__file__).parent.parent
+
+
+def _detect_env() -> str:
+    """检测运行环境，返回供 system prompt 使用的环境描述。"""
+    system = platform.system()  # Darwin / Linux / Windows
+    parts = [f"操作系统: {system}"]
+
+    # 检测可用的下载工具
+    download_tools = []
+    if shutil.which("curl"):
+        download_tools.append("curl")
+    if shutil.which("wget"):
+        download_tools.append("wget")
+    parts.append(f"下载工具: {', '.join(download_tools) if download_tools else '无 (需安装 curl 或 wget)'}")
+
+    # 检测 LaTeX 编译器
+    if shutil.which("xelatex"):
+        parts.append("LaTeX 编译器: xelatex ✓")
+    else:
+        parts.append("LaTeX 编译器: 未安装")
+
+    return "\n".join(parts)
 
 
 def build_system_prompt(
@@ -21,9 +45,11 @@ def build_system_prompt(
     """
     构建 Agent 的 system prompt。
 
-    只包含：身份、工具列表、工作策略、目录约定。
+    只包含：身份、工具列表、工作策略、目录约定、系统环境。
     详细指南通过 read_skill() 按需加载。
     """
+
+    env_info = _detect_env()
 
     prompt = f"""你是 Scholar Granny (论文奶奶)，一个专业的 arXiv 论文解读 AI Agent。
 你的核心目标是：为背景知识薄弱的老奶奶读者，将 arXiv 论文转化为通俗易懂的解读报告（PDF）。
@@ -63,6 +89,12 @@ def build_system_prompt(
 - 论文源码: `papers/{{arxiv_id}}/source/`
 - 解读报告: `papers/{{arxiv_id}}/report.tex`
 - 图片从源码目录引用
+
+## 系统环境
+
+{env_info}
+
+**重要**: 使用 `run_shell` 时必须使用当前系统上可用的命令。例如下载文件时，如果只有 curl 没有 wget，就用 curl。
 
 {f'## 用户指定模板: {template_name}' if template_name else ''}
 {extra_instructions}

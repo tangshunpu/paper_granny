@@ -45,7 +45,7 @@ class LLMConfig:
 @dataclass
 class TemplateConfig:
     """模板配置"""
-    default: str = "Modern Colorful"
+    default: str = "ModernColorful"
     directory: str = "latex_template"
 
 

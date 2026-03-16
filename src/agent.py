@@ -23,6 +23,9 @@ console = Console()
 # ─── 上下文管理 ──────────────────────────────────────────────
 # Agent 工作分为多个阶段，前一阶段的详细 tool 输出在进入下一阶段后
 # 可以被压缩为摘要，避免 messages 无限膨胀撑爆 context window。
+#
+# 关键原则：论文源码 (read_file) 和模板内容 (read_template) 是写报告的
+# 核心输入，必须保留到报告写完 (write 阶段之后) 才能压缩。
 
 # 阶段定义：通过 tool 调用模式识别当前阶段
 STAGES = [
@@ -36,12 +39,16 @@ STAGES = [
     ("compile",     lambda tc: tc["name"] == "compile_pdf" or (tc["name"] == "run_shell" and "xelatex" in tc["args"].get("command", ""))),
 ]
 
-# 每个阶段结束后，哪些 tool 的输出可以被压缩
-STAGE_COMPRESSIBLE_TOOLS = {
-    "download":    {"run_shell"},         # wget/tar 的输出
-    "read_source": {"read_file"},         # .tex 源码全文
-    "interpret":   {"read_skill"},        # 技能指南（已内化）
-    "template":    {"read_template", "read_skill"},
+# 到达某个阶段时，哪些 tool 的输出可以被压缩
+# 关键：read_file 和 read_template 的输出直到 compile 阶段才压缩，
+# 因为写报告 (write) 阶段仍然需要论文源码和模板内容作为参考
+STAGE_COMPRESS_RULES = {
+    "download":    {"run_shell"},                              # 下载日志可以立即压缩
+    "read_source": {"run_shell"},                              # 同上
+    "interpret":   {"run_shell", "read_skill"},                # 技能指南读完可压缩
+    "template":    {"run_shell", "read_skill"},                # 同上
+    "write":       {"run_shell", "read_skill"},                # 写报告时仍需论文+模板
+    "compile":     {"run_shell", "read_skill", "read_file", "read_template"},  # 报告写完，源码和模板可压缩
 }
 
 # tool 输出超过此长度才压缩，避免压缩短消息
@@ -64,47 +71,22 @@ def _detect_current_stage(messages) -> str:
     return current
 
 
-def _get_passed_stages(messages) -> list[str]:
-    """返回已经经历过的阶段列表（不含当前阶段）。"""
-    seen = []
-    current = "init"
-    for msg in messages:
-        if not hasattr(msg, "tool_calls") or not msg.tool_calls:
-            continue
-        for tc in msg.tool_calls:
-            for stage_name, matcher in STAGES:
-                try:
-                    if matcher(tc) and stage_name != current:
-                        if current != "init" and current not in seen:
-                            seen.append(current)
-                        current = stage_name
-                except Exception:
-                    continue
-    return seen
-
 
 def _compress_messages(state) -> dict:
     """
     pre_model_hook: 在每轮 LLM 调用前裁剪上下文。
 
-    策略：已完成阶段的大段 tool 输出替换为摘要行，
-    保留 SystemMessage、HumanMessage、最近阶段的完整内容。
+    策略：根据当前阶段决定哪些 tool 输出可压缩。
+    论文源码 (read_file) 和模板 (read_template) 在报告写完前始终保留。
     """
     messages = state["messages"]
 
-    passed_stages = _get_passed_stages(messages)
-    if not passed_stages:
-        return {"llm_input_messages": messages}
+    current_stage = _detect_current_stage(messages)
 
-    # 收集已完成阶段可压缩的 tool 名称
-    compressible_tools = set()
-    for stage in passed_stages:
-        compressible_tools |= STAGE_COMPRESSIBLE_TOOLS.get(stage, set())
-
+    # 根据当前阶段确定可压缩的 tool 集合
+    compressible_tools = STAGE_COMPRESS_RULES.get(current_stage, set())
     if not compressible_tools:
         return {"llm_input_messages": messages}
-
-    current_stage = _detect_current_stage(messages)
 
     # 找到当前阶段开始的位置（从后往前找）
     current_stage_start = len(messages)
@@ -120,7 +102,6 @@ def _compress_messages(state) -> dict:
                         continue
 
     trimmed = []
-    # 构建 tool_call id -> AI message 的映射，用于保持 tool_call/ToolMessage 配对一致
     for i, msg in enumerate(messages):
         # 保留 System/Human 消息
         if isinstance(msg, (SystemMessage, HumanMessage)):

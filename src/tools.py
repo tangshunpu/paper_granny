@@ -181,52 +181,61 @@ def list_dir(path: str = ".") -> str:
 def list_templates() -> str:
     """列出 latex_template/ 目录下所有可用的 LaTeX 模板。
 
-    返回每个模板的名称、文件大小和描述（从文件首行注释提取）。
+    返回每个模板的名称、类型（.cls 或 .tex）、文件大小和描述。
+    .cls 模板推荐使用，agent 只需写 \\documentclass{Name} + 正文即可。
     """
     template_dir = _project_root() / "latex_template"
     if not template_dir.exists():
         return "[ERROR] 模板目录不存在: latex_template/"
 
     templates = []
-    for tex_file in sorted(template_dir.glob("*.tex")):
-        size = tex_file.stat().st_size
-        # 从首行注释提取描述
-        try:
-            first_line = tex_file.read_text(encoding="utf-8").split("\n")[0]
-            desc = first_line.lstrip("% ").strip() if first_line.startswith("%") else ""
-        except Exception:
-            desc = ""
-        templates.append(f"  📄 {tex_file.stem}  ({size / 1024:.1f} KB) — {desc}")
+    for pattern in ("*.cls", "*.tex"):
+        for f in sorted(template_dir.glob(pattern)):
+            size = f.stat().st_size
+            try:
+                first_line = f.read_text(encoding="utf-8").split("\n")[0]
+                desc = first_line.lstrip("% ").strip() if first_line.startswith("%") else ""
+            except Exception:
+                desc = ""
+            tag = "[CLS]" if f.suffix == ".cls" else "[TEX]"
+            templates.append(f"  📄 {tag} {f.stem}  ({size / 1024:.1f} KB) — {desc}")
 
     if not templates:
-        return "没有找到可用的 LaTeX 模板。请在 latex_template/ 目录下放置 .tex 模板文件。"
+        return "没有找到可用的 LaTeX 模板。请在 latex_template/ 目录下放置 .cls 或 .tex 模板文件。"
 
     return "📋 可用模板:\n" + "\n".join(templates)
 
 
 @tool
 def read_template(template_name: str) -> str:
-    """读取指定模板的 preamble 部分（从 documentclass 到 begin{document}）。
+    """读取指定模板的信息，返回可用的盒子环境、命令和使用示例。
 
-    返回模板中定义的颜色、盒子环境、自定义命令等，
-    供 Agent 在生成报告时正确使用这些样式。
+    对于 .cls 模板，只需 \\documentclass{TemplateName} 即可使用，
+    无需复制 preamble，大幅减少报告生成量。
 
     Args:
-        template_name: 模板名称（不含 .tex 扩展名），如 "Modern Colorful"
+        template_name: 模板名称（不含扩展名），如 "Modern Colorful" 或 "ModernColorful"
     """
     template_dir = _project_root() / "latex_template"
 
-    # 精确或模糊匹配
+    # 搜索 .cls 和 .tex 文件，优先 .cls
     found = None
-    for tex_file in template_dir.glob("*.tex"):
-        if tex_file.stem.lower() == template_name.lower():
-            found = tex_file
+    for ext in (".cls", ".tex"):
+        for f in template_dir.glob(f"*{ext}"):
+            if f.stem.lower() == template_name.lower().replace(" ", ""):
+                found = f
+                break
+            if f.stem.lower() == template_name.lower():
+                found = f
+                break
+            if template_name.lower().replace(" ", "") in f.stem.lower():
+                found = f
+        if found:
             break
-        if template_name.lower() in tex_file.stem.lower():
-            found = tex_file
 
     if not found:
-        available = [f.stem for f in template_dir.glob("*.tex")]
+        available = [f.stem for f in template_dir.glob("*.cls")] + \
+                    [f.stem for f in template_dir.glob("*.tex")]
         return f"[ERROR] 未找到模板 '{template_name}'。可用: {available}"
 
     try:
@@ -234,8 +243,40 @@ def read_template(template_name: str) -> str:
     except Exception as e:
         return f"[ERROR] 读取模板失败: {e}"
 
-    # 提取 preamble
-    import re
+    # .cls 模板：提取可用环境和命令的摘要，而非完整 preamble
+    if found.suffix == ".cls":
+        # 提取 tcolorbox 环境名
+        boxes = re.findall(r"\\newtcolorbox\{(\w+)\}", content)
+        # 提取自定义命令
+        commands = re.findall(r"\\newcommand\{\\(\w+)\}", content)
+        # 提取颜色名
+        colors = re.findall(r"\\definecolor\{(\w+)\}", content)
+
+        cls_name = found.stem
+        result = f"📄 模板: {cls_name} (.cls)\n\n"
+        result += f"## 使用方式\n\n"
+        result += f"只需一行即可引入所有样式，无需复制 preamble：\n"
+        result += f"```latex\n\\documentclass{{{cls_name}}}\n```\n\n"
+        result += f"编译时需要将 {cls_name}.cls 复制到报告目录，或设置 TEXINPUTS。\n\n"
+        result += f"## 可用盒子环境\n\n"
+        for box in boxes:
+            # 查找盒子定义附近的注释作为描述
+            pattern = rf"% (.+?)\n\\newtcolorbox\{{{box}\}}"
+            desc_match = re.search(pattern, content)
+            desc = desc_match.group(1) if desc_match else ""
+            result += f"- `{box}` — {desc}\n"
+        result += f"\n## 可用高亮命令\n\n"
+        for cmd in commands:
+            result += f"- `\\{cmd}{{text}}`\n"
+        result += f"\n## 可用颜色\n\n"
+        result += ", ".join(f"`{c}`" for c in colors)
+        result += f"\n\n## 其他说明\n\n"
+        result += f"- `\\AddTitlePageLogo` — 标题页左上角 logo\n"
+        result += f"- 页面默认使用 `logostyle` 页眉（左上 logo + 页码）\n"
+        result += f"- 需要 logo.png 在报告同目录下\n"
+        return result
+
+    # .tex 模板：返回 preamble（旧逻辑兼容）
     match = re.search(r"(\\documentclass.*?)\\begin\{document\}", content, re.DOTALL)
     if match:
         preamble = match.group(1).strip()
@@ -349,6 +390,21 @@ def compile_pdf(tex_path: str, runs: int = 2, cleanup: bool = True) -> str:
 
     log_path = file_path.with_suffix(".log")
     pdf_path = file_path.with_suffix(".pdf")
+    report_dir = file_path.parent
+    template_dir = _project_root() / "latex_template"
+
+    # 自动复制模板依赖文件到报告目录
+    import shutil
+    # 复制所有 .cls 文件（模板类文件）
+    for cls_file in template_dir.glob("*.cls"):
+        dest = report_dir / cls_file.name
+        if not dest.exists():
+            shutil.copy2(cls_file, dest)
+    # 复制 logo.png（模板页眉/标题页需要）
+    logo_src = _project_root() / "figure" / "logo.png"
+    logo_dest = report_dir / "logo.png"
+    if logo_src.exists() and not logo_dest.exists():
+        shutil.copy2(logo_src, logo_dest)
 
     # 多遍编译
     for i in range(1, runs + 1):

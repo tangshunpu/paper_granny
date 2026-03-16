@@ -23,13 +23,16 @@ mkdir -p papers/{arxiv_id}/source
 
 ### 3. 下载源码
 
-```bash
-wget "https://arxiv.org/e-print/{arxiv_id}" -O papers/{arxiv_id}/source.tar.gz
-```
+**根据系统环境选择可用的下载工具（参考 system prompt 中的系统环境信息）：**
 
-如果 wget 失败，尝试 curl：
+curl（macOS/Linux 通常自带）：
 ```bash
 curl -L "https://arxiv.org/e-print/{arxiv_id}" -o papers/{arxiv_id}/source.tar.gz
+```
+
+wget（如果可用）：
+```bash
+wget "https://arxiv.org/e-print/{arxiv_id}" -O papers/{arxiv_id}/source.tar.gz
 ```
 
 ### 4. 解压

@@ -24,7 +24,7 @@ llm:
 
 # 模板配置
 template:
-  default: "Modern Colorful"       # 默认模板名称
+  default: "ModernColorful"         # 默认模板名称 (.cls)
   directory: latex_template        # 模板目录
 
 # 输出配置
