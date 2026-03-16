@@ -3,9 +3,6 @@
 > **arXiv 论文智能解读 Agent** — 基于 LangGraph ReAct 的自主论文分析系统
 
 Scholar Granny 是一个 AI Agent，能够自动下载 arXiv 论文 LaTeX 源码、深度阅读理解、并生成精美的中文解读报告 PDF。
-
-**不是固定 pipeline，而是真正的 AI Agent。** LLM 在 ReAct 循环中自主调用工具（shell 命令、文件读写）来探索论文、理解内容、生成报告。
-
 ## ✨ 特性
 
 - 🤖 **LangGraph ReAct Agent** — LLM 自主决策，按需调用 7 种工具
