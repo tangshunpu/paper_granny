@@ -1,4 +1,4 @@
-# Scholar Granny
+# Scholar Granny 📖
 
 [English](README.md)
 
@@ -6,25 +6,25 @@
 
 Scholar Granny 是一个 AI Agent，能够自动下载 arXiv 论文 LaTeX 源码、深度阅读理解、并生成精美的中文解读报告 PDF。
 
-## 特性
+## ✨ 特性
 
-- **LangGraph ReAct Agent** — LLM 自主决策，按需调用 7 种工具
-- **Web UI + CLI** — 精美 Web 界面 & 命令行双入口
-- **SSE 实时流式** — 通过 Server-Sent Events 实时展示 Agent 推理过程
-- **10+ LLM Provider** — OpenAI / Claude / DeepSeek / Kimi / 通义 / SiliconFlow / OpenRouter / Ollama / vLLM
-- **LaTeX 模板系统** — 可扩展的报告模板，生成精美 PDF（已预置 "Modern Colorful" 模板，开箱即用）
-- **Skill 子技能系统** — Agent 按需读取技能指南，模块化知识注入
-- **Web 界面配置 API Key** — 直接在浏览器中配置 API Key、选择 Provider 和模型，无需手动编辑配置文件或环境变量
+- 🤖 **LangGraph ReAct Agent** — LLM 自主决策，按需调用 7 种工具
+- 🌐 **Web UI + CLI** — 精美 Web 界面 & 命令行双入口
+- 📡 **SSE 实时流式** — 通过 Server-Sent Events 实时展示 Agent 推理过程
+- 🔌 **10+ LLM Provider** — OpenAI / Claude / DeepSeek / Kimi / 通义 / SiliconFlow / OpenRouter / Ollama / vLLM
+- 📄 **LaTeX 模板系统** — 可扩展的报告模板，生成精美 PDF（已预置 "Modern Colorful" 模板，开箱即用）
+- 🧠 **Skill 子技能系统** — Agent 按需读取技能指南，模块化知识注入
+- 🔑 **Web 界面配置 API Key** — 直接在浏览器中配置 API Key、选择 Provider 和模型，无需手动编辑配置文件或环境变量
 
-## 快速开始
+## 🚀 快速开始
 
-### 安装
+### 📦 安装
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 配置 API Key
+### 🔑 配置 API Key
 
 **方式一：通过 Web 界面配置（推荐）**
 
@@ -62,7 +62,7 @@ llm:
   api_key: "sk-xxx"
 ```
 
-### 使用
+### 💡 使用
 
 **Web 界面（推荐）**
 
@@ -99,7 +99,7 @@ python -m src.main list-templates
 python -m src.main --url 2603.03251 -q
 ```
 
-## 架构
+## 🏗️ 架构
 
 ```
 用户输入 arXiv URL
@@ -125,7 +125,7 @@ python -m src.main --url 2603.03251 -q
    生成 PDF 解读报告
 ```
 
-## 支持的 LLM Provider
+## 🔌 支持的 LLM Provider
 
 | Provider | 环境变量 | 默认模型 | 备注 |
 |----------|---------|---------|------|
@@ -140,7 +140,7 @@ python -m src.main --url 2603.03251 -q
 | Ollama | 无需设置 | `llama3` | 本地部署 |
 | vLLM | 无需设置 | 自定义 | 需设置 `base_url` |
 
-## 项目结构
+## 📁 项目结构
 
 ```
 Paper_Granny/
@@ -168,13 +168,13 @@ Paper_Granny/
     └── index.html               # Web 前端
 ```
 
-## 自定义
+## 🔧 自定义
 
 ### 添加模板
 
 将 `.tex` 模板放入 `latex_template/` 目录即可，Agent 自动发现。
 
-## 环境要求
+## 📝 环境要求
 
 - Python 3.10+
 - XeLaTeX（TeX Live 或 MacTeX）
@@ -183,6 +183,6 @@ Paper_Granny/
   - Windows：SimSun / SimHei / Microsoft YaHei（系统自带）
   - Linux：Fandol 字体（TeX Live 自带）
 
-## License
+## 📄 License
 
 MIT

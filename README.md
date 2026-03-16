@@ -1,4 +1,4 @@
-# Scholar Granny
+# Scholar Granny 📖
 
 [中文文档](README_CN.md)
 
@@ -6,25 +6,25 @@
 
 Scholar Granny is an AI Agent that automatically downloads arXiv paper LaTeX source code, performs deep reading comprehension, and generates beautifully formatted Chinese interpretation report PDFs.
 
-## Features
+## ✨ Features
 
-- **LangGraph ReAct Agent** — LLM autonomous decision-making with 7 specialized tools
-- **Web UI + CLI** — Beautiful web interface & command-line dual entry points
-- **SSE Real-time Streaming** — Live display of Agent reasoning process via Server-Sent Events
-- **10+ LLM Providers** — OpenAI / Claude / DeepSeek / Kimi / DashScope / SiliconFlow / OpenRouter / Ollama / vLLM
-- **LaTeX Template System** — Extensible report templates for beautiful PDF generation (a "Modern Colorful" template is pre-built and ready to use)
-- **Skill Sub-system** — Agent reads skill guides on demand for modular knowledge injection
-- **Web-based API Key Configuration** — Configure API keys, select providers and models directly from the web UI — no need to edit config files or environment variables
+- 🤖 **LangGraph ReAct Agent** — LLM autonomous decision-making with 7 specialized tools
+- 🌐 **Web UI + CLI** — Beautiful web interface & command-line dual entry points
+- 📡 **SSE Real-time Streaming** — Live display of Agent reasoning process via Server-Sent Events
+- 🔌 **10+ LLM Providers** — OpenAI / Claude / DeepSeek / Kimi / DashScope / SiliconFlow / OpenRouter / Ollama / vLLM
+- 📄 **LaTeX Template System** — Extensible report templates for beautiful PDF generation (a "Modern Colorful" template is pre-built and ready to use)
+- 🧠 **Skill Sub-system** — Agent reads skill guides on demand for modular knowledge injection
+- 🔑 **Web-based API Key Configuration** — Configure API keys, select providers and models directly from the web UI — no need to edit config files or environment variables
 
-## Quick Start
+## 🚀 Quick Start
 
-### Installation
+### 📦 Installation
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Configure API Key
+### 🔑 Configure API Key
 
 **Option 1: Via Web UI (Recommended)**
 
@@ -62,7 +62,7 @@ llm:
   api_key: "sk-xxx"
 ```
 
-### Usage
+### 💡 Usage
 
 **Web UI (Recommended)**
 
@@ -99,7 +99,7 @@ python -m src.main list-templates
 python -m src.main --url 2603.03251 -q
 ```
 
-## Architecture
+## 🏗️ Architecture
 
 ```
 User inputs arXiv URL
@@ -125,7 +125,7 @@ User inputs arXiv URL
    Generated PDF Report
 ```
 
-## Supported LLM Providers
+## 🔌 Supported LLM Providers
 
 | Provider | Environment Variable | Default Model | Notes |
 |----------|---------------------|---------------|-------|
@@ -140,7 +140,7 @@ User inputs arXiv URL
 | Ollama | Not required | `llama3` | Local deployment |
 | vLLM | Not required | Custom | Requires `base_url` |
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 Paper_Granny/
@@ -168,13 +168,13 @@ Paper_Granny/
     └── index.html               # Web frontend
 ```
 
-## Customization
+## 🔧 Customization
 
 ### Adding Templates
 
 Place `.tex` template files in the `latex_template/` directory — the Agent will auto-discover them.
 
-## Requirements
+## 📝 Requirements
 
 - Python 3.10+
 - XeLaTeX (TeX Live or MacTeX)
@@ -183,6 +183,6 @@ Place `.tex` template files in the `latex_template/` directory — the Agent wil
   - Windows: SimSun / SimHei / Microsoft YaHei (built-in)
   - Linux: Fandol fonts (included in TeX Live)
 
-## License
+## 📄 License
 
 MIT
