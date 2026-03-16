@@ -14,16 +14,59 @@
 ]{geometry}
 
 % ------------------ 中文支持 ------------------
-\usepackage{ctex}
-\setCJKmainfont{Noto Serif CJK SC}
-\setCJKsansfont{Noto Sans CJK SC}
-\setCJKmonofont{Noto Sans Mono CJK SC}
+% ctex 自动检测系统并选择合适的中文字体:
+%   macOS:   Songti SC / PingFang SC / STSong
+%   Windows: SimSun / SimHei / KaiTi
+%   Linux:   Fandol 字体 (TeX Live 自带)
+\usepackage[UTF8, fontset=none]{ctex}
+\IfFontExistsTF{Songti SC}{%
+  % macOS 字体
+  \setCJKmainfont{Songti SC}[BoldFont=Songti SC Bold]
+  \setCJKsansfont{Heiti SC}[BoldFont=Heiti SC Medium]
+  \setCJKmonofont{Menlo}
+}{%
+  \IfFontExistsTF{SimSun}{%
+    % Windows 字体
+    \setCJKmainfont{SimSun}[BoldFont=SimHei]
+    \setCJKsansfont{Microsoft YaHei}[BoldFont=Microsoft YaHei Bold]
+    \setCJKmonofont{SimSun}
+  }{%
+    % Linux 回退: Fandol 字体 (TeX Live 自带, 无需安装)
+    \setCJKmainfont{FandolSong}[BoldFont=FandolHei]
+    \setCJKsansfont{FandolHei}
+    \setCJKmonofont{FandolFang}
+  }%
+}
 
-% ------------------ 字体与编码 ------------------
+% ------------------ 英文字体 ------------------
 \usepackage{fontspec}
-\setmainfont{DejaVu Serif}
-\setsansfont{DejaVu Sans}
-\setmonofont{DejaVu Sans Mono}[Scale=0.85]
+\IfFontExistsTF{Palatino}{%
+  \setmainfont{Palatino}             % macOS
+}{%
+  \IfFontExistsTF{Palatino Linotype}{%
+    \setmainfont{Palatino Linotype}   % Windows
+  }{%
+    \setmainfont{TeX Gyre Pagella}    % Linux (TeX Live 自带)
+  }%
+}
+\IfFontExistsTF{Helvetica Neue}{%
+  \setsansfont{Helvetica Neue}       % macOS
+}{%
+  \IfFontExistsTF{Arial}{%
+    \setsansfont{Arial}               % Windows
+  }{%
+    \setsansfont{TeX Gyre Heros}      % Linux (TeX Live 自带)
+  }%
+}
+\IfFontExistsTF{Menlo}{%
+  \setmonofont{Menlo}[Scale=0.85]    % macOS
+}{%
+  \IfFontExistsTF{Consolas}{%
+    \setmonofont{Consolas}[Scale=0.85] % Windows
+  }{%
+    \setmonofont{TeX Gyre Cursor}[Scale=0.85] % Linux (TeX Live 自带)
+  }%
+}
 
 % ------------------ 颜色定义 - 丰富配色 ------------------
 \usepackage{xcolor}

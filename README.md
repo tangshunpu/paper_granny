@@ -161,7 +161,10 @@ llm:
 
 - Python 3.10+
 - XeLaTeX（TeX Live 或 MacTeX）
-- 中文字体：Noto Serif / Sans / Mono CJK SC
+- 中文字体：**无需额外安装**，模板自动检测系统字体
+  - macOS：Songti SC / Heiti SC（系统自带）
+  - Windows：SimSun / SimHei / Microsoft YaHei（系统自带）
+  - Linux：Fandol 字体（TeX Live 自带）
 
 ## 📄 License
 

@@ -20,8 +20,8 @@ console = Console()
 
 BANNER = r"""
   ╔══════════════════════════════════════════════════╗
-  ║  📖  Scholar Granny  v0.2.0  (Agentic Edition)  ║
-  ║  arXiv 论文智能解读 — LangGraph ReAct Agent       ║
+  ║  📖  Scholar Granny  v0.2.0                      ║
+  ║  arXiv 论文智能解读 — LangGraph ReAct Agent        ║
   ╚══════════════════════════════════════════════════╝
 """
 
