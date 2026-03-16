@@ -18,8 +18,7 @@ from sse_starlette.sse import EventSourceResponse
 
 from .config import load_config
 from .llm_factory import create_llm
-from .tools import ALL_TOOLS, _project_root
-from .skills import build_system_prompt
+from .tools import _project_root
 
 app = FastAPI(title="Scholar Granny", version="0.2.0")
 
@@ -159,17 +158,12 @@ async def run_agent_sse(request: Request):
             await asyncio.sleep(0.1)
 
             from langchain_core.messages import HumanMessage
-            from langgraph.prebuilt import create_react_agent
+            from .agent import create_scholar_agent
 
-            system_prompt = build_system_prompt(
+            agent = create_scholar_agent(
+                llm=llm,
                 template_name=template_name,
                 language=language,
-            )
-
-            agent = create_react_agent(
-                model=llm,
-                tools=ALL_TOOLS,
-                prompt=system_prompt,
             )
 
             # Step 3: 构建任务消息
