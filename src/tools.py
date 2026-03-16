@@ -6,6 +6,7 @@ Agent 自行决定何时调用哪个工具来完成论文解读任务。
 """
 
 import os
+import re
 import subprocess
 from pathlib import Path
 from typing import Optional
@@ -244,6 +245,147 @@ def read_template(template_name: str) -> str:
                "\n".join(content.split("\n")[:300])
 
 
+# ─── PDF 编译工具 ────────────────────────────────────────────
+
+# 从 .log 中提取关键错误的正则模式
+_LATEX_ERROR_PATTERNS = [
+    # 标准 LaTeX 错误: ! Error message
+    (re.compile(r"^! (.+)$", re.MULTILINE), "error"),
+    # 带行号的错误: l.123 some context
+    (re.compile(r"^l\.(\d+) (.*)$", re.MULTILINE), "line"),
+    # 未定义的控制序列
+    (re.compile(r"Undefined control sequence.*\n.*\\(\w+)", re.MULTILINE), "undef"),
+    # 缺少文件
+    (re.compile(r"File `(.+?)' not found", re.MULTILINE), "missing_file"),
+    # 字体缺失
+    (re.compile(r"Font .+? at \d+ not found|cannot find (.+?) font", re.MULTILINE | re.IGNORECASE), "font"),
+    # Package 错误
+    (re.compile(r"Package (\w+) Error: (.+?)(?:\n|$)", re.MULTILINE), "package"),
+]
+
+# 编译中间文件后缀
+_LATEX_AUX_EXTENSIONS = {".aux", ".log", ".out", ".toc", ".synctex.gz", ".fls", ".fdb_latexmk", ".nav", ".snm", ".vrb"}
+
+
+def _extract_log_errors(log_path: Path, max_errors: int = 5) -> list[str]:
+    """从 .log 文件中提取关键错误信息，避免返回整个 log。"""
+    if not log_path.exists():
+        return ["[log 文件不存在]"]
+
+    try:
+        log_content = log_path.read_text(encoding="utf-8", errors="replace")
+    except Exception:
+        return ["[无法读取 log 文件]"]
+
+    errors = []
+    for pattern, kind in _LATEX_ERROR_PATTERNS:
+        for match in pattern.finditer(log_content):
+            if kind == "error":
+                errors.append(f"! {match.group(1)}")
+            elif kind == "line":
+                errors.append(f"  → 行 {match.group(1)}: {match.group(2)}")
+            elif kind == "undef":
+                errors.append(f"未定义命令: \\{match.group(1)}")
+            elif kind == "missing_file":
+                errors.append(f"缺少文件: {match.group(1)}")
+            elif kind == "font":
+                errors.append(f"字体问题: {match.group(0).strip()}")
+            elif kind == "package":
+                errors.append(f"Package {match.group(1)}: {match.group(2)}")
+            if len(errors) >= max_errors:
+                break
+        if len(errors) >= max_errors:
+            break
+
+    return errors if errors else ["[未能从 log 提取具体错误，请检查 .log 文件]"]
+
+
+def _run_xelatex(tex_path: Path, timeout: int = 60) -> tuple[bool, str]:
+    """运行一次 xelatex 编译，返回 (成功?, 输出摘要)。"""
+    cmd = [
+        "xelatex",
+        "-interaction=nonstopmode",  # 遇到错误不等待输入，直接跳过
+        "-halt-on-error",            # 遇到严重错误立即停止，不浪费时间
+        "-file-line-error",          # 输出 file:line:error 格式，方便定位
+        tex_path.name,
+    ]
+    try:
+        result = subprocess.run(
+            cmd,
+            cwd=str(tex_path.parent),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+        success = result.returncode == 0
+        return success, result.stdout[-500:] if result.stdout else ""
+    except subprocess.TimeoutExpired:
+        return False, f"[编译超时 ({timeout}s)]"
+    except FileNotFoundError:
+        return False, "[错误] 未找到 xelatex 命令，请安装 TeX Live 或 MacTeX"
+    except Exception as e:
+        return False, f"[错误] {e}"
+
+
+@tool
+def compile_pdf(tex_path: str, runs: int = 2, cleanup: bool = True) -> str:
+    """编译 LaTeX 文件为 PDF。自动使用 xelatex 并提取错误信息。
+
+    比直接用 run_shell 调 xelatex 更快更可靠：
+    - 使用 nonstopmode + halt-on-error，遇错立即停止不会卡住
+    - 自动从 .log 提取关键错误（行号 + 错误类型），无需手动读 log
+    - 自动清理中间文件
+
+    Args:
+        tex_path: .tex 文件路径（相对于项目根目录，或绝对路径）
+        runs: 编译次数，默认 2（第二遍生成目录和交叉引用）
+        cleanup: 编译成功后是否清理中间文件（.aux/.log/.out/.toc 等）
+    """
+    file_path = _resolve_path(tex_path)
+    if not file_path.exists():
+        return f"[ERROR] 文件不存在: {file_path}"
+    if not file_path.suffix == ".tex":
+        return f"[ERROR] 不是 .tex 文件: {file_path}"
+
+    log_path = file_path.with_suffix(".log")
+    pdf_path = file_path.with_suffix(".pdf")
+
+    # 多遍编译
+    for i in range(1, runs + 1):
+        success, output = _run_xelatex(file_path)
+
+        if not success:
+            errors = _extract_log_errors(log_path)
+            error_report = "\n".join(errors)
+            return (
+                f"[编译失败] 第 {i}/{runs} 遍\n"
+                f"文件: {file_path}\n\n"
+                f"错误摘要（共 {len(errors)} 条）:\n{error_report}\n\n"
+                f"请根据以上错误修改 .tex 文件后重新调用 compile_pdf。"
+            )
+
+    # 检查 PDF 输出
+    if not pdf_path.exists():
+        return f"[ERROR] 编译似乎成功但未生成 PDF: {pdf_path}"
+
+    pdf_size = pdf_path.stat().st_size
+    size_str = f"{pdf_size / 1024:.1f} KB" if pdf_size < 1024 * 1024 else f"{pdf_size / 1024 / 1024:.1f} MB"
+
+    # 清理中间文件
+    cleaned = []
+    if cleanup:
+        for ext in _LATEX_AUX_EXTENSIONS:
+            aux_file = file_path.with_suffix(ext)
+            if aux_file.exists():
+                aux_file.unlink()
+                cleaned.append(ext)
+
+    result = f"✅ 编译成功！\nPDF: {pdf_path} ({size_str})"
+    if cleaned:
+        result += f"\n已清理: {', '.join(cleaned)}"
+    return result
+
+
 # ─── Skill 工具 ──────────────────────────────────────────────
 
 @tool
@@ -287,4 +429,5 @@ ALL_TOOLS = [
     list_templates,
     read_template,
     read_skill,
+    compile_pdf,
 ]

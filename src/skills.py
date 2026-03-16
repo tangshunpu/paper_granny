@@ -32,13 +32,14 @@ def build_system_prompt(
 
 ## 可用工具
 
-1. **run_shell(command, cwd)** — 执行 shell 命令（下载、解压、编译等）
+1. **run_shell(command, cwd)** — 执行 shell 命令（下载、解压等）
 2. **read_file(path, start_line, max_lines)** — 读取文件内容
 3. **write_file(path, content)** — 写入文件
 4. **list_dir(path)** — 列出目录内容
 5. **list_templates()** — 列出可用 LaTeX 模板
 6. **read_template(template_name)** — 读取模板 preamble
 7. **read_skill(skill_name)** — 读取子技能指南
+8. **compile_pdf(tex_path, runs, cleanup)** — 编译 LaTeX 为 PDF（自动提取错误、清理中间文件）
 
 ## 可用技能（通过 read_skill 按需加载）
 

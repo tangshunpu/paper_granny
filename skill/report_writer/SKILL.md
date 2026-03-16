@@ -96,9 +96,10 @@ description: 如何使用 LaTeX 模板写解读报告。Agent 准备写报告时
 
 ## 编译
 
-```bash
-xelatex report.tex    # 第一遍
-xelatex report.tex    # 第二遍（生成目录）
+**使用 `compile_pdf` 工具（不要用 `run_shell` 手动调 xelatex）：**
+
+```
+compile_pdf("papers/{arxiv_id}/report.tex")
 ```
 
-如果编译失败，阅读 `.log` 文件定位错误。
+编译失败时工具会自动提取错误摘要，根据提示修改 .tex 文件后重新调用即可。

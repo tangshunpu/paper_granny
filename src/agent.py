@@ -33,7 +33,7 @@ STAGES = [
     ("template",    lambda tc: tc["name"] in ("read_template", "read_skill") and
                      ("template" in tc["args"].get("template_name", "") or "report_writer" in tc["args"].get("skill_name", "") or "template" in tc["args"].get("skill_name", ""))),
     ("write",       lambda tc: tc["name"] == "write_file" and "report" in tc["args"].get("path", "")),
-    ("compile",     lambda tc: tc["name"] == "run_shell" and "xelatex" in tc["args"].get("command", "")),
+    ("compile",     lambda tc: tc["name"] == "compile_pdf" or (tc["name"] == "run_shell" and "xelatex" in tc["args"].get("command", ""))),
 ]
 
 # 每个阶段结束后，哪些 tool 的输出可以被压缩

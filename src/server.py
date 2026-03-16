@@ -261,6 +261,8 @@ def _format_tool_call(tool_name: str, tool_input: dict) -> str:
         return f"📄 template: {tool_input.get('template_name', '')}"
     elif tool_name == "list_templates":
         return "📋 listing templates"
+    elif tool_name == "compile_pdf":
+        return f"🔨 compiling {tool_input.get('tex_path', '')}"
     return str(tool_input)
 
 
