@@ -7,6 +7,7 @@ Agent 自行决定何时调用哪个工具来完成论文解读任务。
 
 import os
 import re
+import shutil
 import subprocess
 from pathlib import Path
 from typing import Optional
@@ -64,6 +65,110 @@ def run_shell(command: str, cwd: Optional[str] = None) -> str:
         return "[ERROR] 命令执行超时 (120s)"
     except Exception as e:
         return f"[ERROR] 命令执行失败: {e}"
+
+
+# ─── 论文下载工具（带缓存）──────────────────────────────────
+
+def _extract_arxiv_id(url_or_id: str) -> str:
+    """从 URL 或 ID 字符串中提取 arXiv ID。"""
+    url_or_id = url_or_id.strip()
+    # 匹配 arXiv ID 模式: YYMM.NNNNN 或旧格式 category/NNNNNNN
+    patterns = [
+        r"arxiv\.org/(?:abs|pdf|e-print)/(\d{4}\.\d{4,5}(?:v\d+)?)",
+        r"arxiv\.org/(?:abs|pdf|e-print)/([\w.-]+/\d{7}(?:v\d+)?)",
+        r"arXiv:(\d{4}\.\d{4,5}(?:v\d+)?)",
+        r"^(\d{4}\.\d{4,5}(?:v\d+)?)$",
+    ]
+    for pat in patterns:
+        m = re.search(pat, url_or_id)
+        if m:
+            return m.group(1)
+    return url_or_id  # 原样返回，让后续步骤处理错误
+
+
+@tool
+def download_paper(arxiv_url: str) -> str:
+    """下载 arXiv 论文 LaTeX 源码。自动提取 ID、下载、解压，并缓存已下载的论文。
+
+    如果论文已下载过（papers/{id}/source/ 下有 .tex 文件），直接返回缓存结果，跳过下载。
+
+    Args:
+        arxiv_url: arXiv 论文 URL 或 ID，如 "https://arxiv.org/abs/2603.03251" 或 "2603.03251"
+    """
+    arxiv_id = _extract_arxiv_id(arxiv_url)
+    root = _project_root()
+    paper_dir = root / "papers" / arxiv_id
+    source_dir = paper_dir / "source"
+    tarball = paper_dir / "source.tar.gz"
+
+    # ─── 缓存检查 ───
+    if source_dir.exists():
+        tex_files = list(source_dir.rglob("*.tex"))
+        if tex_files:
+            file_list = "\n".join(f"  📄 {f.relative_to(source_dir)}" for f in sorted(tex_files))
+            return (
+                f"✅ 论文已缓存，跳过下载\n"
+                f"目录: papers/{arxiv_id}/source/\n"
+                f"找到 {len(tex_files)} 个 .tex 文件:\n{file_list}"
+            )
+
+    # ─── 创建目录 ───
+    source_dir.mkdir(parents=True, exist_ok=True)
+
+    # ─── 下载 ───
+    download_url = f"https://arxiv.org/e-print/{arxiv_id}"
+    # 优先 curl（macOS 自带），其次 wget
+    for cmd in [
+        f'curl -L "{download_url}" -o "{tarball}"',
+        f'wget "{download_url}" -O "{tarball}"',
+    ]:
+        try:
+            result = subprocess.run(
+                cmd, shell=True, cwd=str(root),
+                capture_output=True, text=True, timeout=120,
+            )
+            if result.returncode == 0 and tarball.exists() and tarball.stat().st_size > 0:
+                break
+        except Exception:
+            continue
+    else:
+        return f"[ERROR] 下载失败: {download_url}\n请检查网络连接或论文 ID 是否正确。"
+
+    # ─── 解压 ───
+    # 尝试 tar.gz
+    try:
+        result = subprocess.run(
+            f'tar -xzf "{tarball}" -C "{source_dir}"',
+            shell=True, capture_output=True, text=True, timeout=60,
+        )
+        if result.returncode != 0:
+            # 可能是单个 gzip 文件
+            subprocess.run(
+                f'gunzip -c "{tarball}" > "{source_dir}/main.tex"',
+                shell=True, capture_output=True, text=True, timeout=60,
+            )
+    except Exception as e:
+        return f"[ERROR] 解压失败: {e}"
+
+    # ─── 验证 ───
+    tex_files = list(source_dir.rglob("*.tex"))
+    if not tex_files:
+        return (
+            f"[WARNING] 下载并解压完成，但未找到 .tex 文件。\n"
+            f"目录: papers/{arxiv_id}/source/\n"
+            f"此论文可能没有 LaTeX 源码，请用 list_dir 检查目录内容。"
+        )
+
+    file_list = "\n".join(f"  📄 {f.relative_to(source_dir)}" for f in sorted(tex_files))
+    size = tarball.stat().st_size
+    size_str = f"{size / 1024:.1f} KB" if size < 1024 * 1024 else f"{size / 1024 / 1024:.1f} MB"
+
+    return (
+        f"✅ 下载并解压成功\n"
+        f"目录: papers/{arxiv_id}/source/\n"
+        f"源码包: {size_str}\n"
+        f"找到 {len(tex_files)} 个 .tex 文件:\n{file_list}"
+    )
 
 
 # ─── 文件读取工具 ────────────────────────────────────────────
@@ -292,7 +397,8 @@ def list_dir(path: str = ".") -> str:
 def list_templates() -> str:
     """列出 latex_template/ 目录下所有可用的 LaTeX 模板。
 
-    返回每个模板的名称、类型（.cls 或 .tex）、文件大小和描述。
+    每个模板是一个子目录，包含同名 .cls 文件。
+    例如 latex_template/ModernColorful/ModernColorful.cls。
     .cls 模板推荐使用，agent 只需写 \\documentclass{Name} + 正文即可。
     """
     template_dir = _project_root() / "latex_template"
@@ -300,19 +406,26 @@ def list_templates() -> str:
         return "[ERROR] 模板目录不存在: latex_template/"
 
     templates = []
-    for pattern in ("*.cls", "*.tex"):
-        for f in sorted(template_dir.glob(pattern)):
-            size = f.stat().st_size
-            try:
-                first_line = f.read_text(encoding="utf-8").split("\n")[0]
-                desc = first_line.lstrip("% ").strip() if first_line.startswith("%") else ""
-            except Exception:
-                desc = ""
-            tag = "[CLS]" if f.suffix == ".cls" else "[TEX]"
-            templates.append(f"  📄 {tag} {f.stem}  ({size / 1024:.1f} KB) — {desc}")
+    for sub in sorted(template_dir.iterdir()):
+        if not sub.is_dir() or sub.name.startswith("."):
+            continue
+        cls_file = sub / f"{sub.name}.cls"
+        if not cls_file.exists():
+            # 也尝试查找目录内任意 .cls 文件
+            cls_files = list(sub.glob("*.cls"))
+            if not cls_files:
+                continue
+            cls_file = cls_files[0]
+        size = cls_file.stat().st_size
+        try:
+            first_line = cls_file.read_text(encoding="utf-8").split("\n")[0]
+            desc = first_line.lstrip("% ").strip() if first_line.startswith("%") else ""
+        except Exception:
+            desc = ""
+        templates.append(f"  📄 [CLS] {cls_file.stem}  ({size / 1024:.1f} KB) — {desc}")
 
     if not templates:
-        return "没有找到可用的 LaTeX 模板。请在 latex_template/ 目录下放置 .cls 或 .tex 模板文件。"
+        return "没有找到可用的 LaTeX 模板。请在 latex_template/<模板名>/ 目录下放置同名 .cls 模板文件。"
 
     return "📋 可用模板:\n" + "\n".join(templates)
 
@@ -325,28 +438,14 @@ def read_template(template_name: str) -> str:
     无需复制 preamble，大幅减少报告生成量。
 
     Args:
-        template_name: 模板名称（不含扩展名），如 "Modern Colorful" 或 "ModernColorful"
+        template_name: 模板名称（不含扩展名），如 "ModernColorful"
     """
     template_dir = _project_root() / "latex_template"
-
-    # 搜索 .cls 和 .tex 文件，优先 .cls
-    found = None
-    for ext in (".cls", ".tex"):
-        for f in template_dir.glob(f"*{ext}"):
-            if f.stem.lower() == template_name.lower().replace(" ", ""):
-                found = f
-                break
-            if f.stem.lower() == template_name.lower():
-                found = f
-                break
-            if template_name.lower().replace(" ", "") in f.stem.lower():
-                found = f
-        if found:
-            break
+    found = _find_template_cls(template_dir, template_name)
 
     if not found:
-        available = [f.stem for f in template_dir.glob("*.cls")] + \
-                    [f.stem for f in template_dir.glob("*.tex")]
+        available = [d.name for d in template_dir.iterdir()
+                     if d.is_dir() and not d.name.startswith(".") and list(d.glob("*.cls"))]
         return f"[ERROR] 未找到模板 '{template_name}'。可用: {available}"
 
     try:
@@ -354,102 +453,292 @@ def read_template(template_name: str) -> str:
     except Exception as e:
         return f"[ERROR] 读取模板失败: {e}"
 
-    # .cls 模板：提取可用环境和命令的摘要，而非完整 preamble
-    if found.suffix == ".cls":
-        # 提取 tcolorbox 环境名
-        boxes = re.findall(r"\\newtcolorbox\{(\w+)\}", content)
-        # 提取自定义命令
-        commands = re.findall(r"\\newcommand\{\\(\w+)\}", content)
-        # 提取颜色名
-        colors = re.findall(r"\\definecolor\{(\w+)\}", content)
+    # 提取可用环境和命令的摘要
+    boxes = re.findall(r"\\newtcolorbox\{(\w+)\}", content)
+    commands = re.findall(r"\\newcommand\{\\(\w+)\}", content)
+    colors = re.findall(r"\\definecolor\{(\w+)\}", content)
 
-        cls_name = found.stem
-        result = f"📄 模板: {cls_name} (.cls)\n\n"
-        result += f"## 使用方式\n\n"
-        result += f"只需一行即可引入所有样式，无需复制 preamble：\n"
-        result += f"```latex\n\\documentclass{{{cls_name}}}\n```\n\n"
-        result += f"编译时需要将 {cls_name}.cls 复制到报告目录，或设置 TEXINPUTS。\n\n"
-        result += f"## 可用盒子环境\n\n"
-        for box in boxes:
-            # 查找盒子定义附近的注释作为描述
-            pattern = rf"% (.+?)\n\\newtcolorbox\{{{box}\}}"
-            desc_match = re.search(pattern, content)
-            desc = desc_match.group(1) if desc_match else ""
-            result += f"- `{box}` — {desc}\n"
-        result += f"\n## 可用高亮命令\n\n"
-        for cmd in commands:
-            result += f"- `\\{cmd}{{text}}`\n"
-        result += f"\n## 可用颜色\n\n"
-        result += ", ".join(f"`{c}`" for c in colors)
-        result += f"\n\n## 其他说明\n\n"
-        result += f"- `\\AddTitlePageLogo` — 标题页左上角 logo\n"
-        result += f"- 页面默认使用 `logostyle` 页眉（左上 logo + 页码）\n"
-        result += f"- 需要 logo.png 在报告同目录下\n"
-        return result
+    cls_name = found.stem
+    result = f"📄 模板: {cls_name} (.cls)\n\n"
+    result += f"## 使用方式\n\n"
+    result += f"只需一行即可引入所有样式，无需复制 preamble：\n"
+    result += f"```latex\n\\documentclass{{{cls_name}}}\n```\n\n"
+    result += f"compile_pdf 会自动将 .cls 和 logo.png 复制到报告目录。\n\n"
+    result += f"## 可用盒子环境\n\n"
+    for box in boxes:
+        pattern = rf"% (.+?)\n\\newtcolorbox\{{{box}\}}"
+        desc_match = re.search(pattern, content)
+        desc = desc_match.group(1) if desc_match else ""
+        result += f"- `{box}` — {desc}\n"
+    result += f"\n## 可用高亮命令\n\n"
+    for cmd in commands:
+        result += f"- `\\{cmd}{{text}}`\n"
+    result += f"\n## 可用颜色\n\n"
+    result += ", ".join(f"`{c}`" for c in colors)
+    result += f"\n\n## 其他说明\n\n"
+    result += f"- `\\AddTitlePageLogo` — 标题页左上角 logo\n"
+    result += f"- 页面默认使用 `logostyle` 页眉（左上 logo + 页码）\n"
+    result += f"- 需要 logo.png 在报告同目录下\n"
+    return result
 
-    # .tex 模板：返回 preamble（旧逻辑兼容）
-    match = re.search(r"(\\documentclass.*?)\\begin\{document\}", content, re.DOTALL)
-    if match:
-        preamble = match.group(1).strip()
-        return f"📄 模板: {found.stem}\n\n=== PREAMBLE ===\n{preamble}"
-    else:
-        return f"📄 模板: {found.stem}\n\n(无法提取 preamble，返回完整内容前 300 行)\n" + \
-               "\n".join(content.split("\n")[:300])
+
+def _find_template_cls(template_dir: Path, template_name: str) -> Optional[Path]:
+    """在 template_dir 的子目录中查找与 template_name 匹配的 .cls 文件。"""
+    name_normalized = template_name.lower().replace(" ", "")
+    for sub in template_dir.iterdir():
+        if not sub.is_dir() or sub.name.startswith("."):
+            continue
+        if sub.name.lower().replace(" ", "") == name_normalized:
+            cls_file = sub / f"{sub.name}.cls"
+            if cls_file.exists():
+                return cls_file
+            cls_files = list(sub.glob("*.cls"))
+            if cls_files:
+                return cls_files[0]
+    return None
 
 
 # ─── PDF 编译工具 ────────────────────────────────────────────
 
-# 从 .log 中提取关键错误的正则模式
-_LATEX_ERROR_PATTERNS = [
-    # 标准 LaTeX 错误: ! Error message
-    (re.compile(r"^! (.+)$", re.MULTILINE), "error"),
-    # 带行号的错误: l.123 some context
-    (re.compile(r"^l\.(\d+) (.*)$", re.MULTILINE), "line"),
-    # 未定义的控制序列
-    (re.compile(r"Undefined control sequence.*\n.*\\(\w+)", re.MULTILINE), "undef"),
-    # 缺少文件
-    (re.compile(r"File `(.+?)' not found", re.MULTILINE), "missing_file"),
-    # 字体缺失
-    (re.compile(r"Font .+? at \d+ not found|cannot find (.+?) font", re.MULTILINE | re.IGNORECASE), "font"),
-    # Package 错误
-    (re.compile(r"Package (\w+) Error: (.+?)(?:\n|$)", re.MULTILINE), "package"),
-]
-
 # 编译中间文件后缀
 _LATEX_AUX_EXTENSIONS = {".aux", ".log", ".out", ".toc", ".synctex.gz", ".fls", ".fdb_latexmk", ".nav", ".snm", ".vrb"}
 
+# 常见错误的自动修复提示
+_FIX_HINTS = {
+    "Undefined control sequence": "检查命令拼写，确认模板是否提供该命令。只用 SKILL.md 中列出的命令。",
+    "Missing $ inserted": "数学符号（如 下标 _ 、上标 ^ 、希腊字母）必须在 $ $ 或数学环境中使用。",
+    "Missing \\endcsname inserted": "检查是否在 \\hypersetup 等键值参数中用了不匹配的花括号或特殊字符。",
+    "File": "用 list_dir 确认文件位置，修正路径或复制文件到报告目录。",
+    "Missing number": "检查长度/计数器参数是否正确，如 \\hspace{} 中是否遗漏了数值。",
+    "Illegal unit of measure": "长度值需要单位，如 1cm、10pt、0.5\\textwidth。",
+    "Environment": "检查 \\begin{xxx} 和 \\end{xxx} 是否配对，环境名是否拼写正确。",
+    "Too many }'s": "多余的 }，检查花括号配对。",
+    "Extra alignment tab": "表格中 & 的数量超过列数，检查 tabular/tabularx 的列定义。",
+    "Overfull \\hbox": "内容溢出页面边距。长 URL 用 \\url{}，长公式加 \\allowbreak。",
+    "Package kvsetkeys Error": "键值参数格式错误，检查 \\hypersetup 等命令中的逗号和等号。",
+}
 
-def _extract_log_errors(log_path: Path, max_errors: int = 5) -> list[str]:
-    """从 .log 文件中提取关键错误信息，避免返回整个 log。"""
+
+def _get_fix_hint(error_msg: str) -> str:
+    """根据错误信息返回修复提示。"""
+    for keyword, hint in _FIX_HINTS.items():
+        if keyword.lower() in error_msg.lower():
+            return hint
+    return ""
+
+
+def _get_source_context(tex_path: Path, line_num: int, context: int = 2) -> str:
+    """读取 .tex 文件中指定行号附近的源码，用于错误定位。
+
+    Args:
+        tex_path: .tex 文件路径
+        line_num: 错误行号 (1-indexed)
+        context: 上下文行数（前后各取几行）
+
+    Returns:
+        带行号的源码片段，出错行用 >>> 标记
+    """
+    try:
+        lines = tex_path.read_text(encoding="utf-8", errors="replace").split("\n")
+    except Exception:
+        return ""
+
+    if line_num < 1 or line_num > len(lines):
+        return ""
+
+    start = max(0, line_num - 1 - context)
+    end = min(len(lines), line_num + context)
+
+    result_lines = []
+    for i in range(start, end):
+        ln = i + 1  # 1-indexed
+        marker = ">>>" if ln == line_num else "   "
+        result_lines.append(f"    {marker} {ln:4d} | {lines[i]}")
+
+    return "\n".join(result_lines)
+
+
+def _extract_log_errors(log_path: Path, tex_path: Path, max_errors: int = 10) -> str:
+    """从 .log 文件中提取结构化错误信息。
+
+    使用状态机逐行扫描，将 ! 错误与后续 l.XXX 行号配对。
+    同时收集 Missing character 警告和 Overfull/Underfull 警告。
+
+    Returns:
+        格式化的错误报告字符串（包含行号、错误描述、源码上下文、修复提示）
+    """
     if not log_path.exists():
-        return ["[log 文件不存在]"]
+        return "[log 文件不存在]"
 
     try:
         log_content = log_path.read_text(encoding="utf-8", errors="replace")
     except Exception:
-        return ["[无法读取 log 文件]"]
+        return "[无法读取 log 文件]"
 
-    errors = []
-    for pattern, kind in _LATEX_ERROR_PATTERNS:
-        for match in pattern.finditer(log_content):
-            if kind == "error":
-                errors.append(f"! {match.group(1)}")
-            elif kind == "line":
-                errors.append(f"  → 行 {match.group(1)}: {match.group(2)}")
-            elif kind == "undef":
-                errors.append(f"未定义命令: \\{match.group(1)}")
-            elif kind == "missing_file":
-                errors.append(f"缺少文件: {match.group(1)}")
-            elif kind == "font":
-                errors.append(f"字体问题: {match.group(0).strip()}")
-            elif kind == "package":
-                errors.append(f"Package {match.group(1)}: {match.group(2)}")
-            if len(errors) >= max_errors:
-                break
-        if len(errors) >= max_errors:
-            break
+    log_lines = log_content.split("\n")
 
-    return errors if errors else ["[未能从 log 提取具体错误，请检查 .log 文件]"]
+    # ── 状态机解析：配对 ! Error 和 l.XXX ──
+    errors: list[dict] = []
+    missing_chars: set[str] = set()
+    overflow_warnings: list[str] = []
+    current_error: dict | None = None
+
+    # file-line-error 格式: ./report.tex:123: error message
+    re_file_line = re.compile(r"^\./(.+?):(\d+): (.+)$")
+    # 标准错误: ! Error message
+    re_bang_error = re.compile(r"^! (.+)$")
+    # 行号: l.123 context
+    re_line_num = re.compile(r"^l\.(\d+) (.*)$")
+    # Package/Class 错误
+    re_package_error = re.compile(r"^! (Package|Class) (\w+) Error: (.+)$")
+    # Missing character 警告
+    re_missing_char = re.compile(r"Missing character: There is no (.+?) \((.+?)\) in font")
+    # Overfull/Underfull 警告
+    re_overflow = re.compile(r"^((?:Over|Under)full \\[hv]box .+?) at lines? (\d+)(?:--(\d+))?")
+
+    def _finalize_error():
+        nonlocal current_error
+        if current_error and len(errors) < max_errors:
+            errors.append(current_error)
+        current_error = None
+
+    for line in log_lines:
+        line_stripped = line.rstrip()
+
+        # 1) file-line-error 格式
+        m = re_file_line.match(line_stripped)
+        if m:
+            _finalize_error()
+            current_error = {
+                "file": m.group(1),
+                "line": int(m.group(2)),
+                "message": m.group(3),
+                "context_from_log": "",
+            }
+            continue
+
+        # 2) Package/Class 错误（优先于通用 ! 匹配）
+        m = re_package_error.match(line_stripped)
+        if m:
+            _finalize_error()
+            pkg_type = m.group(1)
+            pkg_name = m.group(2)
+            pkg_msg = m.group(3)
+            current_error = {
+                "file": "",
+                "line": 0,
+                "message": f"{pkg_type} {pkg_name} Error: {pkg_msg}",
+                "context_from_log": "",
+            }
+            continue
+
+        # 3) 标准 ! 错误
+        m = re_bang_error.match(line_stripped)
+        if m:
+            # 如果已有 file-line-error 正在处理，它已经有消息了，
+            # 这个 ! 行通常是同一个错误的重复，跳过
+            if current_error and current_error.get("line", 0) > 0:
+                # 已通过 file-line-error 捕获，补充消息
+                if not current_error["message"] or current_error["message"] == line_stripped:
+                    pass
+                continue
+            _finalize_error()
+            current_error = {
+                "file": "",
+                "line": 0,
+                "message": m.group(1),
+                "context_from_log": "",
+            }
+            continue
+
+        # 4) l.XXX 行号 — 关联到当前错误
+        m = re_line_num.match(line_stripped)
+        if m:
+            line_num = int(m.group(1))
+            log_context = m.group(2)
+            if current_error:
+                if current_error["line"] == 0:
+                    current_error["line"] = line_num
+                current_error["context_from_log"] = log_context
+                _finalize_error()
+            else:
+                # 孤立的 l.XXX（不太常见）
+                if len(errors) < max_errors:
+                    errors.append({
+                        "file": "",
+                        "line": line_num,
+                        "message": f"(错误上下文) {log_context}",
+                        "context_from_log": log_context,
+                    })
+            continue
+
+        # 5) Missing character 警告
+        m = re_missing_char.search(line_stripped)
+        if m:
+            char_desc = m.group(1).strip()
+            char_code = m.group(2).strip()
+            missing_chars.add(f"{char_desc} ({char_code})")
+            continue
+
+        # 6) Overfull/Underfull 警告
+        m = re_overflow.match(line_stripped)
+        if m:
+            if len(overflow_warnings) < 3:  # 只保留前 3 条
+                overflow_warnings.append(f"行 {m.group(2)}: {m.group(1)}")
+            continue
+
+    # 处理最后一个未关闭的错误
+    _finalize_error()
+
+    # ── 格式化输出 ──
+    if not errors and not missing_chars and not overflow_warnings:
+        return "[未能从 log 提取具体错误，请用 read_file 查看 .log 文件手动排查]"
+
+    parts = []
+
+    # 主要错误
+    if errors:
+        parts.append(f"═══ 编译错误（共 {len(errors)} 条）═══\n")
+        for idx, err in enumerate(errors, 1):
+            line_num = err["line"]
+            msg = err["message"]
+            hint = _get_fix_hint(msg)
+
+            parts.append(f"── 错误 #{idx} ──")
+            parts.append(f"  类型: {msg}")
+            if line_num > 0:
+                parts.append(f"  位置: 第 {line_num} 行")
+                # 附加源码上下文
+                src_ctx = _get_source_context(tex_path, line_num)
+                if src_ctx:
+                    parts.append(f"  源码:")
+                    parts.append(src_ctx)
+            if err["context_from_log"]:
+                parts.append(f"  log 上下文: {err['context_from_log']}")
+            if hint:
+                parts.append(f"  💡 修复提示: {hint}")
+            parts.append("")
+
+    # Missing character 警告
+    if missing_chars:
+        chars_list = sorted(missing_chars)
+        parts.append(f"═══ 字体缺失字符（共 {len(chars_list)} 种）═══")
+        for ch in chars_list[:10]:  # 最多显示 10 种
+            parts.append(f"  • {ch}")
+        if len(chars_list) > 10:
+            parts.append(f"  ... 还有 {len(chars_list) - 10} 种")
+        parts.append("  💡 修复: Unicode 符号改用 LaTeX 命令，如 → 改为 $\\rightarrow$")
+        parts.append("")
+
+    # Overflow 警告
+    if overflow_warnings:
+        parts.append(f"═══ 排版溢出警告（共 {len(overflow_warnings)} 条）═══")
+        for w in overflow_warnings:
+            parts.append(f"  • {w}")
+        parts.append("  💡 修复: 长 URL 用 \\url{}，长公式加 \\allowbreak")
+        parts.append("")
+
+    return "\n".join(parts)
 
 
 def _run_xelatex(tex_path: Path, timeout: int = 60) -> tuple[bool, str]:
@@ -485,7 +774,7 @@ def compile_pdf(tex_path: str, runs: int = 2, cleanup: bool = True) -> str:
 
     比直接用 run_shell 调 xelatex 更快更可靠：
     - 使用 nonstopmode + halt-on-error，遇错立即停止不会卡住
-    - 自动从 .log 提取关键错误（行号 + 错误类型），无需手动读 log
+    - 自动从 .log 提取结构化错误（行号 + 错误类型 + 源码上下文 + 修复提示）
     - 自动清理中间文件
 
     Args:
@@ -505,12 +794,14 @@ def compile_pdf(tex_path: str, runs: int = 2, cleanup: bool = True) -> str:
     template_dir = _project_root() / "latex_template"
 
     # 自动复制模板依赖文件到报告目录
-    import shutil
-    # 复制所有 .cls 文件（模板类文件）
-    for cls_file in template_dir.glob("*.cls"):
-        dest = report_dir / cls_file.name
-        if not dest.exists():
-            shutil.copy2(cls_file, dest)
+    # 从所有模板子目录复制 .cls 文件
+    for sub in template_dir.iterdir():
+        if not sub.is_dir() or sub.name.startswith("."):
+            continue
+        for cls_file in sub.glob("*.cls"):
+            dest = report_dir / cls_file.name
+            if not dest.exists():
+                shutil.copy2(cls_file, dest)
     # 复制 logo.png（模板页眉/标题页需要）
     logo_src = _project_root() / "figure" / "logo.png"
     logo_dest = report_dir / "logo.png"
@@ -522,13 +813,12 @@ def compile_pdf(tex_path: str, runs: int = 2, cleanup: bool = True) -> str:
         success, output = _run_xelatex(file_path)
 
         if not success:
-            errors = _extract_log_errors(log_path)
-            error_report = "\n".join(errors)
+            error_report = _extract_log_errors(log_path, file_path)
             return (
                 f"[编译失败] 第 {i}/{runs} 遍\n"
                 f"文件: {file_path}\n\n"
-                f"错误摘要（共 {len(errors)} 条）:\n{error_report}\n\n"
-                f"请根据以上错误修改 .tex 文件后重新调用 compile_pdf。"
+                f"{error_report}\n"
+                f"请根据以上错误使用 edit_file 修改 .tex 文件后重新调用 compile_pdf。"
             )
 
     # 检查 PDF 输出
@@ -537,6 +827,25 @@ def compile_pdf(tex_path: str, runs: int = 2, cleanup: bool = True) -> str:
 
     pdf_size = pdf_path.stat().st_size
     size_str = f"{pdf_size / 1024:.1f} KB" if pdf_size < 1024 * 1024 else f"{pdf_size / 1024 / 1024:.1f} MB"
+
+    # 成功时也检查警告（Missing character 等）
+    warnings = ""
+    if log_path.exists():
+        warn_report = _extract_log_errors(log_path, file_path)
+        # 只有在有实际警告内容时才附加（非"未能提取"开头）
+        if warn_report and not warn_report.startswith("[未能从"):
+            # 过滤只保留警告部分（非"编译错误"部分）
+            warn_lines = []
+            in_warning_section = False
+            for line in warn_report.split("\n"):
+                if "字体缺失字符" in line or "排版溢出警告" in line:
+                    in_warning_section = True
+                if "编译错误" in line:
+                    in_warning_section = False
+                if in_warning_section:
+                    warn_lines.append(line)
+            if warn_lines:
+                warnings = "\n\n⚠️ 编译警告（不影响 PDF 生成，但建议修复）:\n" + "\n".join(warn_lines)
 
     # 清理中间文件
     cleaned = []
@@ -550,7 +859,176 @@ def compile_pdf(tex_path: str, runs: int = 2, cleanup: bool = True) -> str:
     result = f"✅ 编译成功！\nPDF: {pdf_path} ({size_str})"
     if cleaned:
         result += f"\n已清理: {', '.join(cleaned)}"
+    if warnings:
+        result += warnings
     return result
+
+
+# ─── 图片信息工具 ─────────────────────────────────────────────
+
+@tool
+def get_image_info(path: str) -> str:
+    """获取目录下所有图片的尺寸信息，用于在 LaTeX 中设置合适的 includegraphics 宽度。
+
+    扫描指定目录下的所有图片文件（.png, .jpg, .jpeg, .pdf, .eps），
+    返回每张图片的：宽度×高度（像素/点）、宽高比、文件大小、建议的 LaTeX 宽度参数。
+
+    **在 report.tex 中使用 \includegraphics 之前务必先调用此工具！**
+
+    Args:
+        path: 图片所在目录路径（相对于项目根目录，或绝对路径）
+    """
+    dir_path = _resolve_path(path)
+    if not dir_path.exists():
+        return f"[ERROR] 目录不存在: {dir_path}"
+    if not dir_path.is_dir():
+        # 如果传入了单个文件，取其父目录
+        dir_path = dir_path.parent
+
+    image_exts = {".png", ".jpg", ".jpeg", ".pdf", ".eps"}
+    images = sorted(
+        f for f in dir_path.iterdir()
+        if f.is_file() and f.suffix.lower() in image_exts
+    )
+
+    if not images:
+        return f"[INFO] 目录 {dir_path} 中没有找到图片文件（.png/.jpg/.pdf/.eps）"
+
+    results = []
+    results.append(f"📸 图片信息（{dir_path}，共 {len(images)} 张）\n")
+    results.append(f"{'文件名':<30s} {'尺寸(px/pt)':<18s} {'宽高比':<8s} {'大小':<10s} {'建议 LaTeX 宽度'}")
+    results.append("─" * 95)
+
+    for img_path in images:
+        name = img_path.name
+        size = img_path.stat().st_size
+        size_str = f"{size / 1024:.1f}KB" if size < 1024 * 1024 else f"{size / 1024 / 1024:.1f}MB"
+
+        w, h = _get_dimensions(img_path)
+
+        if w > 0 and h > 0:
+            ratio = w / h
+            ratio_str = f"{ratio:.2f}"
+            dim_str = f"{w}×{h}"
+            # 根据宽高比和绝对宽度推荐 LaTeX 宽度
+            latex_width = _recommend_latex_width(w, h, img_path.suffix.lower())
+        else:
+            ratio_str = "?"
+            dim_str = "未知"
+            latex_width = "0.8\\textwidth"
+
+        results.append(f"{name:<30s} {dim_str:<18s} {ratio_str:<8s} {size_str:<10s} {latex_width}")
+
+    results.append("")
+    results.append("💡 使用示例:")
+    if images:
+        sample = images[0]
+        sample_w, sample_h = _get_dimensions(sample)
+        lw = _recommend_latex_width(sample_w, sample_h, sample.suffix.lower()) if sample_w > 0 else "0.8\\textwidth"
+        results.append(f"  \\includegraphics[width={lw}]{{{sample.name}}}")
+
+    return "\n".join(results)
+
+
+def _get_dimensions(img_path: Path) -> tuple[int, int]:
+    """获取图片的宽高（像素或点）。支持 PNG/JPG (Pillow) 和 PDF (pdfinfo/sips)。"""
+    suffix = img_path.suffix.lower()
+
+    # PNG/JPG: 尝试 Pillow
+    if suffix in (".png", ".jpg", ".jpeg"):
+        try:
+            from PIL import Image
+            with Image.open(img_path) as im:
+                return im.size  # (width, height)
+        except Exception:
+            pass
+        # fallback: macOS sips
+        try:
+            result = subprocess.run(
+                ["sips", "-g", "pixelWidth", "-g", "pixelHeight", str(img_path)],
+                capture_output=True, text=True, timeout=5,
+            )
+            w = h = 0
+            for line in result.stdout.split("\n"):
+                if "pixelWidth" in line:
+                    w = int(line.split(":")[-1].strip())
+                if "pixelHeight" in line:
+                    h = int(line.split(":")[-1].strip())
+            if w > 0 and h > 0:
+                return w, h
+        except Exception:
+            pass
+
+    # PDF: 尝试 pdfinfo
+    if suffix == ".pdf":
+        try:
+            result = subprocess.run(
+                ["pdfinfo", str(img_path)],
+                capture_output=True, text=True, timeout=5,
+            )
+            for line in result.stdout.split("\n"):
+                if "Page size" in line:
+                    # 格式: "Page size:      612 x 792 pts (letter)"
+                    m = re.search(r"([\d.]+)\s*x\s*([\d.]+)", line)
+                    if m:
+                        return int(float(m.group(1))), int(float(m.group(2)))
+        except Exception:
+            pass
+        # fallback: macOS mdls
+        try:
+            result = subprocess.run(
+                ["mdls", "-name", "kMDItemPageWidth", "-name", "kMDItemPageHeight", str(img_path)],
+                capture_output=True, text=True, timeout=5,
+            )
+            w = h = 0
+            for line in result.stdout.split("\n"):
+                if "kMDItemPageWidth" in line and "(null)" not in line:
+                    w = int(float(line.split("=")[-1].strip()))
+                if "kMDItemPageHeight" in line and "(null)" not in line:
+                    h = int(float(line.split("=")[-1].strip()))
+            if w > 0 and h > 0:
+                return w, h
+        except Exception:
+            pass
+
+    return 0, 0
+
+
+def _recommend_latex_width(w: int, h: int, suffix: str) -> str:
+    """根据图片尺寸推荐 LaTeX \includegraphics 的 width 参数。"""
+    if w <= 0 or h <= 0:
+        return "0.8\\textwidth"
+
+    ratio = w / h
+
+    # PDF 图片通常是矢量图，尺寸单位是 pt (1pt ≈ 0.35mm)
+    # \textwidth ≈ 455pt (A4, 1in margin each side)
+    if suffix == ".pdf":
+        if w > 600:  # 很宽的图
+            return "\\textwidth"
+        elif w > 400:
+            return "0.9\\textwidth"
+        elif ratio > 1.8:  # 宽型图
+            return "0.85\\textwidth"
+        elif ratio < 0.6:  # 高型/窄图
+            return "0.45\\textwidth"
+        else:
+            return "0.7\\textwidth"
+
+    # 光栅图 (PNG/JPG)，通常 DPI ≈ 72-300
+    # 预估: 150dpi → 1px ≈ 0.5pt, 所以 455pt ≈ 910px
+    if w > 1200:  # 很宽
+        return "\\textwidth"
+    elif w > 800:
+        return "0.9\\textwidth"
+    elif ratio > 1.8:  # 宽型
+        return "0.85\\textwidth"
+    elif ratio < 0.6:  # 高型/窄图
+        return "0.4\\textwidth"
+    elif w < 400:  # 小图
+        return "0.5\\textwidth"
+    else:
+        return "0.7\\textwidth"
 
 
 # ─── Skill 工具 ──────────────────────────────────────────────
@@ -590,6 +1068,7 @@ def read_skill(skill_name: str) -> str:
 
 ALL_TOOLS = [
     run_shell,
+    download_paper,
     read_file,
     write_file,
     edit_file,
@@ -598,4 +1077,5 @@ ALL_TOOLS = [
     read_template,
     read_skill,
     compile_pdf,
+    get_image_info,
 ]

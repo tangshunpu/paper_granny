@@ -30,7 +30,7 @@ console = Console()
 # 阶段定义：通过 tool 调用模式识别当前阶段
 STAGES = [
     # (阶段名, 进入条件: 出现过的 tool_call 模式)
-    ("download",    lambda tc: tc["name"] == "read_skill" and "arxiv_downloader" in tc["args"].get("skill_name", "")),
+    ("download",    lambda tc: tc["name"] == "download_paper" or (tc["name"] == "read_skill" and "arxiv_downloader" in tc["args"].get("skill_name", ""))),
     ("read_source", lambda tc: tc["name"] == "read_file" and "source/" in tc["args"].get("path", "")),
     ("interpret",   lambda tc: tc["name"] == "read_skill" and "paper_interpreter" in tc["args"].get("skill_name", "")),
     ("template",    lambda tc: tc["name"] in ("read_template", "read_skill") and
@@ -48,7 +48,7 @@ STAGE_COMPRESS_RULES = {
     "interpret":   {"run_shell", "read_skill"},                # 技能指南读完可压缩
     "template":    {"run_shell", "read_skill"},                # 同上
     "write":       {"run_shell", "read_skill"},                # 写报告时仍需论文+模板
-    "compile":     {"run_shell", "read_skill", "read_file", "read_template"},  # 报告写完，源码和模板可压缩
+    "compile":     {"run_shell", "read_skill"},                # read_file 和 read_template 始终保留，不压缩
 }
 
 # tool 输出超过此长度才压缩，避免压缩短消息
@@ -191,7 +191,7 @@ def run_agent(
 
     task_parts.append(
         "\n请按以下步骤自主工作:\n"
-        "1. 先读取 arxiv_downloader 技能指南，下载并解压论文 LaTeX 源码\n"
+        "1. 使用 download_paper 工具下载论文源码（已下载过会自动跳过）\n"
         "2. 探索源码目录结构，找到主 tex 文件\n"
         "3. 深度阅读论文源码（包括所有 \\input 引用的文件）\n"
         "4. 读取 paper_interpreter 技能指南，学习解读方法\n"

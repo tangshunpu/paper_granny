@@ -24,7 +24,7 @@
 \IfFontExistsTF{Songti SC}{%
   \setCJKmainfont{Songti SC}[BoldFont=Songti SC Bold]
   \setCJKsansfont{Heiti SC}[BoldFont=Heiti SC Medium]
-  \setCJKmonofont{Menlo}
+  \setCJKmonofont{Heiti SC}
 }{%
   \IfFontExistsTF{SimSun}{%
     \setCJKmainfont{SimSun}[BoldFont=SimHei]
@@ -206,6 +206,7 @@
 \RequirePackage{tabularx}
 \RequirePackage{multirow}
 \RequirePackage{colortbl}
+\RequirePackage{makecell}
 \newcommand{\tableheadercolor}{\rowcolor{primaryblue!15}}
 \newcommand{\tablerowcolor}{\rowcolor{bglight}}
 
@@ -213,7 +214,6 @@
 \RequirePackage{graphicx}
 \RequirePackage{float}
 \RequirePackage{subcaption}
-\graphicspath{{../figure/}{../../figure/}}
 
 % ------------------ 页眉 Logo ------------------
 \RequirePackage{fancyhdr}
@@ -221,7 +221,7 @@
 
 \fancypagestyle{logostyle}{%
   \fancyhf{}
-  \fancyhead[L]{\includegraphics[height=2cm]{logo.png}}
+  \fancyhead[L]{\includegraphics[height=1.5cm]{logo.png}}
   \fancyfoot[C]{\thepage}
   \renewcommand{\headrulewidth}{0pt}
 }

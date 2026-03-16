@@ -54,4 +54,4 @@ Add an entry to `OPENAI_COMPATIBLE_PROVIDERS` dict in `src/llm_factory.py` and u
 
 ## Adding Templates
 
-Place `.tex` files in `latex_template/`. The agent auto-discovers them. First line comment is used as description.
+Create a subdirectory in `latex_template/` with a `.cls` file of the same name (e.g. `latex_template/MyTemplate/MyTemplate.cls`). The agent auto-discovers them and reports only need `\documentclass{Name}`. First line comment is used as description.

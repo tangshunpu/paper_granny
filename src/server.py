@@ -44,16 +44,24 @@ async def get_templates():
     template_dir = _project_root() / "latex_template"
     templates = []
     if template_dir.exists():
-        for tex_file in sorted(template_dir.glob("*.tex")):
+        for sub in sorted(template_dir.iterdir()):
+            if not sub.is_dir() or sub.name.startswith("."):
+                continue
+            cls_file = sub / f"{sub.name}.cls"
+            if not cls_file.exists():
+                cls_files = list(sub.glob("*.cls"))
+                if not cls_files:
+                    continue
+                cls_file = cls_files[0]
             try:
-                first_line = tex_file.read_text(encoding="utf-8").split("\n")[0]
+                first_line = cls_file.read_text(encoding="utf-8").split("\n")[0]
                 desc = first_line.lstrip("% ").strip() if first_line.startswith("%") else ""
             except Exception:
                 desc = ""
             templates.append({
-                "name": tex_file.stem,
+                "name": cls_file.stem,
                 "description": desc,
-                "size_kb": round(tex_file.stat().st_size / 1024, 1),
+                "size_kb": round(cls_file.stat().st_size / 1024, 1),
             })
     return {"templates": templates}
 
@@ -172,7 +180,7 @@ async def run_agent_sse(request: Request):
                 f"使用 LaTeX 模板: {template_name}\n"
                 f"报告语言: {language}\n\n"
                 "请按以下步骤自主工作:\n"
-                "1. 先读取 arxiv_downloader 技能指南，下载并解压论文 LaTeX 源码\n"
+                "1. 使用 download_paper 工具下载论文源码（已下载过会自动跳过）\n"
                 "2. 探索源码目录结构，找到主 tex 文件\n"
                 "3. 深度阅读论文源码（包括所有 \\input 引用的文件）\n"
                 "4. 读取 paper_interpreter 技能指南，学习解读方法\n"
@@ -278,6 +286,8 @@ def _format_tool_call(tool_name: str, tool_input: dict) -> str:
         return "📋 listing templates"
     elif tool_name == "compile_pdf":
         return f"🔨 compiling {tool_input.get('tex_path', '')}"
+    elif tool_name == "get_image_info":
+        return f"📸 scanning images in {tool_input.get('path', '')}"
     return str(tool_input)
 
 

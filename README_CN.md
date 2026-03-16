@@ -24,7 +24,7 @@ Scholar Granny 是一个 AI Agent，能够自动下载 arXiv 论文 LaTeX 源码
 | Deep Residual Learning for Image Recognition (中文) | 阿里云百炼 | `glm-5` | [PDF](example/Deep_Residual_Learning_for_Image_Recognition.pdf) | ⭐⭐⭐⭐ |
 | Attention Is All You Need | OpenAI | `gpt-5-mini` | [PDF](example/Attention_Is_All_You_Need.pdf) | ⭐ |
 
-> 建议使用2026的新模型，如GPT-5.4、Claude 4.5、DeepSeek V3、Qwen 3.5, GLM-5等，这些模型在Agent任务上表现更加出色。之前的模型往往不能准确定位Latex编译错误。
+> 建议使用2026的新模型，如GPT-5.4、Claude 4.5、DeepSeek V3、Qwen 3.5, GLM-5等，这些模型在Agent任务上表现更加出色。之前的模型往往不能准确定位Latex编译错误
 
 ## 🚀 快速开始
 

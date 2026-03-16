@@ -67,6 +67,7 @@ def build_system_prompt(
 7. **read_template(template_name)** — 读取模板信息和可用环境
 8. **read_skill(skill_name)** — 读取子技能指南
 9. **compile_pdf(tex_path, runs, cleanup)** — 编译 LaTeX 为 PDF（自动提取错误、清理中间文件）
+10. **get_image_info(path)** — 获取目录下所有图片的尺寸，返回建议的 LaTeX 宽度参数
 
 ## 可用技能（通过 read_skill 按需加载）
 

@@ -18,33 +18,68 @@ compile_pdf("papers/{arxiv_id}/report.tex")
 ```
 
 `compile_pdf` 自动完成：
-1. 复制 .cls 模板和 logo.png 到报告目录
-2. 使用 `xelatex -interaction=nonstopmode -halt-on-error` 编译（遇错即停，不会卡住）
-3. 默认编译 2 遍（生成目录和交叉引用）
-4. 从 `.log` 自动提取关键错误（行号 + 错误类型）
-5. 编译成功后自动清理中间文件
+1. 从 `latex_template/*/` 子目录复制所有 `.cls` 模板到报告目录（如 `ModernColorful.cls`）
+2. 从 `figure/logo.png` 复制 logo 到报告目录（页眉和标题页需要）
+3. 使用 `xelatex -interaction=nonstopmode -halt-on-error` 编译（遇错即停，不会卡住）
+4. 默认编译 2 遍（生成目录和交叉引用）
+5. 从 `.log` 自动提取**结构化错误报告**（见下方格式说明）
+6. 编译成功后自动清理中间文件
+
+## 错误报告格式
+
+编译失败时，`compile_pdf` 返回以下结构化信息：
+
+```
+═══ 编译错误（共 N 条）═══
+
+── 错误 #1 ──
+  类型: Missing $ inserted
+  位置: 第 367 行
+  源码:
+       365 | \begin{equationbox}
+       366 | 条件概率可表示为：
+    >> 367 | p(a_s | c, m_s) > p(a_s | c)
+       368 | \end{equationbox}
+       369 | 
+  log 上下文: p(a_
+  💡 修复提示: 数学符号（如 下标 _ 、上标 ^ ）必须在 $ $ 或数学环境中使用。
+
+═══ 字体缺失字符（共 3 种）═══
+  • → (U+2192)
+  • ← (U+2190)
+  💡 修复: Unicode 符号改用 LaTeX 命令，如 → 改为 $\rightarrow$
+
+═══ 排版溢出警告（共 2 条）═══
+  • 行 142: Overfull \hbox (15.2pt too wide)
+  💡 修复: 长 URL 用 \url{}，长公式加 \allowbreak
+```
+
+**关键特性：**
+- 每条错误自带 `.tex` 源码上下文（出错行用 `>>>` 标记），直接看到要改的代码
+- 自动匹配修复提示，告诉你怎么修
+- Missing character 警告去重汇总，不再被重复信息淹没
 
 ## 错误修复流程
 
 当 `compile_pdf` 返回错误时：
 
-1. **阅读错误摘要**：工具已提取了行号和错误类型
-2. **用 `edit_file` 修复**（不要用 `write_file` 重写整个文件！）：
+1. **阅读结构化错误报告**：每条错误都有行号、源码上下文和修复提示
+2. **用 `edit_file` 按行号精确修复**（不要用 `write_file` 重写整个文件！）：
 
 ```python
-# 按行号修复（错误摘要中给出了行号）
+# 按行号修复（错误报告中给出了行号和 >>> 标记的源码）
 edit_file("papers/{arxiv_id}/report.tex", [
-    {"start_line": 42, "end_line": 42, "new_content": "修复后的那一行"},
+    {"start_line": 367, "end_line": 367, "new_content": "$p(a_s | c, m_s) > p(a_s | c)$"},
 ])
 
 # 或按字符串匹配修复
 edit_file("papers/{arxiv_id}/report.tex", [
-    {"old_string": "\\badcommand{text}", "new_string": "\\goodcommand{text}"},
+    {"old_string": "p(a_s | c, m_s)", "new_string": "$p(a_s | c, m_s)$"},
 ])
 
 # 可以一次修复多处错误
 edit_file("papers/{arxiv_id}/report.tex", [
-    {"start_line": 42, "end_line": 42, "new_content": "修复行42"},
+    {"start_line": 367, "end_line": 367, "new_content": "$p(a_s | c, m_s) > p(a_s | c)$"},
     {"old_string": "未转义的&", "new_string": "转义的\\&"},
 ])
 ```
@@ -60,6 +95,9 @@ edit_file("papers/{arxiv_id}/report.tex", [
 | 特殊字符报错 | 转义: `&` → `\&`, `%` → `\%`, `#` → `\#`, `_` → `\_` |
 | 文字溢出 margin | 长 URL 用 `\url{}`，长公式加 `\allowbreak` |
 | 字体缺失 | 提示用户安装对应字体 |
+| Missing character in font | Unicode 符号（如 `→` `←` `⇒`）Palatino 不支持，改用 LaTeX 命令：`$\rightarrow$` `$\leftarrow$` `$\Rightarrow$` |
+| Missing $ inserted | 数学符号必须在 `$ $` 或 `equation` 环境中 |
+| Package kvsetkeys Error | 检查 `\hypersetup` 中的键值格式（逗号和等号） |
 
 ## 环境要求
 
