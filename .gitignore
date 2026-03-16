@@ -24,3 +24,11 @@ papers/
 # OS
 .DS_Store
 Thumbs.db
+
+# latex
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+

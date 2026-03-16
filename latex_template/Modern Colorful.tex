@@ -10,7 +10,8 @@
   bottom=2.5cm,
   left=2.5cm,
   right=2.5cm,
-  columnsep=1cm
+  columnsep=1cm,
+  headheight=62pt
 ]{geometry}
 
 % ------------------ 中文支持 ------------------
@@ -269,6 +270,29 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{subcaption}
+\graphicspath{{../figure/}{../../figure/}}
+
+% ------------------ 页眉 Logo ------------------
+\usepackage{fancyhdr}
+\usepackage{eso-pic}
+
+% 普通页面样式：左上角 logo
+\fancypagestyle{logostyle}{%
+  \fancyhf{}
+  \fancyhead[L]{\includegraphics[height=2cm]{logo.png}}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+\pagestyle{logostyle}
+
+% 标题页左上角 logo（通过 eso-pic 绝对定位）
+\newcommand{\AddTitlePageLogo}{%
+  \AddToShipoutPictureBG*{%
+    \AtPageUpperLeft{%
+      \raisebox{-3.5cm}{\hspace{1.5cm}\includegraphics[height=3cm]{logo.png}}%
+    }%
+  }%
+}
 
 % ------------------ 防止溢出 ------------------
 \tolerance=1000
@@ -305,6 +329,8 @@
 
 % ------------------ 标题页 ------------------
 \begin{titlepage}
+  \AddTitlePageLogo
+  \thispagestyle{empty}
   \centering
   \vspace*{2cm}
   

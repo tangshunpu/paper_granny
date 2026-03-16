@@ -1,4 +1,8 @@
-# Scholar Granny 📖
+<p align="center">
+  <img src="figure/logo.png" alt="Scholar Granny Logo" width="200">
+</p>
+
+# Paper Granny 📖
 
 [中文文档](README_CN.md)
 
@@ -21,6 +25,8 @@ Scholar Granny is an AI Agent that automatically downloads arXiv paper LaTeX sou
 ### 📦 Installation
 
 ```bash
+git clone https://github.com/tangshunpu/paper_granny.git
+cd paper_granny
 pip install -r requirements.txt
 ```
 
