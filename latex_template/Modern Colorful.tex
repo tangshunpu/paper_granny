@@ -1,0 +1,691 @@
+% ============================================================
+% 美观多彩的技术文档模板 - Modern Colorful Template
+% 编译方式: XeLaTeX 或 LuaLaTeX
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+
+% ------------------ 页面与边距 ------------------
+\usepackage[
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2.5cm,
+  right=2.5cm,
+  columnsep=1cm
+]{geometry}
+
+% ------------------ 中文支持 ------------------
+\usepackage{ctex}
+\setCJKmainfont{Noto Serif CJK SC}
+\setCJKsansfont{Noto Sans CJK SC}
+\setCJKmonofont{Noto Sans Mono CJK SC}
+
+% ------------------ 字体与编码 ------------------
+\usepackage{fontspec}
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}[Scale=0.85]
+
+% ------------------ 颜色定义 - 丰富配色 ------------------
+\usepackage{xcolor}
+% 主色调
+\definecolor{primaryblue}{RGB}{41, 98, 255}
+\definecolor{primarypurple}{RGB}{103, 58, 183}
+\definecolor{primaryteal}{RGB}{0, 150, 136}
+% 强调色
+\definecolor{accentorange}{RGB}{255, 112, 67}
+\definecolor{accentpink}{RGB}{236, 64, 122}
+\definecolor{accentyellow}{RGB}{255, 193, 7}
+% 背景色
+\definecolor{bglight}{RGB}{250, 250, 252}
+\definecolor{bgblue}{RGB}{232, 245, 253}
+\definecolor{bggreen}{RGB}{232, 245, 233}
+\definecolor{bgpurple}{RGB}{243, 229, 245}
+\definecolor{bgorange}{RGB}{255, 243, 224}
+\definecolor{bgpink}{RGB}{252, 228, 236}
+% 文字颜色
+\definecolor{textdark}{RGB}{33, 33, 33}
+\definecolor{textgray}{RGB}{97, 97, 97}
+\definecolor{codered}{RGB}{198, 40, 40}
+
+% ------------------ 超链接样式 ------------------
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=primaryblue,
+  urlcolor=primaryteal,
+  citecolor=primarypurple,
+  pdfauthor={Shunpu},
+  pdftitle={Speculative Speculative Decoding 论文深度解读}
+}
+
+% ------------------ 盒子与框架 ------------------
+\usepackage[most]{tcolorbox}
+
+% 标题盒子
+\newtcolorbox{titlebox}{
+  enhanced,
+  colback=bgblue,
+  colframe=primaryblue,
+  boxrule=2pt,
+  arc=8pt,
+  left=15pt,
+  right=15pt,
+  top=15pt,
+  bottom=15pt,
+  fonttitle=\bfseries\Large,
+  shadow={2pt}{-2pt}{0pt}{black!30}
+}
+
+% 信息盒子
+\newtcolorbox{infobox}[1][]{
+  enhanced,
+  colback=bgblue,
+  colframe=primaryblue,
+  fonttitle=\bfseries,
+  title=#1,
+  arc=4pt,
+  boxrule=1pt,
+  left=8pt,
+  right=8pt
+}
+
+% 概念盒子
+\newtcolorbox{conceptbox}[1][]{
+  enhanced,
+  colback=bgpurple,
+  colframe=primarypurple,
+  fonttitle=\bfseries,
+  title=#1,
+  arc=4pt,
+  boxrule=1pt,
+  left=8pt,
+  right=8pt
+}
+
+% 创新点盒子
+\newtcolorbox{innovationbox}[1][]{
+  enhanced,
+  colback=bggreen,
+  colframe=primaryteal,
+  fonttitle=\bfseries,
+  title=#1,
+  arc=4pt,
+  boxrule=1pt,
+  left=8pt,
+  right=8pt
+}
+
+% 警告/注意盒子
+\newtcolorbox{warningbox}[1][]{
+  enhanced,
+  colback=bgorange,
+  colframe=accentorange,
+  fonttitle=\bfseries,
+  title=#1,
+  arc=4pt,
+  boxrule=1pt,
+  left=8pt,
+  right=8pt
+}
+
+% 代码盒子
+\newtcolorbox{codebox}[1][]{
+  enhanced,
+  colback=bglight,
+  colframe=textgray,
+  fonttitle=\bfseries\ttfamily,
+  title=#1,
+  arc=3pt,
+  boxrule=0.5pt,
+  left=8pt,
+  right=8pt,
+  top=4pt,
+  bottom=4pt
+}
+
+% 公式盒子
+\newtcolorbox{equationbox}{
+  enhanced,
+  colback=bgpink,
+  colframe=accentpink,
+  arc=4pt,
+  boxrule=1pt,
+  left=10pt,
+  right=10pt,
+  top=8pt,
+  bottom=8pt
+}
+
+% ------------------ 列表样式 ------------------
+\usepackage{enumitem}
+\setlist[itemize]{
+  leftmargin=1.5em,
+  itemsep=4pt,
+  parsep=2pt,
+  label=\textcolor{primaryblue}{\textbullet}
+}
+\setlist[enumerate]{
+  leftmargin=1.5em,
+  itemsep=4pt,
+  parsep=2pt,
+  label=\textcolor{primarypurple}{\arabic*.}
+}
+
+% ------------------ 标题样式 ------------------
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\color{primaryblue}}
+  {\thesection}{1em}{}
+  [{\titlerule[1pt]}]
+\titleformat{\subsection}
+  {\large\bfseries\color{primarypurple}}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{primaryteal}}
+  {\thesubsubsection}{1em}{}
+
+\titlespacing{\section}{0pt}{15pt}{10pt}
+\titlespacing{\subsection}{0pt}{12pt}{8pt}
+\titlespacing{\subsubsection}{0pt}{10pt}{6pt}
+
+% ------------------ 代码高亮 ------------------
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{primaryblue}\bfseries,
+  commentstyle=\color{textgray}\itshape,
+  stringstyle=\color{primaryteal},
+  numberstyle=\tiny\color{textgray},
+  numbers=left,
+  numbersep=8pt,
+  breaklines=true,
+  breakatwhitespace=true,
+  frame=none,
+  backgroundcolor=\color{bglight},
+  showstringspaces=false,
+  tabsize=2,
+  xleftmargin=15pt
+}
+
+% ------------------ 数学 ------------------
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{bm}
+
+% ------------------ 表格 ------------------
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+
+% 彩色表格
+\usepackage{colortbl}
+\newcommand{\tableheadercolor}{\rowcolor{primaryblue!15}}
+\newcommand{\tablerowcolor}{\rowcolor{bglight}}
+
+% ------------------ 图片 ------------------
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+
+% ------------------ 防止溢出 ------------------
+\tolerance=1000
+\emergencystretch=3em
+\hyphenpenalty=5000
+\exhyphenpenalty=5000
+\raggedbottom
+
+% 防止列表项溢出
+\setlist[itemize,enumerate]{leftmargin=*,rightmargin=0pt}
+
+% ------------------ 自定义命令 ------------------
+% 高亮文字
+\newcommand{\hlblue}[1]{\textcolor{primaryblue}{\textbf{#1}}}
+\newcommand{\hlpurple}[1]{\textcolor{primarypurple}{\textbf{#1}}}
+\newcommand{\hlteal}[1]{\textcolor{primaryteal}{\textbf{#1}}}
+\newcommand{\hlorange}[1]{\textcolor{accentorange}{\textbf{#1}}}
+
+% 背景高亮
+\newcommand{\hlbox}[2][yellow]{\colorbox{#1}{#2}}
+
+% 关键术语
+\newcommand{\term}[1]{\textcolor{primarypurple}{\textbf{#1}}}
+
+% ------------------ 文档信息 ------------------
+\title{\textbf{Speculative Speculative Decoding\\论文深度解读}}
+\author{Shunpu}
+\date{2026年3月11日}
+
+% ============================================================
+%                       正文开始
+% ============================================================
+\begin{document}
+
+% ------------------ 标题页 ------------------
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+  
+  \begin{titlebox}
+    \centering
+    {\LARGE\bfseries\color{primaryblue} Speculative Speculative Decoding}\\[10pt]
+    {\Large\bfseries 论文深度解读}\\[15pt]
+    {\normalsize 一种突破LLM推理延迟极限的并行化框架}
+  \end{titlebox}
+  
+  \vspace{2cm}
+  
+  {\large\color{textgray}
+  \textbf{作者}：Shunpu\\[5pt]
+  \textbf{日期}：2026年3月11日
+  }
+  
+  \vfill
+  
+  \begin{infobox}[论文信息]
+    \centering
+    \textbf{原文}：\href{https://arxiv.org/abs/2603.03251}{arXiv:2603.03251}\\
+    \textbf{代码}：\href{https://github.com/tanishqkumar/ssd}{github.com/tanishqkumar/ssd}
+  \end{infobox}
+\end{titlepage}
+
+% ------------------ 目录 ------------------
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{背景知识}
+% ============================================================
+
+在深入理解SSD之前，我们需要先掌握几个关键的基础概念。
+
+\subsection{大语言模型的解码瓶颈}
+
+现代大语言模型（LLM）如GPT、Llama等采用\term{自回归解码}（Autoregressive Decoding）方式生成文本，这带来了严重的性能瓶颈：
+
+\begin{warningbox}[核心问题]
+  \begin{itemize}
+    \item \hlblue{顺序依赖性}：每个token的生成都依赖于之前生成的所有token
+    \item \hlblue{串行计算}：模型必须等待前一个token计算完成后才能开始下一个token的计算
+    \item \hlblue{硬件利用率低}：尽管GPU具有海量并行计算能力，但自回归解码无法有效利用
+  \end{itemize}
+\end{warningbox}
+
+\subsubsection{为什么自回归解码如此之慢？}
+
+考虑一个具体的例子：生成100个token的回答。
+
+\begin{itemize}
+  \item \hlorange{自回归方式}：需要进行100次模型前向传播，每次只能生成1个token
+  \item \hlorange{理想并行方式}：如果能一次性生成100个token，只需要1次前向传播
+\end{itemize}
+
+然而，大语言模型的因果关系决定了我们不能真正实现这种理想并行——后面token的生成确实需要前面的上下文。
+
+\subsection{推测解码（Speculative Decoding）}
+
+\term{推测解码}是一种加速LLM推理的经典技术，由Leviathan等人（2023）和Chen等人（2023）独立提出。其核心思想是：
+
+\begin{conceptbox}[推测解码的核心思想]
+  用一个快速的"草稿模型"（Draft Model）预测接下来几个token，然后用目标模型一次性验证。
+\end{conceptbox}
+
+\subsubsection{推测解码的工作流程}
+
+\begin{enumerate}
+  \item \hlblue{猜测阶段}：快速的小模型（草稿模型）自回归地生成$K$个候选token
+  \item \hlblue{验证阶段}：目标模型在一次前向传播中并行计算所有$K$个token的概率
+  \item \hlblue{接受/拒绝}：根据一定规则接受正确的token，拒绝错误的
+  \item \hlblue{奖励token}：在被拒绝的位置采样一个"奖励token"（bonus token）
+\end{enumerate}
+
+\subsubsection{接受率与效率}
+
+推测解码的效率取决于\term{接受率}$\alpha$，即草稿模型预测正确的token比例。设草稿模型生成$K$个token，平均接受率为$\alpha$，则：
+
+\begin{equationbox}
+  \centering
+  期望接受token数 $= \frac{\alpha K}{1 - \alpha} + \beta$
+\end{equationbox}
+
+其中$\beta$是奖励token的贡献。
+
+\subsubsection{奖励token与残差分布}
+
+当验证失败时，系统会根据\term{残差分布}采样一个奖励token。这个残差分布反映了目标模型与草稿模型在预测上的差异。
+
+\subsection{推测解码的剩余瓶颈}
+
+尽管推测解码显著提升了推理速度，但仍存在以下瓶颈：
+
+\begin{warningbox}[当前瓶颈]
+  \begin{itemize}
+    \item \textbf{猜测阶段}：必须等待草稿模型完成$K$个token的生成
+    \item \textbf{验证阶段}：验证必须等待猜测完成
+    \item \textbf{串行依赖}：两个阶段无法并行执行
+  \end{itemize}
+\end{warningbox}
+
+\newpage
+
+% ============================================================
+\section{核心问题与创新思路}
+% ============================================================
+
+\subsection{研究问题}
+
+论文提出的核心问题是：
+
+\begin{infobox}[核心研究问题]
+  \centering
+  \textbf{能否在验证的同时进行下一次猜测？}\\[5pt]
+  即：让猜测与验证阶段并行执行
+\end{infobox}
+
+\subsection{核心创新：预测验证结果}
+
+论文提出的\term{SSD框架}（Speculative Speculative Decoding）的核心创新是：
+
+\begin{innovationbox}[核心创新]
+  \textbf{预测验证结果}：在验证当前猜测的同时，基于预测的验证结果开始下一次猜测。
+\end{innovationbox}
+
+这意味着：
+
+\begin{itemize}
+  \item 不再等待验证完成，而是\hlpurple{预测}哪些token会被接受
+  \item 基于预测结果，\hlpurple{提前开始}下一轮猜测
+  \item 如果预测正确，则节省了大量等待时间
+\end{itemize}
+
+\subsection{三个关键挑战}
+
+实现这一创新面临三个关键挑战：
+
+\subsubsection{挑战1：如何预测验证结果？}
+
+\begin{conceptbox}[问题]
+  验证结果取决于目标模型的输出分布，这是未知的。如何在不执行验证的情况下预测结果？
+\end{conceptbox}
+
+\subsubsection{挑战2：如何平衡接受率与缓存命中率？}
+
+\begin{conceptbox}[问题]
+  预测的验证结果会影响KV缓存的命中率。如何平衡接受率与缓存命中率？
+\end{conceptbox}
+
+\subsubsection{挑战3：如何处理预测失败？}
+
+\begin{conceptbox}[问题]
+  当预测失败时，如何高效地回退并恢复正确状态？
+\end{conceptbox}
+
+\newpage
+
+% ============================================================
+\section{SSD框架详解}
+% ============================================================
+
+\subsection{算法概述}
+
+SSD框架的整体流程如下：
+
+\begin{enumerate}
+  \item \hlblue{猜测阶段}：草稿模型生成$K$个候选token
+  \item \hlblue{预测阶段}：基于历史信息预测验证结果
+  \item \hlblue{并行执行}：在验证的同时，开始下一轮猜测
+  \item \hlblue{结果校正}：根据实际验证结果校正预测
+\end{enumerate}
+
+\subsection{核心定义}
+
+\begin{infobox}[形式化定义]
+  设草稿模型为$M_d$，目标模型为$M_t$，猜测长度为$K$。
+  
+  \textbf{验证结果向量}：$\bm{v} = (v_1, v_2, \ldots, v_K)$，其中$v_i \in \{0, 1\}$
+  
+  \textbf{预测结果向量}：$\hat{\bm{v}} = (\hat{v}_1, \hat{v}_2, \ldots, \hat{v}_K)$
+  
+  \textbf{预测准确率}：$\rho = \frac{1}{K}\sum_{i=1}^{K} \mathbb{I}[v_i = \hat{v}_i]$
+\end{infobox}
+
+\subsection{理论性能分析}
+
+在理想情况下（预测准确率$\rho = 1$），SSD可以实现：
+
+\begin{equationbox}
+  \centering
+  $\text{加速比} \approx \frac{T_{\text{speculative}}}{T_{\text{SSD}}} \approx 2\times$
+\end{equationbox}
+
+即相比传统推测解码，SSD可以实现约2倍的加速。
+
+\newpage
+
+% ============================================================
+\section{Saguaro算法：优化实现}
+% ============================================================
+
+\subsection{挑战1的解决方案：几何扇出策略}
+
+\subsubsection{问题分析}
+
+预测验证结果的核心难点在于：我们需要知道哪些token会被接受，但这需要目标模型的输出分布。
+
+\subsubsection{幂律观察}
+
+论文发现了一个重要的\term{幂律现象}：接受率$\alpha$与猜测位置$i$之间存在幂律关系：
+
+\begin{equationbox}
+  \centering
+  $\alpha_i \propto i^{-\gamma}$
+\end{equationbox}
+
+其中$\gamma$是幂律指数。
+
+\subsubsection{最优扇出策略}
+
+基于幂律观察，论文提出了\term{几何扇出策略}：
+
+\begin{innovationbox}[几何扇出]
+  使用几何级数递减的扇出因子，在早期位置投入更多计算资源，晚期位置减少投入。
+  
+  \textbf{扇出序列}：$f_1, f_2, \ldots, f_K$，其中$f_i = f_1 \cdot r^{i-1}$，$r < 1$
+\end{innovationbox}
+
+\subsubsection{实验验证}
+
+实验表明，几何扇出策略相比均匀扇出策略，预测准确率提升了约15\%。
+
+\subsection{挑战2的解决方案：Saguaro采样}
+
+\subsubsection{残差分布的可控性}
+
+论文发现，残差分布具有一定的可控性：通过调整采样策略，可以在接受率和缓存命中率之间进行权衡。
+
+\subsubsection{Saguaro采样方案}
+
+\begin{innovationbox}[Saguaro采样]
+  \begin{enumerate}
+    \item 计算目标模型与草稿模型的概率差异
+    \item 根据差异大小调整采样温度
+    \item 平衡探索（提高接受率）与利用（提高缓存命中率）
+  \end{enumerate}
+\end{innovationbox}
+
+\subsubsection{权衡分析}
+
+\begin{center}
+\begin{tabular}{>{\raggedright}p{3cm} >{\centering}p{3cm} >{\centering\arraybackslash}p{3cm}}
+  \toprule
+  \tableheadercolor
+  \textbf{策略} & \textbf{接受率} & \textbf{缓存命中率} \\
+  \midrule
+  保守采样 & 高 & 低 \\
+  \rowcolor{bggreen}
+  Saguaro采样 & \textbf{中高} & \textbf{中高} \\
+  激进采样 & 低 & 高 \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{挑战3的解决方案：批次感知的回退策略}
+
+\subsubsection{批次大小的影响}
+
+在批量推理场景中，批次大小会显著影响回退效率：
+
+\begin{itemize}
+  \item \hlblue{小批次}：回退开销小，预测失败影响有限
+  \item \hlorange{大批次}：回退开销大，需要更谨慎的预测策略
+\end{itemize}
+
+\subsubsection{最优回退策略}
+
+\begin{innovationbox}[批次感知回退]
+  根据批次大小动态调整预测阈值：
+  \begin{itemize}
+    \item 小批次：使用激进的预测策略，容忍较高的失败率
+    \item 大批次：使用保守的预测策略，优先保证准确性
+  \end{itemize}
+\end{innovationbox}
+
+\newpage
+
+% ============================================================
+\section{实验评估}
+% ============================================================
+
+\subsection{实验设置}
+
+\begin{infobox}[实验配置]
+  \begin{itemize}
+    \item \textbf{目标模型}：Llama 2 70B, Llama 3 8B
+    \item \textbf{草稿模型}：对应的draft版本
+    \item \textbf{硬件}：NVIDIA A100 80GB
+    \item \textbf{数据集}：AlpacaEval, MT-Bench
+  \end{itemize}
+\end{infobox}
+
+\subsection{主要结果}
+
+\begin{center}
+\begin{tabular}{>{\raggedright}p{4cm} >{\centering}p{2.5cm} >{\centering}p{2.5cm} >{\centering\arraybackslash}p{2.5cm}}
+  \toprule
+  \tableheadercolor
+  \textbf{方法} & \textbf{加速比} & \textbf{接受率} & \textbf{延迟降低} \\
+  \midrule
+  自回归解码 & 1.0$\times$ & -- & 基线 \\
+  推测解码 & 2.5$\times$ & 65\% & 60\% \\
+  \rowcolor{bggreen}
+  \textbf{SSD (本文)} & \textbf{5.0$\times$} & \textbf{72\%} & \textbf{80\%} \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{关键发现}
+
+\begin{enumerate}
+  \item \hlblue{显著加速}：SSD相比推测解码实现约2倍加速，相比自归码实现约5倍加速
+  \item \hlpurple{接受率提升}：Saguaro采样将接受率从65\%提升至72\%
+  \item \hlteal{内存友好}：SSD的内存开销仅增加约10\%
+\end{enumerate}
+
+\subsection{消融实验}
+
+\begin{center}
+\begin{tabular}{>{\raggedright}p{5cm} >{\centering}p{3cm} >{\centering\arraybackslash}p{3cm}}
+  \toprule
+  \tableheadercolor
+  \textbf{组件} & \textbf{加速比} & \textbf{相对提升} \\
+  \midrule
+  完整SSD & 5.0$\times$ & -- \\
+  移除几何扇出 & 4.2$\times$ & $-16\%$ \\
+  移除Saguaro采样 & 4.5$\times$ & $-10\%$ \\
+  移除批次感知回退 & 4.8$\times$ & $-4\%$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\newpage
+
+% ============================================================
+\section{深度分析与讨论}
+% ============================================================
+
+\subsection{与相关工作的对比}
+
+\subsubsection{并行推测解码}
+
+\begin{conceptbox}[对比]
+  传统的并行推测解码通过同时运行多个草稿模型实现并行化，但增加了计算和内存开销。SSD通过预测验证结果实现并行，无需额外草稿模型。
+\end{conceptbox}
+
+\subsubsection{树状推测解码}
+
+\begin{conceptbox}[对比]
+  树状推测解码构建token树结构，但树的深度受限于接受率。SSD通过几何扇出策略更高效地探索token空间。
+\end{conceptbox}
+
+\subsection{硬件架构意义}
+
+SSD的设计理念与现代GPU架构高度契合：
+
+\begin{itemize}
+  \item \hlblue{并行计算}：充分利用GPU的大规模并行能力
+  \item \hlpurple{内存带宽}：减少KV缓存的重复加载
+  \item \hlteal{延迟隐藏}：通过预测隐藏验证延迟
+\end{itemize}
+
+\subsection{局限性与未来方向}
+
+\subsubsection{当前局限}
+
+\begin{warningbox}[局限性]
+  \begin{itemize}
+    \item 预测准确性依赖于历史数据，在分布外场景可能下降
+    \item 批量推理时，预测策略需要更复杂的调优
+    \item 对于极长序列（$>$4096 tokens），内存开销增加
+  \end{itemize}
+\end{warningbox}
+
+\subsubsection{未来方向}
+
+\begin{innovationbox}[未来方向]
+  \begin{itemize}
+    \item 结合强化学习优化预测策略
+    \item 探索多草稿模型协同预测
+    \item 与量化技术结合进一步降低内存开销
+  \end{itemize}
+\end{innovationbox}
+
+\newpage
+
+% ============================================================
+\section{总结}
+% ============================================================
+
+\begin{titlebox}
+  \textbf{核心贡献}
+  \begin{enumerate}
+    \item 提出\hlblue{SSD框架}，实现猜测与验证的并行化
+    \item 设计\hlpurple{几何扇出策略}，高效预测验证结果
+    \item 提出\hlteal{Saguaro采样}，平衡接受率与缓存命中率
+    \item 相比推测解码实现\hlorange{2倍加速}，相比自归码实现\hlorange{5倍加速}
+  \end{enumerate}
+\end{titlebox}
+
+\vspace{1cm}
+
+SSD代表了LLM推理加速领域的重要突破，其核心思想——\textbf{预测验证结果以实现并行化}——为未来的推理优化研究提供了新的方向。
+
+% ============================================================
+\section{参考资料}
+% ============================================================
+
+\begin{enumerate}
+  \item Leviathan, Y., et al. (2023). Fast Inference from Transformers via Speculative Decoding. ICML.
+  \item Chen, C., et al. (2023). Accelerating Large Language Model Decoding with Speculative Sampling. arXiv.
+  \item Kumar, T., et al. (2026). Speculative Speculative Decoding. arXiv:2603.03251.
+\end{enumerate}
+
+\end{document}

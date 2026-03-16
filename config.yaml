@@ -1,0 +1,39 @@
+# Scholar Granny 配置文件
+# ========================
+
+# LLM 配置
+llm:
+  provider: openai          # 可选: openai / claude / openrouter / kimi / dashscope / dashscope-coding / deepseek / siliconflow / ollama / vllm
+  model: gpt-4o             # 模型名称
+  api_key: ""               # API Key (也可通过环境变量设置, 见下方说明)
+  base_url: null            # 自定义 API 地址 (覆盖 provider 默认值)
+  temperature: 0.3          # 生成温度
+  max_tokens: 4096          # 单次最大 token 数
+
+# 环境变量说明:
+#   OpenAI:           OPENAI_API_KEY
+#   Claude:           ANTHROPIC_API_KEY
+#   OpenRouter:       OPENROUTER_API_KEY
+#   Kimi (Moonshot):  MOONSHOT_API_KEY
+#   DashScope (通义):  DASHSCOPE_API_KEY
+#   DashScope Coding: DASHSCOPE_API_KEY  (base_url: https://coding.dashscope.aliyuncs.com/v1)
+#   DeepSeek:         DEEPSEEK_API_KEY
+#   SiliconFlow:      SILICONFLOW_API_KEY
+#   Ollama:           无需设置 (默认 http://localhost:11434)
+#   vLLM:             设置 base_url 即可
+
+# 模板配置
+template:
+  default: "Modern Colorful"       # 默认模板名称
+  directory: latex_template        # 模板目录
+
+# 输出配置
+output:
+  directory: papers                # 输出目录
+  naming: "{topic}_论文解读"        # 命名格式
+
+# 编译配置
+compiler:
+  engine: xelatex                  # LaTeX 编译器
+  runs: 2                          # 编译次数 (2次以生成目录)
+  cleanup: true                    # 编译后清理中间文件

@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scholar Granny — arXiv 论文智能解读</title>
+  <meta name="description"
+    content="Scholar Granny: AI-powered arXiv paper interpretation agent with beautiful PDF reports">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ─── Reset & Base ─────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #111827;
+      --bg-card: rgba(17, 24, 39, 0.7);
+      --bg-glass: rgba(255, 255, 255, 0.04);
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --accent-teal: #14b8a6;
+      --accent-orange: #f97316;
+      --accent-pink: #ec4899;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --gradient-1: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      --gradient-2: linear-gradient(135deg, #8b5cf6, #ec4899);
+      --gradient-3: linear-gradient(135deg, #14b8a6, #3b82f6);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── Background Effects ──────────────────── */
+    .bg-effects {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+    }
+
+    .bg-orb.orb-1 {
+      width: 600px;
+      height: 600px;
+      top: -200px;
+      right: -100px;
+      background: var(--accent-purple);
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .bg-orb.orb-2 {
+      width: 500px;
+      height: 500px;
+      bottom: -150px;
+      left: -100px;
+      background: var(--accent-blue);
+      animation: float 25s ease-in-out infinite reverse;
+    }
+
+    .bg-orb.orb-3 {
+      width: 400px;
+      height: 400px;
+      top: 40%;
+      left: 50%;
+      background: var(--accent-teal);
+      animation: float 15s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      33% {
+        transform: translate(30px, -30px) scale(1.05);
+      }
+
+      66% {
+        transform: translate(-20px, 20px) scale(0.95);
+      }
+    }
+
+    /* ─── Layout ──────────────────────────────── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* ─── Header ──────────────────────────────── */
+    header {
+      text-align: center;
+      padding: 48px 0 32px;
+      position: relative;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 2rem;
+      font-weight: 800;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-emoji {
+      font-size: 2.4rem;
+      -webkit-text-fill-color: initial;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--text-secondary);
+      font-size: 1rem;
+      font-weight: 400;
+    }
+
+    /* ─── Language Switcher ───────────────────── */
+    .lang-switch {
+      position: absolute;
+      top: 48px;
+      right: 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      border-radius: 20px;
+      padding: 4px;
+    }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .lang-btn.active {
+      background: var(--gradient-1);
+      color: white;
+    }
+
+    .lang-btn:hover:not(.active) {
+      color: var(--text-primary);
+    }
+
+    /* ─── Glass Card ──────────────────────────── */
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      transition: border-color var(--transition);
+    }
+
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title .icon {
+      font-size: 1.3rem;
+    }
+
+    /* ─── Grid Layout ─────────────────────────── */
+    .config-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .config-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ─── Form Elements ───────────────────────── */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 7px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: all var(--transition);
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    input::placeholder {
+      color: var(--text-muted);
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%2394a3b8'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+    }
+
+    select option {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .input-large {
+      font-size: 1.15rem;
+      padding: 16px 20px;
+      border-radius: var(--radius);
+    }
+
+    /* ─── Buttons ─────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 32px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .btn-primary {
+      background: var(--gradient-1);
+      color: white;
+      width: 100%;
+      font-size: 1.1rem;
+      padding: 16px;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-download {
+      background: var(--gradient-3);
+      color: white;
+      padding: 12px 24px;
+      text-decoration: none;
+    }
+
+    .btn-download:hover {
+      transform: translateY(-1px);
+    }
+
+    /* ─── Agent Log ───────────────────────────── */
+    .agent-panel {
+      display: none;
+      margin-top: 24px;
+    }
+
+    .agent-panel.active {
+      display: block;
+    }
+
+    .agent-log {
+      max-height: 600px;
+      overflow-y: auto;
+      padding: 4px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+    }
+
+    .agent-log::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .agent-log::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .agent-log::-webkit-scrollbar-thumb {
+      background: var(--border-glass);
+      border-radius: 3px;
+    }
+
+    .log-entry {
+      padding: 6px 12px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .log-tool-start {
+      background: rgba(59, 130, 246, 0.08);
+      border-left: 3px solid var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .log-tool-end {
+      background: rgba(20, 184, 166, 0.06);
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      max-height: 120px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .log-thinking {
+      color: var(--text-secondary);
+      font-style: italic;
+      border-left: 3px solid var(--accent-purple);
+      background: rgba(139, 92, 246, 0.05);
+    }
+
+    .log-status {
+      color: var(--accent-orange);
+      font-weight: 600;
+      border-left: 3px solid var(--accent-orange);
+      background: rgba(249, 115, 22, 0.06);
+    }
+
+    .log-error {
+      color: var(--accent-red);
+      font-weight: 600;
+      border-left: 3px solid var(--accent-red);
+      background: rgba(239, 68, 68, 0.08);
+    }
+
+    .log-complete {
+      background: rgba(34, 197, 94, 0.08);
+      border-left: 3px solid var(--accent-green);
+      color: var(--accent-green);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 12px;
+    }
+
+    /* ─── Status Badge ────────────────────────── */
+    .status-bar {
+      display: none;
+      padding: 14px 20px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 20px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      font-weight: 500;
+      font-size: 0.9rem;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-bar.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-glass);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ─── Result Card ─────────────────────────── */
+    .result-card {
+      display: none;
+      margin-top: 24px;
+      text-align: center;
+      padding: 32px;
+      background: rgba(34, 197, 94, 0.05);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .result-card.active {
+      display: block;
+    }
+
+    .result-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+
+    .result-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .result-sub {
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+
+    /* ─── API Key Toggle ──────────────────────── */
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-wrapper input {
+      padding-right: 44px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 4px;
+    }
+
+    /* ─── Temperature slider ──────────────────── */
+    .slider-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slider-group input[type=range] {
+      flex: 1;
+      padding: 0;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--border-glass);
+      border-radius: 3px;
+      border: none;
+    }
+
+    .slider-group input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--accent-blue);
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid var(--bg-primary);
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    .slider-value {
+      min-width: 36px;
+      text-align: center;
+      font-weight: 600;
+      color: var(--accent-blue);
+      font-size: 0.9rem;
+    }
+
+    /* ─── Responsive ──────────────────────────── */
+    @media (max-width: 640px) {
+      .container {
+        padding: 16px;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .lang-switch {
+        position: static;
+        margin-top: 16px;
+        display: inline-flex;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-effects">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+  </div>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="logo">
+        <span class="logo-emoji">📖</span>
+        <span>Scholar Granny</span>
+      </div>
+      <p class="subtitle" data-i18n="subtitle">arXiv 论文智能解读 — LangGraph ReAct Agent</p>
+
+      <!-- Language Switcher -->
+      <div class="lang-switch">
+        <button class="lang-btn active" onclick="switchLang('zh')" id="langBtnZh">中文</button>
+        <button class="lang-btn" onclick="switchLang('en')" id="langBtnEn">EN</button>
+      </div>
+    </header>
+
+    <!-- Main Input -->
+    <div class="card" style="margin-bottom: 24px;">
+      <div class="form-group">
+        <label data-i18n="label_arxiv">arXiv 论文链接或 ID</label>
+        <input type="text" id="arxivUrl" class="input-large"
+          data-i18n-placeholder="placeholder_arxiv"
+          placeholder="https://arxiv.org/abs/2603.03251 或直接输入 2603.03251">
+      </div>
+    </div>
+
+    <!-- Config Grid -->
+    <div class="config-grid">
+      <!-- LLM Config -->
+      <div class="card">
+        <div class="card-title"><span class="icon">🤖</span> <span data-i18n="title_llm">LLM 配置</span></div>
+
+        <div class="form-group">
+          <label>Provider</label>
+          <select id="provider">
+            <optgroup data-i18n-label="group_commercial" label="商业 API">
+              <option value="openai">OpenAI</option>
+              <option value="claude">Claude (Anthropic)</option>
+              <option value="openrouter">OpenRouter</option>
+            </optgroup>
+            <optgroup data-i18n-label="group_china" label="国内服务">
+              <option value="deepseek">DeepSeek</option>
+              <option value="kimi">Kimi (Moonshot)</option>
+              <option value="dashscope" data-i18n="provider_dashscope">通义千问 (DashScope)</option>
+              <option value="dashscope-coding" data-i18n="provider_dashscope_coding">百炼 Coding Plan</option>
+              <option value="siliconflow" data-i18n="provider_siliconflow">SiliconFlow 硅基流动</option>
+            </optgroup>
+            <optgroup data-i18n-label="group_local" label="本地 / 自部署">
+              <option value="ollama" data-i18n="provider_ollama">Ollama (本地)</option>
+              <option value="vllm">vLLM</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label data-i18n="label_model">模型</label>
+          <input type="text" id="model" placeholder="gpt-4o">
+        </div>
+
+        <div class="form-group">
+          <label>API Key</label>
+          <div class="password-wrapper">
+            <input type="password" id="apiKey" placeholder="sk-...">
+            <button class="toggle-password" onclick="toggleApiKey()" data-i18n-title="toggle_show_hide" title="显示/隐藏">👁</button>
+          </div>
+        </div>
+
+        <div class="form-group" id="baseUrlGroup">
+          <label>Base URL <span style="font-weight:400;text-transform:none;letter-spacing:0" data-i18n="label_baseurl_hint">(可选，自定义 API
+              地址)</span></label>
+          <input type="text" id="baseUrl" placeholder="https://api.openai.com/v1">
+        </div>
+
+        <div class="form-group">
+          <label>Temperature</label>
+          <div class="slider-group">
+            <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.3">
+            <span class="slider-value" id="tempValue">0.3</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Template & Language Config -->
+      <div class="card">
+        <div class="card-title"><span class="icon">🎨</span> <span data-i18n="title_template">模板选择</span></div>
+
+        <div class="form-group">
+          <label data-i18n="label_latex_template">LaTeX 模板</label>
+          <select id="template">
+            <option value="Modern Colorful" data-i18n="loading">加载中...</option>
+          </select>
+        </div>
+
+        <div id="templateInfo"
+          style="margin-top: 16px; padding: 14px; background: var(--bg-glass); border-radius: var(--radius-sm); color: var(--text-secondary); font-size: 0.85rem;"
+          data-i18n="template_info_hint">
+          选择模板后将显示详细信息
+        </div>
+
+        <div class="form-group" style="margin-top: 20px;">
+          <label data-i18n="label_report_lang">🌐 报告语言</label>
+          <select id="language">
+            <option value="中文">🇨🇳 中文</option>
+            <option value="English">🇺🇸 English</option>
+            <option value="日本語">🇯🇵 日本語</option>
+            <option value="한국어">🇰🇷 한국어</option>
+            <option value="Français">🇫🇷 Français</option>
+            <option value="Deutsch">🇩🇪 Deutsch</option>
+            <option value="Español">🇪🇸 Español</option>
+          </select>
+        </div>
+
+        <!-- History -->
+        <div style="margin-top: 24px;">
+          <div class="card-title" style="margin-bottom: 12px;"><span class="icon">📂</span> <span data-i18n="title_history">已生成的报告</span></div>
+          <div id="papersList" style="font-size: 0.85rem; color: var(--text-secondary);" data-i18n="loading">
+            加载中...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Run Button -->
+    <button class="btn btn-primary" id="runBtn" onclick="startAgent()">
+      <span>🚀</span>
+      <span data-i18n="btn_run">开始解读</span>
+    </button>
+
+    <!-- Status Bar -->
+    <div class="status-bar" id="statusBar">
+      <div class="spinner"></div>
+      <span id="statusText" data-i18n="status_preparing">准备中...</span>
+    </div>
+
+    <!-- Agent Panel -->
+    <div class="agent-panel card" id="agentPanel">
+      <div class="card-title"><span class="icon">🧠</span> <span data-i18n="title_agent_log">Agent 推理过程</span></div>
+      <div class="agent-log" id="agentLog"></div>
+    </div>
+
+    <!-- Result Card -->
+    <div class="result-card card" id="resultCard">
+      <div class="result-icon">🎉</div>
+      <div class="result-title" data-i18n="result_title">论文解读完成！</div>
+      <div class="result-sub" id="resultSub"></div>
+      <a class="btn btn-download" id="downloadBtn" href="#" target="_blank">
+        <span data-i18n="btn_download">📄 下载 PDF 报告</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // ─── i18n ──────────────────────────────────
+    const I18N = {
+      zh: {
+        subtitle: 'arXiv 论文智能解读 — LangGraph ReAct Agent',
+        label_arxiv: 'arXiv 论文链接或 ID',
+        placeholder_arxiv: 'https://arxiv.org/abs/2603.03251 或直接输入 2603.03251',
+        title_llm: 'LLM 配置',
+        label_model: '模型',
+        label_baseurl_hint: '(可选，自定义 API 地址)',
+        toggle_show_hide: '显示/隐藏',
+        title_template: '模板选择',
+        label_latex_template: 'LaTeX 模板',
+        template_info_hint: '选择模板后将显示详细信息',
+        label_report_lang: '🌐 报告语言',
+        title_history: '已生成的报告',
+        loading: '加载中...',
+        btn_run: '开始解读',
+        btn_running: 'Agent 运行中...',
+        status_preparing: '准备中...',
+        title_agent_log: 'Agent 推理过程',
+        result_title: '论文解读完成！',
+        btn_download: '📄 下载 PDF 报告',
+        no_reports: '暂无已生成的报告',
+        load_failed: '加载失败',
+        download_pdf: '下载 PDF →',
+        no_pdf: '无 PDF',
+        log_send: '🚀 发送请求',
+        log_stream_error: '流读取错误',
+        log_connect_error: '连接失败',
+        server_error: '服务器错误',
+        group_commercial: '商业 API',
+        group_china: '国内服务',
+        group_local: '本地 / 自部署',
+        provider_dashscope: '通义千问 (DashScope)',
+        provider_dashscope_coding: '百炼 Coding Plan',
+        provider_siliconflow: 'SiliconFlow 硅基流动',
+        provider_ollama: 'Ollama (本地)',
+      },
+      en: {
+        subtitle: 'AI-Powered arXiv Paper Interpretation — LangGraph ReAct Agent',
+        label_arxiv: 'arXiv Paper URL or ID',
+        placeholder_arxiv: 'https://arxiv.org/abs/2603.03251 or enter ID 2603.03251',
+        title_llm: 'LLM Settings',
+        label_model: 'Model',
+        label_baseurl_hint: '(optional, custom API endpoint)',
+        toggle_show_hide: 'Show/Hide',
+        title_template: 'Template',
+        label_latex_template: 'LaTeX Template',
+        template_info_hint: 'Select a template to see details',
+        label_report_lang: '🌐 Report Language',
+        title_history: 'Generated Reports',
+        loading: 'Loading...',
+        btn_run: 'Start Interpretation',
+        btn_running: 'Agent Running...',
+        status_preparing: 'Preparing...',
+        title_agent_log: 'Agent Reasoning',
+        result_title: 'Interpretation Complete!',
+        btn_download: '📄 Download PDF Report',
+        no_reports: 'No reports generated yet',
+        load_failed: 'Failed to load',
+        download_pdf: 'Download PDF →',
+        no_pdf: 'No PDF',
+        log_send: '🚀 Sending request',
+        log_stream_error: 'Stream read error',
+        log_connect_error: 'Connection failed',
+        server_error: 'Server error',
+        group_commercial: 'Commercial API',
+        group_china: 'China Services',
+        group_local: 'Local / Self-hosted',
+        provider_dashscope: 'Qwen (DashScope)',
+        provider_dashscope_coding: 'Bailian Coding Plan',
+        provider_siliconflow: 'SiliconFlow',
+        provider_ollama: 'Ollama (Local)',
+      },
+    };
+
+    let currentLang = 'zh';
+
+    function t(key) {
+      return (I18N[currentLang] && I18N[currentLang][key]) || I18N['zh'][key] || key;
+    }
+
+    function switchLang(lang) {
+      currentLang = lang;
+      localStorage.setItem('scholar_granny_ui_lang', lang);
+
+      // Update active button
+      document.getElementById('langBtnZh').classList.toggle('active', lang === 'zh');
+      document.getElementById('langBtnEn').classList.toggle('active', lang === 'en');
+
+      // Update all data-i18n elements
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (I18N[lang][key] !== undefined) {
+          el.textContent = I18N[lang][key];
+        }
+      });
+
+      // Update placeholders
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (I18N[lang][key] !== undefined) {
+          el.placeholder = I18N[lang][key];
+        }
+      });
+
+      // Update title attributes
+      document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        if (I18N[lang][key] !== undefined) {
+          el.title = I18N[lang][key];
+        }
+      });
+
+      // Update optgroup labels
+      document.querySelectorAll('[data-i18n-label]').forEach(el => {
+        const key = el.getAttribute('data-i18n-label');
+        if (I18N[lang][key] !== undefined) {
+          el.label = I18N[lang][key];
+        }
+      });
+
+      // Update page title
+      document.title = lang === 'zh'
+        ? 'Scholar Granny — arXiv 论文智能解读'
+        : 'Scholar Granny — AI Paper Interpretation';
+    }
+
+    // ─── Provider Presets ─────────────────────
+    const PROVIDER_DEFAULTS = {
+      openai:             { model: 'gpt-4o',                  basePlaceholder: 'https://api.openai.com/v1' },
+      claude:             { model: 'claude-sonnet-4-20250514', basePlaceholder: 'https://api.anthropic.com' },
+      openrouter:         { model: 'google/gemini-2.5-flash',  basePlaceholder: 'https://openrouter.ai/api/v1' },
+      deepseek:           { model: 'deepseek-chat',            basePlaceholder: 'https://api.deepseek.com/v1' },
+      kimi:               { model: 'moonshot-v1-128k',         basePlaceholder: 'https://api.moonshot.cn/v1' },
+      dashscope:          { model: 'qwen-plus',                basePlaceholder: 'https://dashscope.aliyuncs.com/compatible-mode/v1' },
+      'dashscope-coding': { model: 'qwen-plus',                basePlaceholder: 'https://coding.dashscope.aliyuncs.com/v1' },
+      siliconflow:        { model: 'Qwen/Qwen3-8B',           basePlaceholder: 'https://api.siliconflow.cn/v1' },
+      ollama:             { model: 'llama3',                   basePlaceholder: 'http://localhost:11434/v1' },
+      vllm:               { model: '',                         basePlaceholder: 'http://localhost:8000/v1' },
+    };
+
+    // ─── State ────────────────────────────────
+    let running = false;
+    let eventSource = null;
+
+    // ─── LocalStorage 持久化 ──────────────────
+    const STORAGE_KEY = 'scholar_granny_settings';
+
+    function saveSettings() {
+      const settings = {
+        provider: document.getElementById('provider').value,
+        model: document.getElementById('model').value,
+        apiKey: document.getElementById('apiKey').value,
+        baseUrl: document.getElementById('baseUrl').value,
+        temperature: document.getElementById('temperature').value,
+        language: document.getElementById('language').value,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    }
+
+    function restoreSettings() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const s = JSON.parse(raw);
+        if (s.provider) document.getElementById('provider').value = s.provider;
+        if (s.model) document.getElementById('model').value = s.model;
+        if (s.apiKey) document.getElementById('apiKey').value = s.apiKey;
+        if (s.baseUrl) document.getElementById('baseUrl').value = s.baseUrl;
+        if (s.temperature) {
+          document.getElementById('temperature').value = s.temperature;
+          document.getElementById('tempValue').textContent = s.temperature;
+        }
+        if (s.language) document.getElementById('language').value = s.language;
+        onProviderChange();
+      } catch (e) { console.warn('Failed to restore settings:', e); }
+    }
+
+    // ─── Init ─────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      // Restore UI language
+      const savedLang = localStorage.getItem('scholar_granny_ui_lang');
+      if (savedLang && I18N[savedLang]) {
+        switchLang(savedLang);
+      }
+
+      loadTemplates();
+      loadPapers();
+      loadConfig();
+
+      // Auto-save on any config change
+      const autoSaveIds = ['provider', 'model', 'apiKey', 'baseUrl', 'temperature', 'language'];
+      autoSaveIds.forEach(id => {
+        document.getElementById(id).addEventListener('change', saveSettings);
+        document.getElementById(id).addEventListener('input', saveSettings);
+      });
+
+      document.getElementById('provider').addEventListener('change', onProviderChange);
+      document.getElementById('temperature').addEventListener('input', (e) => {
+        document.getElementById('tempValue').textContent = e.target.value;
+      });
+      document.getElementById('template').addEventListener('change', onTemplateChange);
+
+      // Enter key
+      document.getElementById('arxivUrl').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !running) startAgent();
+      });
+    });
+
+    // ─── API Calls ────────────────────────────
+    async function loadTemplates() {
+      try {
+        const res = await fetch('/api/templates');
+        const data = await res.json();
+        const sel = document.getElementById('template');
+        sel.innerHTML = '';
+        data.templates.forEach(t => {
+          const opt = document.createElement('option');
+          opt.value = t.name;
+          opt.textContent = `${t.name} (${t.size_kb} KB)`;
+          sel.appendChild(opt);
+        });
+        onTemplateChange();
+      } catch (e) {
+        console.error('Failed to load templates:', e);
+      }
+    }
+
+    async function loadPapers() {
+      try {
+        const res = await fetch('/api/papers');
+        const data = await res.json();
+        const div = document.getElementById('papersList');
+        if (data.papers.length === 0) {
+          div.textContent = t('no_reports');
+          return;
+        }
+        div.innerHTML = data.papers.map(p =>
+          `<div style="padding:6px 0; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-glass);">
+            <span>📄 ${p.arxiv_id}</span>
+            ${p.has_pdf ? `<a href="/api/papers/${p.arxiv_id}/pdf" target="_blank" style="color:var(--accent-teal); text-decoration:none; font-size:0.8rem;">${t('download_pdf')}</a>` : `<span style="color:var(--text-muted)">${t('no_pdf')}</span>`}
+          </div>`
+        ).join('');
+      } catch (e) {
+        document.getElementById('papersList').textContent = t('load_failed');
+      }
+    }
+
+    async function loadConfig() {
+      try {
+        const res = await fetch('/api/config');
+        const cfg = await res.json();
+        document.getElementById('provider').value = cfg.provider;
+        document.getElementById('model').value = cfg.model;
+        document.getElementById('temperature').value = cfg.temperature;
+        document.getElementById('tempValue').textContent = cfg.temperature;
+        onProviderChange();
+      } catch (e) { }
+      // localStorage 优先覆盖服务器配置
+      restoreSettings();
+    }
+
+    // ─── Event Handlers ───────────────────────
+    function onProviderChange() {
+      const provider = document.getElementById('provider').value;
+      const modelInput = document.getElementById('model');
+      const baseUrlGroup = document.getElementById('baseUrlGroup');
+
+      const cfg = PROVIDER_DEFAULTS[provider] || PROVIDER_DEFAULTS.openai;
+      if (!modelInput.value || Object.values(PROVIDER_DEFAULTS).some(d => d.model === modelInput.value)) {
+        modelInput.value = cfg.model;
+      }
+      document.getElementById('baseUrl').placeholder = cfg.basePlaceholder;
+    }
+
+    function onTemplateChange() {
+      const name = document.getElementById('template').value;
+      document.getElementById('templateInfo').innerHTML =
+        `<strong>📄 ${name}</strong><br>${currentLang === 'zh' ? '使用此模板的配色方案和盒子样式生成解读报告' : 'Generate report using this template\'s color scheme and box styles'}`;
+    }
+
+    function toggleApiKey() {
+      const input = document.getElementById('apiKey');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    // ─── Run Agent ────────────────────────────
+    function startAgent() {
+      const url = document.getElementById('arxivUrl').value.trim();
+      if (!url) {
+        document.getElementById('arxivUrl').focus();
+        return;
+      }
+
+      running = true;
+      const btn = document.getElementById('runBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner"></div><span>${t('btn_running')}</span>`;
+
+      // Show panels
+      document.getElementById('statusBar').classList.add('active');
+      document.getElementById('agentPanel').classList.add('active');
+      document.getElementById('resultCard').classList.remove('active');
+      document.getElementById('agentLog').innerHTML = '';
+
+      // Build request
+      const body = {
+        arxiv_url: url,
+        provider: document.getElementById('provider').value,
+        model: document.getElementById('model').value,
+        api_key: document.getElementById('apiKey').value,
+        base_url: document.getElementById('baseUrl').value || null,
+        temperature: parseFloat(document.getElementById('temperature').value),
+        template: document.getElementById('template').value,
+        language: document.getElementById('language').value,
+      };
+
+      addLog('status', `${t('log_send')}: ${body.provider}/${body.model} → ${url}`);
+
+      // SSE via fetch + ReadableStream
+      fetch('/api/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }).then(response => {
+        if (!response.ok) {
+          return response.text().then(text => {
+            throw new Error(`${t('server_error')} (${response.status}): ${text}`);
+          });
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        function pump() {
+          reader.read().then(({ done, value }) => {
+            if (done) { onFinish(); return; }
+
+            // Normalize CRLF → LF (sse_starlette uses \r\n)
+            buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n');
+
+            // Process complete SSE blocks (separated by \n\n)
+            let idx;
+            while ((idx = buffer.indexOf('\n\n')) !== -1) {
+              const block = buffer.slice(0, idx);
+              buffer = buffer.slice(idx + 2);
+              if (block.trim()) processSSEBlock(block);
+            }
+
+            pump();
+          }).catch(err => {
+            console.error('Stream error:', err);
+            addLog('error', `${t('log_stream_error')}: ${err.message}`);
+            onFinish();
+          });
+        }
+        pump();
+
+      }).catch(err => {
+        console.error('Fetch error:', err);
+        addLog('error', `${t('log_connect_error')}: ${err.message}`);
+        onFinish();
+      });
+    }
+
+    function processSSEBlock(block) {
+      let eventType = 'message';
+      let data = '';
+
+      for (const line of block.split('\n')) {
+        if (line.startsWith('event:')) {
+          eventType = line.slice(6).trim();
+        } else if (line.startsWith('data:')) {
+          data += line.slice(5).trim();
+        }
+      }
+
+      if (!data) return;
+
+      let payload;
+      try { payload = JSON.parse(data); } catch (e) { return; }
+
+      switch (eventType) {
+        case 'status':
+          document.getElementById('statusText').textContent = payload.message;
+          addLog('status', payload.message);
+          break;
+        case 'task':
+          // skip
+          break;
+        case 'tool_start':
+          addLog('tool-start', `🔧 ${payload.tool}  →  ${payload.input}`);
+          break;
+        case 'tool_end':
+          addLog('tool-end', payload.output);
+          break;
+        case 'thinking':
+          appendThinking(payload.content);
+          break;
+        case 'complete':
+          addLog('complete', payload.message);
+          showResult(payload);
+          break;
+        case 'error':
+          addLog('error', `❌ ${payload.message}`);
+          break;
+      }
+    }
+
+    function addLog(type, text) {
+      const log = document.getElementById('agentLog');
+      const entry = document.createElement('div');
+      entry.className = `log-entry log-${type}`;
+      entry.textContent = text;
+      log.appendChild(entry);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    let lastThinkingEl = null;
+    function appendThinking(text) {
+      const log = document.getElementById('agentLog');
+      if (!lastThinkingEl || !lastThinkingEl.classList.contains('log-thinking')) {
+        lastThinkingEl = document.createElement('div');
+        lastThinkingEl.className = 'log-entry log-thinking';
+        lastThinkingEl.textContent = '';
+        log.appendChild(lastThinkingEl);
+      }
+      lastThinkingEl.textContent += text;
+      // Break on tool call
+      if (text.includes('\n')) lastThinkingEl = null;
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function showResult(payload) {
+      const card = document.getElementById('resultCard');
+      card.classList.add('active');
+      document.getElementById('resultSub').textContent =
+        currentLang === 'zh'
+          ? `论文 ${payload.arxiv_id} 解读完成`
+          : `Paper ${payload.arxiv_id} interpretation complete`;
+      if (payload.has_pdf && payload.pdf_url) {
+        const btn = document.getElementById('downloadBtn');
+        btn.href = payload.pdf_url;
+        btn.style.display = 'inline-flex';
+      } else {
+        document.getElementById('downloadBtn').style.display = 'none';
+      }
+      loadPapers(); // refresh list
+    }
+
+    function onFinish() {
+      running = false;
+      const btn = document.getElementById('runBtn');
+      btn.disabled = false;
+      btn.innerHTML = `<span>🚀</span><span>${t('btn_run')}</span>`;
+      document.getElementById('statusBar').classList.remove('active');
+      lastThinkingEl = null;
+    }
+  </script>
+</body>
+
+</html>
