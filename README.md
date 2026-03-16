@@ -1,154 +1,59 @@
-# Scholar Granny 📖
+# Scholar Granny
 
-> **arXiv 论文智能解读 Agent** — 基于 LangGraph ReAct 的自主论文分析系统
+[中文文档](README_CN.md)
 
-Scholar Granny 是一个 AI Agent，能够自动下载 arXiv 论文 LaTeX 源码、深度阅读理解、并生成精美的中文解读报告 PDF。
-## ✨ 特性
+> **arXiv Paper Interpretation Agent** — Autonomous paper analysis system powered by LangGraph ReAct
 
-- 🤖 **LangGraph ReAct Agent** — LLM 自主决策，按需调用 7 种工具
-- 🌐 **Web UI + CLI** — 精美 Web 界面 & 命令行双入口
-- 📡 **SSE 实时流式** — 通过 Server-Sent Events 实时展示 Agent 推理过程
-- 🔌 **10+ LLM Provider** — OpenAI / Claude / DeepSeek / Kimi / 通义 / SiliconFlow / OpenRouter / Ollama / vLLM
-- 📄 **LaTeX 模板系统** — 可扩展的报告模板，生成精美 PDF
-- 🧠 **Skill 子技能系统** — Agent 按需读取技能指南，模块化知识注入
+Scholar Granny is an AI Agent that automatically downloads arXiv paper LaTeX source code, performs deep reading comprehension, and generates beautifully formatted Chinese interpretation report PDFs.
 
-## 🚀 快速开始
+## Features
 
-### 安装
+- **LangGraph ReAct Agent** — LLM autonomous decision-making with 7 specialized tools
+- **Web UI + CLI** — Beautiful web interface & command-line dual entry points
+- **SSE Real-time Streaming** — Live display of Agent reasoning process via Server-Sent Events
+- **10+ LLM Providers** — OpenAI / Claude / DeepSeek / Kimi / DashScope / SiliconFlow / OpenRouter / Ollama / vLLM
+- **LaTeX Template System** — Extensible report templates for beautiful PDF generation (a "Modern Colorful" template is pre-built and ready to use)
+- **Skill Sub-system** — Agent reads skill guides on demand for modular knowledge injection
+- **Web-based API Key Configuration** — Configure API keys, select providers and models directly from the web UI — no need to edit config files or environment variables
+
+## Quick Start
+
+### Installation
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 配置 API Key
+### Configure API Key
 
-```bash
-# 通过环境变量设置（推荐）
-export OPENAI_API_KEY="sk-xxx"
-# 或
-export ANTHROPIC_API_KEY="sk-ant-xxx"
-# 或
-export DEEPSEEK_API_KEY="sk-xxx"
-```
+**Option 1: Via Web UI (Recommended)**
 
-也可以在 `config.local.yaml` 中配置（已被 `.gitignore` 忽略）。
-
-### 使用
-
-**方式一：Web 界面（推荐）**
+Start the server and configure everything from the browser — provider, model, API key, and more:
 
 ```bash
 python -m uvicorn src.server:app --reload --port 8000
-
-# 浏览器打开 http://localhost:8000
+# Open http://localhost:8000 in your browser
 ```
 
-**方式二：命令行**
+The web interface provides a settings panel where you can:
+- Select your LLM provider and model
+- Enter your API key (with show/hide toggle)
+- Set custom base URL, temperature, and output language
+- All settings are auto-saved
+
+**Option 2: Via Environment Variables**
 
 ```bash
-# 基本用法
-python -m src.main --url https://arxiv.org/abs/2603.03251
-
-# 指定 LLM
-python -m src.main --url 2603.03251 -p claude -m claude-sonnet-4-20250514
-
-# 使用 DeepSeek
-python -m src.main --url 2603.03251 -p deepseek -m deepseek-chat
-
-# 使用本地 Ollama
-python -m src.main --url 2603.03251 -p ollama -m llama3
-
-# 使用 vLLM
-python -m src.main --url 2603.03251 -p vllm -m my-model --base-url http://localhost:8000/v1
-
-# 指定模板
-python -m src.main --url 2603.03251 -t "Modern Colorful"
-
-# 列出可用模板
-python -m src.main list-templates
-
-# 安静模式（不打印推理过程）
-python -m src.main --url 2603.03251 -q
+export OPENAI_API_KEY="sk-xxx"
+# or
+export ANTHROPIC_API_KEY="sk-ant-xxx"
+# or
+export DEEPSEEK_API_KEY="sk-xxx"
 ```
 
-## 🏗️ 架构
+**Option 3: Via Config File**
 
-```
-用户输入 arXiv URL
-        │
-        ▼
-  ┌─────────────┐
-  │  ReAct Agent │◄── System Prompt + SKILL.md
-  │  (LLM Brain) │
-  └──────┬──────┘
-         │ 自主调用
-         ▼
-  ┌──────────────────────────────────────┐
-  │ run_shell     → wget, tar, xelatex  │
-  │ read_file     → 阅读 .tex/.bib 源码  │
-  │ write_file    → 生成 report.tex      │
-  │ list_dir      → 探索目录结构          │
-  │ list_templates → 查看可用模板         │
-  │ read_template → 获取模板 preamble    │
-  │ read_skill    → 按需学习子技能        │
-  └──────────────────────────────────────┘
-         │
-         ▼
-   生成 PDF 解读报告
-```
-
-## 🔌 支持的 LLM Provider
-
-| Provider | 环境变量 | 默认模型 | 备注 |
-|----------|---------|---------|------|
-| OpenAI | `OPENAI_API_KEY` | `gpt-4o` | |
-| Claude | `ANTHROPIC_API_KEY` | `claude-sonnet-4-20250514` | Anthropic 原生 SDK |
-| DeepSeek | `DEEPSEEK_API_KEY` | `deepseek-chat` | |
-| Kimi | `MOONSHOT_API_KEY` | `moonshot-v1-128k` | |
-| DashScope (通义) | `DASHSCOPE_API_KEY` | `qwen-plus` | |
-| DashScope Coding | `DASHSCOPE_API_KEY` | `qwen-plus` | 编码优化端点 |
-| SiliconFlow | `SILICONFLOW_API_KEY` | `Qwen/Qwen3-8B` | |
-| OpenRouter | `OPENROUTER_API_KEY` | `google/gemini-2.5-flash` | |
-| Ollama | 无需设置 | `llama3` | 本地部署 |
-| vLLM | 无需设置 | 自定义 | 需设置 `base_url` |
-
-## 📁 项目结构
-
-```
-Paper_Granny/
-├── config.yaml                  # 默认配置
-├── config.local.yaml            # 本地覆盖配置 (gitignored)
-├── requirements.txt             # Python 依赖
-├── latex_template/              # LaTeX 模板目录
-│   └── Modern Colorful.tex
-├── skill/                       # Agent 子技能指南 (按需读取)
-│   ├── arxiv_downloader/SKILL.md
-│   ├── latex_reader/SKILL.md
-│   ├── paper_interpreter/SKILL.md
-│   ├── report_writer/SKILL.md
-│   ├── pdf_compiler/SKILL.md
-│   └── template_manager/SKILL.md
-├── src/
-│   ├── main.py                  # CLI 入口
-│   ├── server.py                # FastAPI Web 服务器 (SSE)
-│   ├── agent.py                 # LangGraph ReAct Agent
-│   ├── tools.py                 # 7 个 Agent 工具
-│   ├── skills.py                # Skill 加载与注入
-│   ├── llm_factory.py           # LLM Provider 工厂
-│   └── config.py                # 配置管理
-└── web/
-    └── index.html               # Web 前端
-```
-
-## 🔧 自定义
-
-### 添加模板
-
-将 `.tex` 模板放入 `latex_template/` 目录即可，Agent 自动发现。
-
-### 配置覆盖
-
-创建 `config.local.yaml` 覆盖默认配置：
+Create `config.local.yaml` (git-ignored) to override defaults:
 
 ```yaml
 llm:
@@ -157,15 +62,127 @@ llm:
   api_key: "sk-xxx"
 ```
 
-## 📝 环境要求
+### Usage
+
+**Web UI (Recommended)**
+
+```bash
+python -m uvicorn src.server:app --reload --port 8000
+# Open http://localhost:8000
+```
+
+**Command Line**
+
+```bash
+# Basic usage
+python -m src.main --url https://arxiv.org/abs/2603.03251
+
+# Specify LLM
+python -m src.main --url 2603.03251 -p claude -m claude-sonnet-4-20250514
+
+# Use DeepSeek
+python -m src.main --url 2603.03251 -p deepseek -m deepseek-chat
+
+# Use local Ollama
+python -m src.main --url 2603.03251 -p ollama -m llama3
+
+# Use vLLM
+python -m src.main --url 2603.03251 -p vllm -m my-model --base-url http://localhost:8000/v1
+
+# Specify template
+python -m src.main --url 2603.03251 -t "Modern Colorful"
+
+# List available templates
+python -m src.main list-templates
+
+# Quiet mode (no reasoning output)
+python -m src.main --url 2603.03251 -q
+```
+
+## Architecture
+
+```
+User inputs arXiv URL
+        |
+        v
+  +---------------+
+  |  ReAct Agent  |<-- System Prompt + SKILL.md
+  |  (LLM Brain)  |
+  +-------+-------+
+          | Autonomous calls
+          v
+  +--------------------------------------+
+  | run_shell     -> wget, tar, xelatex |
+  | read_file     -> Read .tex/.bib src  |
+  | write_file    -> Generate report.tex |
+  | list_dir      -> Explore directory   |
+  | list_templates -> View templates     |
+  | read_template -> Get template        |
+  | read_skill    -> Load skill guide    |
+  +--------------------------------------+
+          |
+          v
+   Generated PDF Report
+```
+
+## Supported LLM Providers
+
+| Provider | Environment Variable | Default Model | Notes |
+|----------|---------------------|---------------|-------|
+| OpenAI | `OPENAI_API_KEY` | `gpt-4o` | |
+| Claude | `ANTHROPIC_API_KEY` | `claude-sonnet-4-20250514` | Anthropic native SDK |
+| DeepSeek | `DEEPSEEK_API_KEY` | `deepseek-chat` | |
+| Kimi | `MOONSHOT_API_KEY` | `moonshot-v1-128k` | |
+| DashScope | `DASHSCOPE_API_KEY` | `qwen-plus` | |
+| DashScope Coding | `DASHSCOPE_API_KEY` | `qwen-plus` | Coding-optimized endpoint |
+| SiliconFlow | `SILICONFLOW_API_KEY` | `Qwen/Qwen3-8B` | |
+| OpenRouter | `OPENROUTER_API_KEY` | `google/gemini-2.5-flash` | |
+| Ollama | Not required | `llama3` | Local deployment |
+| vLLM | Not required | Custom | Requires `base_url` |
+
+## Project Structure
+
+```
+Paper_Granny/
+├── config.yaml                  # Default configuration
+├── config.local.yaml            # Local override config (gitignored)
+├── requirements.txt             # Python dependencies
+├── latex_template/              # LaTeX template directory
+│   └── Modern Colorful.tex      # Pre-built template, ready to use
+├── skill/                       # Agent skill guides (loaded on demand)
+│   ├── arxiv_downloader/SKILL.md
+│   ├── latex_reader/SKILL.md
+│   ├── paper_interpreter/SKILL.md
+│   ├── report_writer/SKILL.md
+│   ├── pdf_compiler/SKILL.md
+│   └── template_manager/SKILL.md
+├── src/
+│   ├── main.py                  # CLI entry point
+│   ├── server.py                # FastAPI Web server (SSE)
+│   ├── agent.py                 # LangGraph ReAct Agent
+│   ├── tools.py                 # 7 Agent tools
+│   ├── skills.py                # Skill loading & injection
+│   ├── llm_factory.py           # LLM Provider factory
+│   └── config.py                # Configuration management
+└── web/
+    └── index.html               # Web frontend
+```
+
+## Customization
+
+### Adding Templates
+
+Place `.tex` template files in the `latex_template/` directory — the Agent will auto-discover them.
+
+## Requirements
 
 - Python 3.10+
-- XeLaTeX（TeX Live 或 MacTeX）
-- 中文字体：**无需额外安装**，模板自动检测系统字体
-  - macOS：Songti SC / Heiti SC（系统自带）
-  - Windows：SimSun / SimHei / Microsoft YaHei（系统自带）
-  - Linux：Fandol 字体（TeX Live 自带）
+- XeLaTeX (TeX Live or MacTeX)
+- Chinese fonts: **No extra installation needed** — templates auto-detect system fonts
+  - macOS: Songti SC / Heiti SC (built-in)
+  - Windows: SimSun / SimHei / Microsoft YaHei (built-in)
+  - Linux: Fandol fonts (included in TeX Live)
 
-## 📄 License
+## License
 
 MIT
