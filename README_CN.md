@@ -16,6 +16,16 @@ Scholar Granny 是一个 AI Agent，能够自动下载 arXiv 论文 LaTeX 源码
 - 🧠 **Skill 子技能系统** — Agent 按需读取技能指南，模块化知识注入
 - 🔑 **Web 界面配置 API Key** — 直接在浏览器中配置 API Key、选择 Provider 和模型，无需手动编辑配置文件或环境变量
 
+## 📑 示例报告
+
+| 论文 | Provider | 模型 | 示例 | 推荐指数 |
+|------|----------|------|------|:--------:|
+| Language Models are Few-Shot Learners | 阿里云百炼 | `qwen3.5-plus` | [PDF](example/Language_Models_are_Few-Shot_Learners.pdf) | ⭐⭐⭐⭐ |
+| Deep Residual Learning for Image Recognition (中文) | 阿里云百炼 | `glm-5` | [PDF](example/Deep_Residual_Learning_for_Image_Recognition.pdf) | ⭐⭐⭐⭐ |
+| Attention Is All You Need | OpenAI | `gpt-5-mini` | [PDF](example/Attention_Is_All_You_Need.pdf) | ⭐ |
+
+> 建议使用2026的新模型，如GPT-5.4、Claude 4.5、DeepSeek V3、Qwen 3.5, GLM-5等，这些模型在Agent任务上表现更加出色。之前的模型往往不能准确定位Latex编译错误。
+
 ## 🚀 快速开始
 
 ### 📦 安装
@@ -144,11 +154,14 @@ python -m src.main --url 2603.03251 -q
 
 ```
 Paper_Granny/
+├── example/                     # 示例报告 PDF
 ├── config.yaml                  # 默认配置
 ├── config.local.yaml            # 本地覆盖配置 (gitignored)
 ├── requirements.txt             # Python 依赖
 ├── latex_template/              # LaTeX 模板目录
-│   └── Modern Colorful.tex      # 预置模板，开箱即用
+│   └── ModernColorful/          # 预置模板（推荐）
+│       ├── ModernColorful.cls   # 模板类文件
+│       └── Modern Colorful.tex  # 示例文档
 ├── skill/                       # Agent 子技能指南 (按需读取)
 │   ├── arxiv_downloader/SKILL.md
 │   ├── latex_reader/SKILL.md
@@ -172,7 +185,7 @@ Paper_Granny/
 
 ### 添加模板
 
-将 `.tex` 模板放入 `latex_template/` 目录即可，Agent 自动发现。
+在 `latex_template/` 下创建同名子目录和 `.cls` 文件即可（如 `latex_template/MyTemplate/MyTemplate.cls`），Agent 自动发现。报告只需 `\documentclass{模板名}` 即可使用。
 
 ## 📝 环境要求
 

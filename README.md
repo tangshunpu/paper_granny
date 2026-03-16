@@ -20,6 +20,16 @@ Paper Granny is an AI Agent that automatically downloads arXiv paper LaTeX sourc
 - 🧠 **Skill Sub-system** — Agent reads skill guides on demand for modular knowledge injection
 - 🔑 **Web-based API Key Configuration** — Configure API keys, select providers and models directly from the web UI — no need to edit config files or environment variables
 
+## 📑 Example Reports
+
+| Paper | Provider | Model | Example | Recommendation |
+|-------|----------|-------|---------|:--------------:|
+| Language Models are Few-Shot Learners | DashScope | `qwen3.5-plus` | [PDF](example/Language_Models_are_Few-Shot_Learners.pdf) | ⭐⭐⭐⭐ |
+| Deep Residual Learning for Image Recognition (Chinese) | DashScope | `glm-5` | [PDF](example/Deep_Residual_Learning_for_Image_Recognition.pdf) | ⭐⭐⭐⭐ |
+| Attention Is All You Need | OpenAI | `gpt-5-mini` | [PDF](example/Attention_Is_All_You_Need.pdf) | ⭐ |
+
+> We recommend using 2026 latest models such as GPT-5.4, Claude 4.5, DeepSeek V3, Qwen 3.5, GLM-5, etc. These models perform significantly better on Agent tasks. Older models often fail to accurately locate LaTeX compilation errors.
+
 ## 🚀 Quick Start
 
 ### 📦 Installation
@@ -150,11 +160,14 @@ User inputs arXiv URL
 
 ```
 Paper_Granny/
+├── example/                     # Example report PDFs
 ├── config.yaml                  # Default configuration
 ├── config.local.yaml            # Local override config (gitignored)
 ├── requirements.txt             # Python dependencies
 ├── latex_template/              # LaTeX template directory
-│   └── Modern Colorful.tex      # Pre-built template, ready to use
+│   └── ModernColorful/          # Pre-built template (recommended)
+│       ├── ModernColorful.cls   # Template class file
+│       └── Modern Colorful.tex  # Example document
 ├── skill/                       # Agent skill guides (loaded on demand)
 │   ├── arxiv_downloader/SKILL.md
 │   ├── latex_reader/SKILL.md
@@ -178,7 +191,7 @@ Paper_Granny/
 
 ### Adding Templates
 
-Place `.tex` template files in the `latex_template/` directory — the Agent will auto-discover them.
+Create a subdirectory in `latex_template/` with a `.cls` file of the same name (e.g. `latex_template/MyTemplate/MyTemplate.cls`). The Agent will auto-discover it. Reports only need `\documentclass{MyTemplate}` to use the template.
 
 ## 📝 Requirements
 

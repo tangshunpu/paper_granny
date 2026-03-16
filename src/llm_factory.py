@@ -36,12 +36,12 @@ OPENAI_COMPATIBLE_PROVIDERS = {
     "dashscope": {
         "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
         "env_key": "DASHSCOPE_API_KEY",
-        "default_model": "qwen-plus",
+        "default_model": "qwen3.5-plus",
     },
     "dashscope-coding": {
         "base_url": "https://coding.dashscope.aliyuncs.com/v1",
         "env_key": "DASHSCOPE_API_KEY",
-        "default_model": "qwen-plus",
+        "default_model": "qwen3.5-plus",
     },
     "deepseek": {
         "base_url": "https://api.deepseek.com/v1",
@@ -149,6 +149,8 @@ def create_llm(
             "api_key": key,
             "temperature": temperature,
             "max_tokens": max_tokens,
+            "timeout": 300,       # 5 分钟超时，适配 Agent 长时间流式调用
+            "max_retries": 3,     # 遇到瞬时错误（连接中断、5xx）自动重试 3 次
         }
         if url:
             kwargs["base_url"] = url
