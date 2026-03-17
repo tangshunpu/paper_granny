@@ -3,7 +3,7 @@
 
 # LLM 配置
 llm:
-  provider: openai          # 可选: openai / claude / openrouter / kimi / dashscope / dashscope-coding / deepseek / siliconflow / ollama / vllm
+  provider: openai          # 可选: openai / claude / gemini / openrouter / kimi / dashscope / dashscope-coding / deepseek / siliconflow / ollama / vllm
   model: gpt-4o             # 模型名称
   api_key: ""               # API Key (也可通过环境变量设置, 见下方说明)
   base_url: null            # 自定义 API 地址 (覆盖 provider 默认值)
@@ -19,12 +19,13 @@ llm:
 #   DashScope Coding: DASHSCOPE_API_KEY  (base_url: https://coding.dashscope.aliyuncs.com/v1)
 #   DeepSeek:         DEEPSEEK_API_KEY
 #   SiliconFlow:      SILICONFLOW_API_KEY
+#   Gemini:           GOOGLE_API_KEY
 #   Ollama:           无需设置 (默认 http://localhost:11434)
 #   vLLM:             设置 base_url 即可
 
 # 模板配置
 template:
-  default: "Modern Colorful"       # 默认模板名称
+  default: "ModernColorful"         # 默认模板名称 (.cls)
   directory: latex_template        # 模板目录
 
 # 输出配置

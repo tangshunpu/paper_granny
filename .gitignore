@@ -24,3 +24,18 @@ papers/
 # OS
 .DS_Store
 Thumbs.db
+
+# latex
+*.aux
+*.log
+*.bbl
+*.out
+*.toc
+*.synctex.gz
+
+
+docs/
+
+.claude/
+tests/
+.pytest_cache/

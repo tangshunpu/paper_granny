@@ -1,0 +1,163 @@
+% ============================================================
+% Modern Colorful 模板用法速查 — 展示所有可用环境和命令
+% 编译方式: XeLaTeX
+% ============================================================
+\documentclass{ModernColorful}
+
+\hypersetup{
+  pdfauthor={作者名},
+  pdftitle={论文标题 深度解读}
+}
+
+\title{\textbf{论文标题\\深度解读}}
+\author{作者名}
+\date{2026年3月17日}
+
+\begin{document}
+
+% === 标题页 ===
+\begin{titlepage}
+  \AddTitlePageLogo
+  \thispagestyle{empty}
+  \centering
+  \vspace*{2cm}
+
+  \begin{titlebox}
+    \centering
+    {\LARGE\bfseries\color{primaryblue} 论文标题}\\[10pt]
+    {\Large\bfseries 论文深度解读}\\[15pt]
+    {\normalsize 一句话副标题}
+  \end{titlebox}
+
+  \vspace{2cm}
+
+  {\large\color{textgray}
+  \textbf{作者}：作者名\\[5pt]
+  \textbf{日期}：2026年3月17日
+  }
+
+  \vfill
+
+  \begin{infobox}[论文信息]
+    \centering
+    \textbf{原文}：\href{https://arxiv.org/abs/XXXX.XXXXX}{arXiv:XXXX.XXXXX}\\
+    \textbf{代码}：\href{https://github.com/user/repo}{github.com/user/repo}
+  \end{infobox}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{背景知识}
+% ============================================================
+
+正文段落示例，可使用\term{术语标记}来标注关键术语。
+
+\subsection{子节标题}
+
+\begin{warningbox}[注意事项]
+  \begin{itemize}
+    \item \hlblue{蓝色要点}：说明文字
+    \item \hlorange{橙色要点}：说明文字
+  \end{itemize}
+\end{warningbox}
+
+\subsubsection{子子节标题}
+
+\begin{itemize}
+  \item \hlblue{蓝色高亮}
+  \item \hlpurple{紫色高亮}
+  \item \hlteal{青色高亮}
+  \item \hlorange{橙色高亮}
+  \item \hlbox[bgpink]{背景高亮}
+\end{itemize}
+
+% ============================================================
+\section{核心问题与创新思路}
+% ============================================================
+
+\begin{conceptbox}[概念盒子]
+  用于解释背景概念或对比分析。
+\end{conceptbox}
+
+\begin{innovationbox}[创新点]
+  用于展示核心创新贡献。
+\end{innovationbox}
+
+\begin{infobox}[信息盒子]
+  \centering
+  用于一般信息、实验配置等。
+\end{infobox}
+
+% ============================================================
+\section{方法详解}
+% ============================================================
+
+重要公式使用公式盒子：
+
+\begin{equationbox}
+  \centering
+  $E = mc^2$
+\end{equationbox}
+
+有序列表：
+\begin{enumerate}
+  \item \hlblue{步骤一}：说明
+  \item \hlpurple{步骤二}：说明
+\end{enumerate}
+
+% ============================================================
+\section{实验结果}
+% ============================================================
+
+\begin{center}
+\begin{tabular}{>{\raggedright}p{3cm} >{\centering}p{3cm} >{\centering\arraybackslash}p{3cm}}
+  \toprule
+  \tableheadercolor
+  \textbf{方法} & \textbf{指标A} & \textbf{指标B} \\
+  \midrule
+  基线方法 & 1.0 & 基线 \\
+  \rowcolor{bggreen}
+  \textbf{本文方法} & \textbf{2.5} & \textbf{最优} \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+代码/伪代码盒子：
+
+\begin{codebox}[算法伪代码]
+  1. Initialize model\\
+  2. For each step: predict and verify\\
+  3. Return result
+\end{codebox}
+
+图片（需先复制到报告目录）：
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.7\textwidth]{figure.pdf}
+  \caption{图片标题}
+\end{figure}
+
+% ============================================================
+\section{总结}
+% ============================================================
+
+\begin{titlebox}
+  \textbf{核心贡献}
+  \begin{enumerate}
+    \item 贡献一：\hlblue{关键词}
+    \item 贡献二：\hlpurple{关键词}
+  \end{enumerate}
+\end{titlebox}
+
+% ============================================================
+\section{参考资料}
+% ============================================================
+
+\begin{enumerate}
+  \item Author, A. (2026). Paper Title. Conference/Journal.
+\end{enumerate}
+
+\end{document}

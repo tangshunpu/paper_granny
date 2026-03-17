@@ -6,7 +6,9 @@ FastAPI 后端，通过 SSE 流式推送 Agent 的推理过程。
 
 import asyncio
 import json
+import logging
 import re
+import time
 import uuid
 from pathlib import Path
 from typing import Optional
@@ -18,8 +20,14 @@ from sse_starlette.sse import EventSourceResponse
 
 from .config import load_config
 from .llm_factory import create_llm
-from .tools import ALL_TOOLS, _project_root
-from .skills import build_system_prompt
+from .tools import _project_root
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%H:%M:%S",
+)
+logger = logging.getLogger("scholar_granny")
 
 app = FastAPI(title="Scholar Granny", version="0.2.0")
 
@@ -45,16 +53,24 @@ async def get_templates():
     template_dir = _project_root() / "latex_template"
     templates = []
     if template_dir.exists():
-        for tex_file in sorted(template_dir.glob("*.tex")):
+        for sub in sorted(template_dir.iterdir()):
+            if not sub.is_dir() or sub.name.startswith("."):
+                continue
+            cls_file = sub / f"{sub.name}.cls"
+            if not cls_file.exists():
+                cls_files = list(sub.glob("*.cls"))
+                if not cls_files:
+                    continue
+                cls_file = cls_files[0]
             try:
-                first_line = tex_file.read_text(encoding="utf-8").split("\n")[0]
+                first_line = cls_file.read_text(encoding="utf-8").split("\n")[0]
                 desc = first_line.lstrip("% ").strip() if first_line.startswith("%") else ""
             except Exception:
                 desc = ""
             templates.append({
-                "name": tex_file.stem,
+                "name": cls_file.stem,
                 "description": desc,
-                "size_kb": round(tex_file.stat().st_size / 1024, 1),
+                "size_kb": round(cls_file.stat().st_size / 1024, 1),
             })
     return {"templates": templates}
 
@@ -122,7 +138,7 @@ async def run_agent_sse(request: Request):
         "api_key": "sk-xxx",
         "base_url": null,
         "temperature": 0.3,
-        "template": "Modern Colorful",
+        "template": "ModernColorful",
         "language": "中文"
     }
     """
@@ -134,7 +150,7 @@ async def run_agent_sse(request: Request):
     api_key = body.get("api_key", "")
     base_url = body.get("base_url") or None
     temperature = float(body.get("temperature", 0.3))
-    template_name = body.get("template", "Modern Colorful")
+    template_name = body.get("template", "ModernColorful")
     language = body.get("language", "中文")
 
     if not arxiv_url:
@@ -143,6 +159,7 @@ async def run_agent_sse(request: Request):
     async def event_generator():
         try:
             # Step 1: 创建 LLM
+            logger.info("[SSE] Step 1: 创建 LLM %s/%s", provider, model)
             yield _sse_event("status", {"step": "init", "message": f"🤖 初始化 LLM: {provider}/{model}"})
             await asyncio.sleep(0.1)
 
@@ -155,21 +172,17 @@ async def run_agent_sse(request: Request):
             )
 
             # Step 2: 构建 Agent
+            logger.info("[SSE] Step 2: 构建 Agent")
             yield _sse_event("status", {"step": "agent", "message": "🧠 构建 ReAct Agent..."})
             await asyncio.sleep(0.1)
 
             from langchain_core.messages import HumanMessage
-            from langgraph.prebuilt import create_react_agent
+            from .agent import create_scholar_agent
 
-            system_prompt = build_system_prompt(
+            agent = create_scholar_agent(
+                llm=llm,
                 template_name=template_name,
                 language=language,
-            )
-
-            agent = create_react_agent(
-                model=llm,
-                tools=ALL_TOOLS,
-                prompt=system_prompt,
             )
 
             # Step 3: 构建任务消息
@@ -178,14 +191,14 @@ async def run_agent_sse(request: Request):
                 f"使用 LaTeX 模板: {template_name}\n"
                 f"报告语言: {language}\n\n"
                 "请按以下步骤自主工作:\n"
-                "1. 先读取 arxiv_downloader 技能指南，下载并解压论文 LaTeX 源码\n"
+                "1. 使用 download_paper 工具下载论文源码（已下载过会自动跳过）\n"
                 "2. 探索源码目录结构，找到主 tex 文件\n"
                 "3. 深度阅读论文源码（包括所有 \\input 引用的文件）\n"
                 "4. 读取 paper_interpreter 技能指南，学习解读方法\n"
                 "5. 读取模板 preamble，了解可用的盒子和命令\n"
                 "6. 读取 report_writer 技能指南，学习报告写作规范\n"
                 "7. 生成完整的 LaTeX 解读报告 (使用模板的 preamble + 你的解读内容)\n"
-                "8. 编译 PDF（xelatex 运行两次）\n"
+                "8. 使用 compile_pdf 编译 PDF\n"
                 "9. 报告最终结果\n"
             )
 
@@ -193,17 +206,36 @@ async def run_agent_sse(request: Request):
             yield _sse_event("task", {"content": task_message})
 
             # Step 4: 流式运行 Agent
+            logger.info("[SSE] Step 4: 开始 astream_events 循环")
+            event_count = 0
+            last_event_time = time.time()
+            last_event_kind = ""
+
             async for event in agent.astream_events(
                 {"messages": [HumanMessage(content=task_message)]},
                 version="v2",
                 config={"recursion_limit": 150},
             ):
                 kind = event["event"]
+                event_count += 1
+                now = time.time()
+                gap = now - last_event_time
+
+                # 每 50 个事件 或 间隔超过 5 秒时打日志
+                if event_count % 50 == 0 or gap > 5:
+                    logger.info(
+                        "[SSE] event #%d kind=%s (gap=%.1fs, prev=%s)",
+                        event_count, kind, gap, last_event_kind,
+                    )
+
+                last_event_time = now
+                last_event_kind = kind
 
                 if kind == "on_tool_start":
                     tool_name = event["name"]
                     tool_input = event.get("data", {}).get("input", {})
                     display = _format_tool_call(tool_name, tool_input)
+                    logger.info("[SSE] TOOL START: %s → %s", tool_name, display[:200])
                     yield _sse_event("tool_start", {
                         "tool": tool_name,
                         "input": display,
@@ -212,6 +244,7 @@ async def run_agent_sse(request: Request):
                 elif kind == "on_tool_end":
                     tool_name = event["name"]
                     output = str(event.get("data", {}).get("output", ""))
+                    logger.info("[SSE] TOOL END: %s (output len=%d)", tool_name, len(output))
                     # 截断过长的输出
                     if len(output) > 2000:
                         output = output[:2000] + f"\n... (截断，共 {len(output)} 字符)"
@@ -222,10 +255,23 @@ async def run_agent_sse(request: Request):
 
                 elif kind == "on_chat_model_stream":
                     chunk = event.get("data", {}).get("chunk")
-                    if chunk and hasattr(chunk, "content") and chunk.content:
-                        yield _sse_event("thinking", {"content": chunk.content})
+                    if chunk:
+                        # 普通文本流（agent 的推理过程）
+                        if hasattr(chunk, "content") and chunk.content:
+                            yield _sse_event("thinking", {"content": chunk.content})
+                        # tool call 流（生成 write_file 等工具参数时的流式输出）
+                        if hasattr(chunk, "tool_call_chunks") and chunk.tool_call_chunks:
+                            for tc_chunk in chunk.tool_call_chunks:
+                                args_text = tc_chunk.get("args", "")
+                                tool_name = tc_chunk.get("name", "")
+                                if args_text:
+                                    yield _sse_event("tool_streaming", {
+                                        "tool": tool_name or "",
+                                        "content": args_text,
+                                    })
 
             # 完成
+            logger.info("[SSE] astream_events 循环结束，共 %d 个事件", event_count)
             # 检查是否生成了 PDF
             arxiv_id = _extract_arxiv_id(arxiv_url)
             pdf_path = _find_pdf(arxiv_id)
@@ -239,6 +285,7 @@ async def run_agent_sse(request: Request):
 
         except Exception as e:
             import traceback
+            logger.error("[SSE] 异常: %s", e)
             traceback.print_exc()
             yield _sse_event("error", {"message": str(e)})
 
@@ -259,6 +306,9 @@ def _format_tool_call(tool_name: str, tool_input: dict) -> str:
         return f"📖 {tool_input.get('path', '')}"
     elif tool_name == "write_file":
         return f"✏️ {tool_input.get('path', '')}"
+    elif tool_name == "edit_file":
+        edits = tool_input.get('edits', [])
+        return f"📝 {tool_input.get('path', '')} ({len(edits)} edits)"
     elif tool_name == "list_dir":
         return f"📂 {tool_input.get('path', '.')}"
     elif tool_name == "read_skill":
@@ -267,6 +317,10 @@ def _format_tool_call(tool_name: str, tool_input: dict) -> str:
         return f"📄 template: {tool_input.get('template_name', '')}"
     elif tool_name == "list_templates":
         return "📋 listing templates"
+    elif tool_name == "compile_pdf":
+        return f"🔨 compiling {tool_input.get('tex_path', '')}"
+    elif tool_name == "get_image_info":
+        return f"📸 scanning images in {tool_input.get('path', '')}"
     return str(tool_input)
 
 

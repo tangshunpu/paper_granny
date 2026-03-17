@@ -1,10 +1,14 @@
-# Scholar Granny 📖
+<p align="center">
+  <img src="figure/logo.png" alt="Scholar Granny Logo" width="200">
+</p>
+
+# Paper Granny 📖
 
 [中文文档](README_CN.md)
 
 > **arXiv Paper Interpretation Agent** — Autonomous paper analysis system powered by LangGraph ReAct
 
-Scholar Granny is an AI Agent that automatically downloads arXiv paper LaTeX source code, performs deep reading comprehension, and generates beautifully formatted Chinese interpretation report PDFs.
+Paper Granny is an AI Agent that automatically downloads arXiv paper LaTeX source code, performs deep reading comprehension, and generates beautifully formatted Chinese interpretation report PDFs.
 
 ## ✨ Features
 
@@ -16,11 +20,27 @@ Scholar Granny is an AI Agent that automatically downloads arXiv paper LaTeX sou
 - 🧠 **Skill Sub-system** — Agent reads skill guides on demand for modular knowledge injection
 - 🔑 **Web-based API Key Configuration** — Configure API keys, select providers and models directly from the web UI — no need to edit config files or environment variables
 
+## 📑 Model Recommendation
+| Provider | Model | Price | Rating | Example |
+|----------|------|:-----:|:------:|--------|
+| OpenAI | `gpt-5.4` | 💰💰💰 | ⭐⭐⭐⭐⭐ | [Gated Attention for Large Language Models: Nonlinearity, Sparsity, and Attention-Sink-Free](example/GA.pdf) |
+| DashScope | `qwen3.5-plus` | 💰 | ⭐⭐⭐⭐ | [Language Models are Few-Shot Learners](example/Language_Models_are_Few-Shot_Learners.pdf) |
+| DashScope | `glm-5` | 💰 | ⭐⭐⭐⭐ | [Deep Residual Learning for Image Recognition (Chinese)](example/Deep_Residual_Learning_for_Image_Recognition.pdf) |
+| Google | `gemini-3-flash-preview` | 🆓  | ⭐⭐⭐ | [Denoising Diffusion Probabilistic Models](example/ddpm.pdf) |
+| Local | `qwen3.5-35b-a3b-4bit` | 🆓 | ⭐⭐⭐ | [ReAct: Synergizing Reasoning and Acting in Language Models](example/ReAct.pdf) |
+| OpenAI | `gpt-5-mini` | 💰 | ⭐ | [Attention Is All You Need](example/Attention_Is_All_You_Need.pdf) |
+| OpenAI | `gpt-5.3-codex` | 💰💰💰 | ❌ | Bug |
+| OpenRouter | `claude-opus-4.6` | 💰💰💰💰💰💰 | ❌ | Bug |
+
+> We recommend using 2026 latest models such as GPT-5.4, Claude 4.5, DeepSeek V3, Qwen 3.5, GLM-5, etc. These models perform significantly better on Agent tasks. Older models often fail to accurately locate LaTeX compilation errors.
+
 ## 🚀 Quick Start
 
 ### 📦 Installation
 
 ```bash
+git clone https://github.com/tangshunpu/paper_granny.git
+cd paper_granny
 pip install -r requirements.txt
 ```
 
@@ -144,11 +164,14 @@ User inputs arXiv URL
 
 ```
 Paper_Granny/
+├── example/                     # Example report PDFs
 ├── config.yaml                  # Default configuration
 ├── config.local.yaml            # Local override config (gitignored)
 ├── requirements.txt             # Python dependencies
 ├── latex_template/              # LaTeX template directory
-│   └── Modern Colorful.tex      # Pre-built template, ready to use
+│   └── ModernColorful/          # Pre-built template (recommended)
+│       ├── ModernColorful.cls   # Template class file
+│       └── Modern Colorful.tex  # Example document
 ├── skill/                       # Agent skill guides (loaded on demand)
 │   ├── arxiv_downloader/SKILL.md
 │   ├── latex_reader/SKILL.md
@@ -172,16 +195,12 @@ Paper_Granny/
 
 ### Adding Templates
 
-Place `.tex` template files in the `latex_template/` directory — the Agent will auto-discover them.
+Create a subdirectory in `latex_template/` with a `.cls` file of the same name (e.g. `latex_template/MyTemplate/MyTemplate.cls`). The Agent will auto-discover it. Reports only need `\documentclass{MyTemplate}` to use the template.
 
 ## 📝 Requirements
 
 - Python 3.10+
 - XeLaTeX (TeX Live or MacTeX)
-- Chinese fonts: **No extra installation needed** — templates auto-detect system fonts
-  - macOS: Songti SC / Heiti SC (built-in)
-  - Windows: SimSun / SimHei / Microsoft YaHei (built-in)
-  - Linux: Fandol fonts (included in TeX Live)
 
 ## 📄 License
 

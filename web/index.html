@@ -138,9 +138,10 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .logo-emoji {
-      font-size: 2.4rem;
-      -webkit-text-fill-color: initial;
+    .logo-img {
+      height: 48px;
+      width: auto;
+      border-radius: 8px;
     }
 
     .subtitle {
@@ -434,6 +435,48 @@
       padding: 12px;
     }
 
+    .log-tool-streaming {
+      background: rgba(139, 92, 246, 0.04);
+      border-left: 3px solid var(--accent-teal);
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 200px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .log-tool-streaming .streaming-header {
+      color: var(--accent-teal);
+      font-weight: 600;
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .log-tool-streaming .streaming-header .pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--accent-teal);
+      border-radius: 50%;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    .log-tool-streaming .streaming-stats {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      margin-top: 4px;
+    }
+
     /* ─── Status Badge ────────────────────────── */
     .status-bar {
       display: none;
@@ -590,8 +633,8 @@
     <!-- Header -->
     <header>
       <div class="logo">
-        <span class="logo-emoji">📖</span>
-        <span>Scholar Granny</span>
+        <img src="/static/logo.png" alt="Paper Granny" class="logo-img">
+        <span>Paper Granny</span>
       </div>
       <p class="subtitle" data-i18n="subtitle">arXiv 论文智能解读 — LangGraph ReAct Agent</p>
 
@@ -624,6 +667,7 @@
             <optgroup data-i18n-label="group_commercial" label="商业 API">
               <option value="openai">OpenAI</option>
               <option value="claude">Claude (Anthropic)</option>
+              <option value="gemini">Gemini (Google)</option>
               <option value="openrouter">OpenRouter</option>
             </optgroup>
             <optgroup data-i18n-label="group_china" label="国内服务">
@@ -870,6 +914,7 @@
     const PROVIDER_DEFAULTS = {
       openai:             { model: 'gpt-4o',                  basePlaceholder: 'https://api.openai.com/v1' },
       claude:             { model: 'claude-sonnet-4-20250514', basePlaceholder: 'https://api.anthropic.com' },
+      gemini:             { model: 'gemini-2.5-flash',         basePlaceholder: '' },
       openrouter:         { model: 'google/gemini-2.5-flash',  basePlaceholder: 'https://openrouter.ai/api/v1' },
       deepseek:           { model: 'deepseek-chat',            basePlaceholder: 'https://api.deepseek.com/v1' },
       kimi:               { model: 'moonshot-v1-128k',         basePlaceholder: 'https://api.moonshot.cn/v1' },
@@ -1131,13 +1176,18 @@
           // skip
           break;
         case 'tool_start':
+          resetToolStreaming();
           addLog('tool-start', `🔧 ${payload.tool}  →  ${payload.input}`);
           break;
         case 'tool_end':
+          resetToolStreaming();
           addLog('tool-end', payload.output);
           break;
         case 'thinking':
           appendThinking(payload.content);
+          break;
+        case 'tool_streaming':
+          appendToolStreaming(payload.tool, payload.content);
           break;
         case 'complete':
           addLog('complete', payload.message);
@@ -1173,6 +1223,67 @@
       log.scrollTop = log.scrollHeight;
     }
 
+    // ─── Tool Streaming (write_file 等大量生成时的实时进度) ───
+    let toolStreamingEl = null;
+    let toolStreamingContent = null;
+    let toolStreamingStats = null;
+    let toolStreamingCharCount = 0;
+    let toolStreamingStartTime = 0;
+
+    function appendToolStreaming(toolName, text) {
+      const log = document.getElementById('agentLog');
+
+      // 新建流式输出块
+      if (!toolStreamingEl) {
+        toolStreamingEl = document.createElement('div');
+        toolStreamingEl.className = 'log-entry log-tool-streaming';
+
+        const header = document.createElement('div');
+        header.className = 'streaming-header';
+        header.innerHTML = `<span class="pulse"></span> ${toolName || 'write_file'} ${currentLang === 'zh' ? '生成中...' : 'generating...'}`;
+        toolStreamingEl.appendChild(header);
+
+        toolStreamingContent = document.createElement('div');
+        toolStreamingContent.style.cssText = 'max-height:150px; overflow-y:auto;';
+        toolStreamingEl.appendChild(toolStreamingContent);
+
+        toolStreamingStats = document.createElement('div');
+        toolStreamingStats.className = 'streaming-stats';
+        toolStreamingEl.appendChild(toolStreamingStats);
+
+        log.appendChild(toolStreamingEl);
+        toolStreamingCharCount = 0;
+        toolStreamingStartTime = Date.now();
+        lastThinkingEl = null;
+      }
+
+      toolStreamingCharCount += text.length;
+      toolStreamingContent.textContent += text;
+
+      // 更新统计
+      const elapsed = ((Date.now() - toolStreamingStartTime) / 1000).toFixed(1);
+      toolStreamingStats.textContent = `${toolStreamingCharCount.toLocaleString()} chars · ${elapsed}s`;
+
+      // 自动滚动到底部
+      toolStreamingContent.scrollTop = toolStreamingContent.scrollHeight;
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function resetToolStreaming() {
+      if (toolStreamingEl) {
+        // 移除脉冲动画，标记为完成
+        const header = toolStreamingEl.querySelector('.streaming-header');
+        if (header) {
+          const pulse = header.querySelector('.pulse');
+          if (pulse) pulse.remove();
+          header.innerHTML = `✅ ${header.textContent.replace('生成中...', '').replace('generating...', '').trim()} ${currentLang === 'zh' ? '完成' : 'done'}`;
+        }
+      }
+      toolStreamingEl = null;
+      toolStreamingContent = null;
+      toolStreamingStats = null;
+    }
+
     function showResult(payload) {
       const card = document.getElementById('resultCard');
       card.classList.add('active');
@@ -1197,6 +1308,7 @@
       btn.innerHTML = `<span>🚀</span><span>${t('btn_run')}</span>`;
       document.getElementById('statusBar').classList.remove('active');
       lastThinkingEl = null;
+      resetToolStreaming();
     }
   </script>
 </body>
