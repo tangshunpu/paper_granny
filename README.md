@@ -153,8 +153,8 @@ User inputs arXiv URL
 | Claude | `ANTHROPIC_API_KEY` | `claude-sonnet-4-20250514` | Anthropic native SDK |
 | DeepSeek | `DEEPSEEK_API_KEY` | `deepseek-chat` | |
 | Kimi | `MOONSHOT_API_KEY` | `moonshot-v1-128k` | |
-| DashScope | `DASHSCOPE_API_KEY` | `qwen-plus` | |
-| DashScope Coding | `DASHSCOPE_API_KEY` | `qwen-plus` | Coding-optimized endpoint |
+| DashScope | `DASHSCOPE_API_KEY` | `qwen3.5-plus` | |
+| DashScope Coding | `DASHSCOPE_API_KEY` | `qwen3.5-plus` | |
 | SiliconFlow | `SILICONFLOW_API_KEY` | `Qwen/Qwen3-8B` | |
 | OpenRouter | `OPENROUTER_API_KEY` | `google/gemini-2.5-flash` | |
 | Ollama | Not required | `llama3` | Local deployment |
