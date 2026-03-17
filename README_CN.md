@@ -16,13 +16,18 @@ Scholar Granny 是一个 AI Agent，能够自动下载 arXiv 论文 LaTeX 源码
 - 🧠 **Skill 子技能系统** — Agent 按需读取技能指南，模块化知识注入
 - 🔑 **Web 界面配置 API Key** — 直接在浏览器中配置 API Key、选择 Provider 和模型，无需手动编辑配置文件或环境变量
 
-## 📑 示例报告
 
-| 论文 | Provider | 模型 | 示例 | 推荐指数 |
-|------|----------|------|------|:--------:|
-| Language Models are Few-Shot Learners | 阿里云百炼 | `qwen3.5-plus` | [PDF](example/Language_Models_are_Few-Shot_Learners.pdf) | ⭐⭐⭐⭐ |
-| Deep Residual Learning for Image Recognition (中文) | 阿里云百炼 | `glm-5` | [PDF](example/Deep_Residual_Learning_for_Image_Recognition.pdf) | ⭐⭐⭐⭐ |
-| Attention Is All You Need | OpenAI | `gpt-5-mini` | [PDF](example/Attention_Is_All_You_Need.pdf) | ⭐ |
+## 📑 模型推荐
+| 提供方 | 模型 | 价格 | 推荐指数 | 示例 |
+|--------|------|:----:|:--------:|------|
+| OpenAI | `gpt-5.4` | 💰💰💰 | ⭐⭐⭐⭐⭐ | [Gated Attention for Large Language Models: Nonlinearity, Sparsity, and Attention-Sink-Free](example/GA.pdf) |
+| 阿里云百炼 | `qwen3.5-plus` | 💰 | ⭐⭐⭐⭐ | [Language Models are Few-Shot Learners](example/Language_Models_are_Few-Shot_Learners.pdf) |
+| 阿里云百炼 | `glm-5` | 💰 | ⭐⭐⭐⭐ | [Deep Residual Learning for Image Recognition（中文）](example/Deep_Residual_Learning_for_Image_Recognition.pdf) |
+| Google | `gemini-3-flash-preview` | 🆓 | ⭐⭐⭐ | [Denoising Diffusion Probabilistic Models](example/ddpm.pdf) |
+| 本地部署 | `qwen3.5-35b-a3b-4bit` | 🆓 | ⭐⭐⭐ | [ReAct: Synergizing Reasoning and Acting in Language Models](example/ReAct.pdf) |
+| OpenAI | `gpt-5-mini` | 💰 | ⭐ | [Attention Is All You Need](example/Attention_Is_All_You_Need.pdf) |
+| OpenAI | `gpt-5.3-codex` | 💰💰💰 | ❌ | Bug |
+| OpenRouter | `claude-opus-4.6` | 💰💰💰💰💰💰 | ❌ | Bug |
 
 > 建议使用2026的新模型，如GPT-5.4、Claude 4.5、DeepSeek V3、Qwen 3.5, GLM-5等，这些模型在Agent任务上表现更加出色。之前的模型往往不能准确定位Latex编译错误
 
@@ -31,6 +36,8 @@ Scholar Granny 是一个 AI Agent，能够自动下载 arXiv 论文 LaTeX 源码
 ### 📦 安装
 
 ```bash
+git clone https://github.com/tangshunpu/paper_granny.git
+cd paper_granny
 pip install -r requirements.txt
 ```
 

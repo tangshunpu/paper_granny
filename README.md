@@ -20,13 +20,17 @@ Paper Granny is an AI Agent that automatically downloads arXiv paper LaTeX sourc
 - 🧠 **Skill Sub-system** — Agent reads skill guides on demand for modular knowledge injection
 - 🔑 **Web-based API Key Configuration** — Configure API keys, select providers and models directly from the web UI — no need to edit config files or environment variables
 
-## 📑 Example Reports
-
-| Paper | Provider | Model | Example | Recommendation |
-|-------|----------|-------|---------|:--------------:|
-| Language Models are Few-Shot Learners | DashScope | `qwen3.5-plus` | [PDF](example/Language_Models_are_Few-Shot_Learners.pdf) | ⭐⭐⭐⭐ |
-| Deep Residual Learning for Image Recognition (Chinese) | DashScope | `glm-5` | [PDF](example/Deep_Residual_Learning_for_Image_Recognition.pdf) | ⭐⭐⭐⭐ |
-| Attention Is All You Need | OpenAI | `gpt-5-mini` | [PDF](example/Attention_Is_All_You_Need.pdf) | ⭐ |
+## 📑 Model Recommendation
+| Provider | Model | Price | Rating | Example |
+|----------|------|:-----:|:------:|--------|
+| OpenAI | `gpt-5.4` | 💰💰💰 | ⭐⭐⭐⭐⭐ | [Gated Attention for Large Language Models: Nonlinearity, Sparsity, and Attention-Sink-Free](example/GA.pdf) |
+| DashScope | `qwen3.5-plus` | 💰 | ⭐⭐⭐⭐ | [Language Models are Few-Shot Learners](example/Language_Models_are_Few-Shot_Learners.pdf) |
+| DashScope | `glm-5` | 💰 | ⭐⭐⭐⭐ | [Deep Residual Learning for Image Recognition (Chinese)](example/Deep_Residual_Learning_for_Image_Recognition.pdf) |
+| Google | `gemini-3-flash-preview` | 🆓  | ⭐⭐⭐ | [Denoising Diffusion Probabilistic Models](example/ddpm.pdf) |
+| Local | `qwen3.5-35b-a3b-4bit` | 🆓 | ⭐⭐⭐ | [ReAct: Synergizing Reasoning and Acting in Language Models](example/ReAct.pdf) |
+| OpenAI | `gpt-5-mini` | 💰 | ⭐ | [Attention Is All You Need](example/Attention_Is_All_You_Need.pdf) |
+| OpenAI | `gpt-5.3-codex` | 💰💰💰 | ❌ | Bug |
+| OpenRouter | `claude-opus-4.6` | 💰💰💰💰💰💰 | ❌ | Bug |
 
 > We recommend using 2026 latest models such as GPT-5.4, Claude 4.5, DeepSeek V3, Qwen 3.5, GLM-5, etc. These models perform significantly better on Agent tasks. Older models often fail to accurately locate LaTeX compilation errors.
 

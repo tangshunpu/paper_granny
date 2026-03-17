@@ -667,6 +667,7 @@
             <optgroup data-i18n-label="group_commercial" label="商业 API">
               <option value="openai">OpenAI</option>
               <option value="claude">Claude (Anthropic)</option>
+              <option value="gemini">Gemini (Google)</option>
               <option value="openrouter">OpenRouter</option>
             </optgroup>
             <optgroup data-i18n-label="group_china" label="国内服务">
@@ -913,6 +914,7 @@
     const PROVIDER_DEFAULTS = {
       openai:             { model: 'gpt-4o',                  basePlaceholder: 'https://api.openai.com/v1' },
       claude:             { model: 'claude-sonnet-4-20250514', basePlaceholder: 'https://api.anthropic.com' },
+      gemini:             { model: 'gemini-2.5-flash',         basePlaceholder: '' },
       openrouter:         { model: 'google/gemini-2.5-flash',  basePlaceholder: 'https://openrouter.ai/api/v1' },
       deepseek:           { model: 'deepseek-chat',            basePlaceholder: 'https://api.deepseek.com/v1' },
       kimi:               { model: 'moonshot-v1-128k',         basePlaceholder: 'https://api.moonshot.cn/v1' },

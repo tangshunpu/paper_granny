@@ -54,6 +54,10 @@ STAGE_COMPRESS_RULES = {
 # tool 输出超过此长度才压缩，避免压缩短消息
 COMPRESS_THRESHOLD = 500
 
+# 需要在 compile 阶段仍然保留的 skill（用于定位 LaTeX 错误）
+# 这些 skill 包含模板可用命令/环境的完整列表，修错时需要参考
+PROTECTED_SKILLS = {"report_writer", "template_manager"}
+
 
 def _detect_current_stage(messages) -> str:
     """根据历史 tool_calls 检测当前所处阶段。"""
@@ -117,6 +121,12 @@ def _compress_messages(state) -> dict:
         if isinstance(msg, ToolMessage):
             tool_name = msg.name or ""
             content = msg.content if isinstance(msg.content, str) else str(msg.content)
+            # read_skill 中被保护的 skill 永不压缩（修 LaTeX 错误时需要参考）
+            if tool_name == "read_skill" and any(
+                f"技能指南: {s}" in content for s in PROTECTED_SKILLS
+            ):
+                trimmed.append(msg)
+                continue
             if tool_name in compressible_tools and len(content) > COMPRESS_THRESHOLD:
                 trimmed.append(ToolMessage(
                     content=f"[已完成 - {tool_name} 输出已压缩，共 {len(content)} 字符]",
@@ -198,7 +208,7 @@ def run_agent(
         "5. 读取模板 preamble，了解可用的盒子和命令\n"
         "6. 读取 report_writer 技能指南，学习报告写作规范\n"
         "7. 生成完整的 LaTeX 解读报告 (使用模板的 preamble + 你的解读内容)\n"
-        "8. 编译 PDF（xelatex 运行两次）\n"
+        "8. 使用 compile_pdf 编译 PDF\n"
         "9. 报告最终结果\n"
     )
 

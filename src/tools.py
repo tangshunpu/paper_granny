@@ -289,18 +289,19 @@ def edit_file(path: str, edits: list[dict]) -> str:
         count = content.count(old)
 
         if count == 0:
-            # 容错：尝试忽略前后空白匹配
+            # 不做静默模糊替换 — 返回明确失败和候选行供 agent 确认
             old_stripped = old.strip()
-            found = False
+            candidate_lines = []
             for line_idx, line in enumerate(lines):
                 if old_stripped in line.strip():
-                    # 替换整行
-                    old_line = lines[line_idx]
-                    lines[line_idx] = line.replace(old_stripped, new.strip())
-                    results.append(f"编辑 #{i+1}: ✅ 模糊匹配替换行 {line_idx+1}")
-                    found = True
-                    break
-            if not found:
+                    candidate_lines.append(f"  行 {line_idx+1}: {line.rstrip()[:80]}")
+            if candidate_lines:
+                candidates_str = "\n".join(candidate_lines[:3])
+                results.append(
+                    f"编辑 #{i+1}: [失败] 精确匹配未找到。"
+                    f"以下行包含相似内容（请用精确文本或行号重试）:\n{candidates_str}"
+                )
+            else:
                 results.append(f"编辑 #{i+1}: [失败] 未找到匹配: {old[:60]}...")
         elif count > 1:
             results.append(f"编辑 #{i+1}: [失败] 匹配到 {count} 处，需要唯一匹配: {old[:60]}...")
@@ -584,7 +585,8 @@ def _extract_log_errors(log_path: Path, tex_path: Path, max_errors: int = 10) ->
     current_error: dict | None = None
 
     # file-line-error 格式: ./report.tex:123: error message
-    re_file_line = re.compile(r"^\./(.+?):(\d+): (.+)$")
+    # 支持 ./ 前缀、无前缀 (bare)、绝对路径
+    re_file_line = re.compile(r"^(?:\./)?((?:[A-Za-z]:[\\/]|/)?.+?\.(?:tex|cls|sty)):(\d+): (.+)$")
     # 标准错误: ! Error message
     re_bang_error = re.compile(r"^! (.+)$")
     # 行号: l.123 context
@@ -702,14 +704,28 @@ def _extract_log_errors(log_path: Path, tex_path: Path, max_errors: int = 10) ->
         for idx, err in enumerate(errors, 1):
             line_num = err["line"]
             msg = err["message"]
+            err_file = err.get("file", "")
             hint = _get_fix_hint(msg)
 
             parts.append(f"── 错误 #{idx} ──")
             parts.append(f"  类型: {msg}")
+
+            # 确定源码文件：优先使用 error 中解析出的文件，回退到 tex_path
+            if err_file:
+                # 显示错误所在文件
+                parts.append(f"  文件: {err_file}")
+                # 解析源文件路径用于获取上下文
+                err_file_path = Path(err_file)
+                if not err_file_path.is_absolute():
+                    err_file_path = tex_path.parent / err_file_path
+                source_file = err_file_path if err_file_path.exists() else tex_path
+            else:
+                source_file = tex_path
+
             if line_num > 0:
                 parts.append(f"  位置: 第 {line_num} 行")
-                # 附加源码上下文
-                src_ctx = _get_source_context(tex_path, line_num)
+                # 附加源码上下文（从正确的文件读取）
+                src_ctx = _get_source_context(source_file, line_num)
                 if src_ctx:
                     parts.append(f"  源码:")
                     parts.append(src_ctx)
@@ -818,7 +834,8 @@ def compile_pdf(tex_path: str, runs: int = 2, cleanup: bool = True) -> str:
                 f"[编译失败] 第 {i}/{runs} 遍\n"
                 f"文件: {file_path}\n\n"
                 f"{error_report}\n"
-                f"请根据以上错误使用 edit_file 修改 .tex 文件后重新调用 compile_pdf。"
+                f"请根据以上错误信息，使用 edit_file 修改对应的文件"
+                f"（见每条错误的「文件」字段）后重新调用 compile_pdf。"
             )
 
     # 检查 PDF 输出

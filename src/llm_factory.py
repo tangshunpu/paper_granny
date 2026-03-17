@@ -2,7 +2,7 @@
 LLM Provider 工厂
 
 创建 LangChain ChatModel 实例。
-支持 OpenAI / Claude / OpenRouter / Kimi / DashScope / DeepSeek / SiliconFlow / Ollama / vLLM。
+支持 OpenAI / Claude / Gemini / OpenRouter / Kimi / DashScope / DeepSeek / SiliconFlow / Ollama / vLLM。
 
 OpenRouter、Kimi、DashScope、DeepSeek、SiliconFlow 等均为 OpenAI 兼容 API，
 统一通过 ChatOpenAI + 自定义 base_url 实现，无需额外 SDK。
@@ -87,6 +87,13 @@ def get_supported_providers() -> list[dict]:
         "base_url": "",
         "needs_api_key": True,
     })
+    # 加上 Gemini (非 OpenAI 兼容)
+    result.append({
+        "name": "gemini",
+        "default_model": "gemini-2.5-flash",
+        "base_url": "",
+        "needs_api_key": True,
+    })
     return result
 
 
@@ -125,6 +132,17 @@ def create_llm(
             max_tokens=max_tokens,
         )
 
+    # ── Gemini (Google GenAI 原生 SDK) ──
+    if provider == "gemini":
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        key = api_key or os.environ.get("GOOGLE_API_KEY", "")
+        return ChatGoogleGenerativeAI(
+            model=model,
+            google_api_key=key,
+            temperature=temperature,
+            max_output_tokens=max_tokens,
+        )
+
     # ── 所有 OpenAI 兼容 provider ──
     if provider in OPENAI_COMPATIBLE_PROVIDERS:
         from langchain_openai import ChatOpenAI
@@ -157,5 +175,5 @@ def create_llm(
         return ChatOpenAI(**kwargs)
 
     # ── 不支持 ──
-    supported = list(OPENAI_COMPATIBLE_PROVIDERS.keys()) + ["claude"]
+    supported = list(OPENAI_COMPATIBLE_PROVIDERS.keys()) + ["claude", "gemini"]
     raise ValueError(f"不支持的 provider: {provider}。支持: {supported}")

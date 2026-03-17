@@ -33,6 +33,7 @@ class LLMConfig:
             "dashscope-coding": "DASHSCOPE_API_KEY",
             "deepseek": "DEEPSEEK_API_KEY",
             "siliconflow": "SILICONFLOW_API_KEY",
+            "gemini": "GOOGLE_API_KEY",
         }
         if not self.api_key and self.provider in env_key_map:
             self.api_key = os.environ.get(env_key_map[self.provider], "")

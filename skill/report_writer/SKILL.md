@@ -7,7 +7,7 @@ description: 如何使用 LaTeX 模板写解读报告。Agent 准备写报告时
 
 ## ⚠️ 核心原则：严格使用模板命令
 
-**报告中只能使用 cls 模板已定义的环境和命令。不要自创命令、不要 `\newcommand`、必要时根据原论文导入 `\usepackage` 额外的包。**
+**报告中只能使用 cls 模板已定义的环境和命令。不要自创命令、不要 `\newcommand`、不要添加额外的 `\usepackage`。**
 
 模板 `ModernColorful.cls` 已加载所有需要的包，包括：
 `geometry`, `ctex`, `fontspec`, `xcolor`, `hyperref`, `tcolorbox`, `enumitem`, `titlesec`, `listings`, `amsmath/amssymb/amsthm`, `bm`, `booktabs`, `array`, `tabularx`, `multirow`, `colortbl`, `graphicx`, `float`, `subcaption`, `fancyhdr`, `eso-pic`
@@ -29,7 +29,7 @@ description: 如何使用 LaTeX 模板写解读报告。Agent 准备写报告时
 
 ## 模板使用规则
 
-**报告必须使用模板的 preamble**（通过 `read_template` 获取）。
+**不需要复制 preamble！** 用 `read_template` 了解可用的盒子和命令即可。
 
 
 ### 标题页模板

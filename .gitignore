@@ -33,3 +33,9 @@ Thumbs.db
 *.toc
 *.synctex.gz
 
+
+docs/
+
+.claude/
+tests/
+.pytest_cache/
