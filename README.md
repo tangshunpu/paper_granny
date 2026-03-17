@@ -8,7 +8,7 @@
 
 > **arXiv Paper Interpretation Agent** — Autonomous paper analysis system powered by LangGraph ReAct
 
-Paper Granny is an AI Agent that automatically downloads arXiv paper LaTeX source code, performs deep reading comprehension, and generates beautifully formatted Chinese interpretation report PDFs.
+Paper Granny is an AI Agent that automatically downloads arXiv paper LaTeX source code, performs deep reading comprehension, and generates beautifully formatted interpretation report PDFs.
 
 ## ✨ Features
 
