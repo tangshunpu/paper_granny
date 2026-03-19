@@ -8,286 +8,195 @@
   <meta name="description"
     content="Scholar Granny: AI-powered arXiv paper interpretation agent with beautiful PDF reports">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
-    rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* ─── Reset & Base ─────────────────────────── */
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    /* ─── Reset ───────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg-primary: #0a0e1a;
-      --bg-secondary: #111827;
-      --bg-card: rgba(17, 24, 39, 0.7);
-      --bg-glass: rgba(255, 255, 255, 0.04);
-      --border-glass: rgba(255, 255, 255, 0.08);
-      --text-primary: #f1f5f9;
-      --text-secondary: #94a3b8;
-      --text-muted: #64748b;
-      --accent-blue: #3b82f6;
-      --accent-purple: #8b5cf6;
-      --accent-teal: #14b8a6;
-      --accent-orange: #f97316;
-      --accent-pink: #ec4899;
-      --accent-green: #22c55e;
-      --accent-red: #ef4444;
-      --gradient-1: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      --gradient-2: linear-gradient(135deg, #8b5cf6, #ec4899);
-      --gradient-3: linear-gradient(135deg, #14b8a6, #3b82f6);
-      --radius: 16px;
-      --radius-sm: 10px;
-      --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --bg: #ffffff;
+      --bg-page: #f9fafb;
+      --bg-subtle: #f3f4f6;
+      --bg-code: #f6f7f8;
+      --border: #e5e7eb;
+      --border-light: #f0f1f3;
+
+      --ink: #111827;
+      --ink-2: #374151;
+      --ink-3: #6b7280;
+      --ink-4: #9ca3af;
+
+      --green: #10a37f;
+      --green-hover: #0d8c6d;
+      --green-bg: rgba(16,163,127,0.07);
+      --green-border: rgba(16,163,127,0.22);
+
+      --blue: #2563eb;
+      --blue-bg: rgba(37,99,235,0.06);
+      --purple: #7c3aed;
+      --purple-bg: rgba(124,58,237,0.06);
+      --amber: #d97706;
+      --amber-bg: rgba(217,119,6,0.06);
+      --red: #dc2626;
+      --red-bg: rgba(220,38,38,0.06);
+
+      --r: 12px;
+      --r-sm: 8px;
+      --font: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'JetBrains Mono', 'SF Mono', monospace;
+      --ease: cubic-bezier(.4,0,.2,1);
     }
 
     body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
+      font-family: var(--font);
+      background: var(--bg-page);
+      color: var(--ink);
       min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* ─── Background Effects ──────────────────── */
-    .bg-effects {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: -1;
-    }
-
-    .bg-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(120px);
-      opacity: 0.15;
-    }
-
-    .bg-orb.orb-1 {
-      width: 600px;
-      height: 600px;
-      top: -200px;
-      right: -100px;
-      background: var(--accent-purple);
-      animation: float 20s ease-in-out infinite;
-    }
-
-    .bg-orb.orb-2 {
-      width: 500px;
-      height: 500px;
-      bottom: -150px;
-      left: -100px;
-      background: var(--accent-blue);
-      animation: float 25s ease-in-out infinite reverse;
-    }
-
-    .bg-orb.orb-3 {
-      width: 400px;
-      height: 400px;
-      top: 40%;
-      left: 50%;
-      background: var(--accent-teal);
-      animation: float 15s ease-in-out infinite;
-    }
-
-    @keyframes float {
-
-      0%,
-      100% {
-        transform: translate(0, 0) scale(1);
-      }
-
-      33% {
-        transform: translate(30px, -30px) scale(1.05);
-      }
-
-      66% {
-        transform: translate(-20px, 20px) scale(0.95);
-      }
+      -webkit-font-smoothing: antialiased;
     }
 
     /* ─── Layout ──────────────────────────────── */
     .container {
-      max-width: 1200px;
+      max-width: 920px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 0 24px 56px;
     }
 
     /* ─── Header ──────────────────────────────── */
     header {
       text-align: center;
-      padding: 48px 0 32px;
+      padding: 44px 0 32px;
       position: relative;
     }
 
     .logo {
       display: inline-flex;
       align-items: center;
-      gap: 14px;
-      font-size: 2rem;
-      font-weight: 800;
-      background: var(--gradient-1);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      gap: 12px;
     }
 
     .logo-img {
-      height: 48px;
-      width: auto;
-      border-radius: 8px;
+      height: 42px;
+      border-radius: 10px;
+    }
+
+    .logo-text {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
     }
 
     .subtitle {
-      margin-top: 8px;
-      color: var(--text-secondary);
-      font-size: 1rem;
+      margin-top: 6px;
+      color: var(--ink-3);
+      font-size: 0.85rem;
       font-weight: 400;
     }
 
-    /* ─── Language Switcher ───────────────────── */
+    /* ─── Language Toggle ─────────────────────── */
     .lang-switch {
       position: absolute;
-      top: 48px;
+      top: 44px;
       right: 0;
       display: flex;
-      align-items: center;
-      gap: 4px;
-      background: var(--bg-glass);
-      border: 1px solid var(--border-glass);
+      background: var(--bg);
+      border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 4px;
+      padding: 3px;
     }
 
     .lang-btn {
       background: none;
       border: none;
-      color: var(--text-muted);
-      font-size: 0.82rem;
+      color: var(--ink-4);
+      font-family: var(--font);
+      font-size: 0.76rem;
       font-weight: 600;
-      padding: 6px 12px;
-      border-radius: 16px;
+      padding: 4px 12px;
+      border-radius: 14px;
       cursor: pointer;
-      transition: all var(--transition);
+      transition: all .2s var(--ease);
     }
+    .lang-btn.active { background: var(--green); color: #fff; }
+    .lang-btn:hover:not(.active) { color: var(--ink-2); }
 
-    .lang-btn.active {
-      background: var(--gradient-1);
-      color: white;
-    }
-
-    .lang-btn:hover:not(.active) {
-      color: var(--text-primary);
-    }
-
-    /* ─── Glass Card ──────────────────────────── */
+    /* ─── Card ────────────────────────────────── */
     .card {
-      background: var(--bg-card);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--border-glass);
-      border-radius: var(--radius);
-      padding: 28px;
-      box-shadow: var(--shadow);
-      transition: border-color var(--transition);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 24px;
+      transition: box-shadow .25s var(--ease);
     }
-
-    .card:hover {
-      border-color: rgba(255, 255, 255, 0.12);
-    }
+    .card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
 
     .card-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 20px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 18px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 7px;
+      color: var(--ink);
     }
 
-    .card-title .icon {
-      font-size: 1.3rem;
-    }
-
-    /* ─── Grid Layout ─────────────────────────── */
+    /* ─── Grid ────────────────────────────────── */
     .config-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 24px;
+      gap: 14px;
+      margin-bottom: 14px;
     }
+    @media (max-width: 768px) { .config-grid { grid-template-columns: 1fr; } }
 
-    @media (max-width: 768px) {
-      .config-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* ─── Form Elements ───────────────────────── */
-    .form-group {
-      margin-bottom: 18px;
-    }
-
-    .form-group:last-child {
-      margin-bottom: 0;
-    }
+    /* ─── Forms ───────────────────────────────── */
+    .form-group { margin-bottom: 14px; }
+    .form-group:last-child { margin-bottom: 0; }
 
     label {
       display: block;
-      font-size: 0.82rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 7px;
+      color: var(--ink-3);
+      margin-bottom: 5px;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
     }
 
-    input,
-    select {
+    input, select {
       width: 100%;
-      padding: 12px 16px;
-      background: var(--bg-glass);
-      border: 1px solid var(--border-glass);
-      border-radius: var(--radius-sm);
-      color: var(--text-primary);
-      font-family: inherit;
-      font-size: 0.95rem;
-      transition: all var(--transition);
+      padding: 9px 13px;
+      background: var(--bg-page);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: 0.87rem;
+      transition: all .2s var(--ease);
       outline: none;
     }
-
-    input:focus,
-    select:focus {
-      border-color: var(--accent-blue);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    input:focus, select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(16,163,127,0.1);
+      background: var(--bg);
     }
-
-    input::placeholder {
-      color: var(--text-muted);
-    }
+    input::placeholder { color: var(--ink-4); }
 
     select {
       cursor: pointer;
       appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%2394a3b8'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M5 7L1 3h8z' fill='%239ca3af'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 14px center;
+      background-position: right 12px center;
     }
-
-    select option {
-      background: var(--bg-secondary);
-      color: var(--text-primary);
-    }
+    select option { background: var(--bg); color: var(--ink); }
 
     .input-large {
-      font-size: 1.15rem;
-      padding: 16px 20px;
-      border-radius: var(--radius);
+      font-size: 1rem;
+      padding: 13px 16px;
+      border-radius: var(--r);
     }
 
     /* ─── Buttons ─────────────────────────────── */
@@ -295,350 +204,410 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      padding: 14px 32px;
+      gap: 8px;
       border: none;
-      border-radius: var(--radius-sm);
-      font-family: inherit;
-      font-size: 1rem;
+      border-radius: var(--r-sm);
+      font-family: var(--font);
       font-weight: 600;
       cursor: pointer;
-      transition: all var(--transition);
+      transition: all .2s var(--ease);
     }
 
     .btn-primary {
-      background: var(--gradient-1);
-      color: white;
+      background: var(--green);
+      color: #fff;
       width: 100%;
-      font-size: 1.1rem;
-      padding: 16px;
-      border-radius: var(--radius);
-      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+      font-size: 0.95rem;
+      padding: 13px;
+      border-radius: var(--r);
     }
-
     .btn-primary:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+      background: var(--green-hover);
+      box-shadow: 0 4px 14px rgba(16,163,127,0.22);
     }
+    .btn-primary:disabled { opacity: .55; cursor: not-allowed; }
 
-    .btn-primary:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
+    .btn-save {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--ink-3);
+      padding: 0 18px;
+      height: 46px;
+      font-size: 0.82rem;
+      border-radius: var(--r-sm);
+      white-space: nowrap;
+    }
+    .btn-save:hover:not(:disabled) {
+      border-color: var(--green-border);
+      color: var(--green);
+      background: var(--green-bg);
     }
 
     .btn-download {
-      background: var(--gradient-3);
-      color: white;
-      padding: 12px 24px;
+      background: var(--green);
+      color: #fff;
+      padding: 10px 20px;
       text-decoration: none;
+      font-size: 0.88rem;
+      border-radius: var(--r-sm);
+    }
+    .btn-download:hover { background: var(--green-hover); }
+
+    /* ─── Password toggle ─────────────────────── */
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 38px; }
+    .pw-toggle {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--ink-4); cursor: pointer;
+      font-size: .95rem; padding: 3px; transition: color .15s;
+    }
+    .pw-toggle:hover { color: var(--ink-3); }
+
+    /* ─── Slider ──────────────────────────────── */
+    .slider-row { display: flex; align-items: center; gap: 10px; }
+    .slider-row input[type=range] {
+      flex: 1; padding: 0; height: 3px;
+      -webkit-appearance: none; appearance: none;
+      background: var(--border); border-radius: 2px; border: none;
+    }
+    .slider-row input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px; height: 15px; background: var(--green);
+      border-radius: 50%; cursor: pointer;
+      border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    }
+    .slider-val {
+      min-width: 28px; text-align: center;
+      font-weight: 700; color: var(--green);
+      font-size: .82rem; font-family: var(--mono);
     }
 
-    .btn-download:hover {
-      transform: translateY(-1px);
+    /* ═══════════════════════════════════════════
+       Bookshelf — Horizontal scrolling PDF gallery
+       ═══════════════════════════════════════════ */
+    .bookshelf-section {
+      margin-top: 20px;
     }
 
-    /* ─── Agent Log ───────────────────────────── */
-    .agent-panel {
-      display: none;
-      margin-top: 24px;
+    .bookshelf-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
     }
 
-    .agent-panel.active {
-      display: block;
-    }
-
-    .agent-log {
-      max-height: 600px;
-      overflow-y: auto;
-      padding: 4px 0;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.82rem;
-      line-height: 1.7;
-    }
-
-    .agent-log::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .agent-log::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .agent-log::-webkit-scrollbar-thumb {
-      background: var(--border-glass);
-      border-radius: 3px;
-    }
-
-    .log-entry {
-      padding: 6px 12px;
-      border-radius: 6px;
-      margin-bottom: 4px;
-      animation: slideIn 0.3s ease-out;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(-8px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    .log-tool-start {
-      background: rgba(59, 130, 246, 0.08);
-      border-left: 3px solid var(--accent-blue);
-      color: var(--accent-blue);
-    }
-
-    .log-tool-end {
-      background: rgba(20, 184, 166, 0.06);
-      color: var(--text-secondary);
-      font-size: 0.78rem;
-      max-height: 120px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-
-    .log-thinking {
-      color: var(--text-secondary);
-      font-style: italic;
-      border-left: 3px solid var(--accent-purple);
-      background: rgba(139, 92, 246, 0.05);
-    }
-
-    .log-status {
-      color: var(--accent-orange);
+    .bookshelf-title {
+      font-size: 0.92rem;
       font-weight: 600;
-      border-left: 3px solid var(--accent-orange);
-      background: rgba(249, 115, 22, 0.06);
+      display: flex;
+      align-items: center;
+      gap: 7px;
     }
 
-    .log-error {
-      color: var(--accent-red);
-      font-weight: 600;
-      border-left: 3px solid var(--accent-red);
-      background: rgba(239, 68, 68, 0.08);
+    .bookshelf-count {
+      font-size: 0.75rem;
+      color: var(--ink-4);
+      font-weight: 500;
     }
 
-    .log-complete {
-      background: rgba(34, 197, 94, 0.08);
-      border-left: 3px solid var(--accent-green);
-      color: var(--accent-green);
-      font-weight: 600;
-      font-size: 0.9rem;
-      padding: 12px;
-    }
-
-    .log-tool-streaming {
-      background: rgba(139, 92, 246, 0.04);
-      border-left: 3px solid var(--accent-teal);
-      color: var(--text-secondary);
-      font-size: 0.78rem;
-      white-space: pre-wrap;
-      word-break: break-all;
-      max-height: 200px;
-      overflow-y: auto;
+    .bookshelf {
       position: relative;
     }
 
-    .log-tool-streaming .streaming-header {
-      color: var(--accent-teal);
+    .bookshelf-track {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding: 8px 4px 20px;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .bookshelf-track::-webkit-scrollbar { display: none; }
+
+    /* Individual book card */
+    .book {
+      flex: 0 0 160px;
+      scroll-snap-align: start;
+      text-decoration: none;
+      color: var(--ink);
+      transition: transform .25s var(--ease);
+    }
+    .book:hover { transform: translateY(-4px); }
+
+    .book-cover {
+      width: 160px;
+      height: 210px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06), 2px 4px 12px rgba(0,0,0,0.04);
+      position: relative;
+      transition: box-shadow .25s var(--ease);
+    }
+    .book:hover .book-cover {
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1), 2px 8px 24px rgba(0,0,0,0.06);
+    }
+
+    .book-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Placeholder when no thumbnail */
+    .book-cover-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(145deg, #f8fafc 0%, #eef2f7 100%);
+    }
+    .book-cover-placeholder .pdf-icon {
+      font-size: 2.2rem;
+      opacity: .5;
+    }
+    .book-cover-placeholder .pdf-label {
+      font-size: 0.68rem;
       font-weight: 600;
-      font-size: 0.8rem;
-      margin-bottom: 4px;
+      color: var(--ink-4);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Book spine shadow (left edge) */
+    .book-cover::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: linear-gradient(to right, rgba(0,0,0,0.08), transparent);
+      z-index: 1;
+    }
+
+    .book-id {
+      margin-top: 8px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--ink-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .book-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--green);
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+      z-index: 2;
+    }
+
+    /* Delete button on book cover */
+    .book-delete {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      border: none;
+      font-size: 0.72rem;
+      line-height: 1;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity .2s, background .15s;
+      backdrop-filter: blur(4px);
     }
+    .book:hover .book-delete { opacity: 1; }
+    .book-delete:hover { background: var(--red); }
 
-    .log-tool-streaming .streaming-header .pulse {
-      display: inline-block;
-      width: 8px;
+    /* Shelf surface */
+    .shelf-surface {
       height: 8px;
-      background: var(--accent-teal);
+      background: linear-gradient(180deg, #e8e6e1 0%, #d5d3ce 40%, #c9c7c2 100%);
+      border-radius: 0 0 4px 4px;
+      margin-top: -12px;
+      position: relative;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .shelf-surface::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 1px;
+      background: rgba(255,255,255,0.6);
+    }
+
+    /* Scroll arrows */
+    .shelf-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-70%);
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      animation: pulse 1.2s ease-in-out infinite;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--ink-3);
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: all .2s var(--ease);
+      opacity: 0;
+    }
+    .bookshelf:hover .shelf-arrow { opacity: 1; }
+    .shelf-arrow:hover { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+    .shelf-arrow-left { left: -12px; }
+    .shelf-arrow-right { right: -12px; }
+
+    /* Empty bookshelf */
+    .bookshelf-empty {
+      text-align: center;
+      padding: 36px 20px;
+      color: var(--ink-4);
+      font-size: 0.85rem;
+      border: 1px dashed var(--border);
+      border-radius: var(--r);
+      background: var(--bg);
+    }
+    .bookshelf-empty-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      opacity: .4;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 1; }
+    /* ─── Agent Panel ─────────────────────────── */
+    .agent-panel { display: none; margin-top: 14px; }
+    .agent-panel.active { display: block; }
+
+    .agent-log {
+      max-height: 480px;
+      overflow-y: auto;
+      padding: 2px 0;
+      font-family: var(--mono);
+      font-size: .77rem;
+      line-height: 1.7;
+    }
+    .agent-log::-webkit-scrollbar { width: 4px; }
+    .agent-log::-webkit-scrollbar-track { background: transparent; }
+    .agent-log::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .log-entry {
+      padding: 5px 10px;
+      border-radius: 4px;
+      margin-bottom: 2px;
+      animation: logIn .25s var(--ease) both;
+    }
+    @keyframes logIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    .log-tool-streaming .streaming-stats {
-      color: var(--text-muted);
-      font-size: 0.72rem;
-      margin-top: 4px;
+    .log-tool-start { background: var(--blue-bg); border-left: 2px solid var(--blue); color: var(--blue); }
+    .log-tool-end {
+      background: var(--bg-code); color: var(--ink-3); font-size: .73rem;
+      max-height: 100px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;
+      border-left: 2px solid var(--border);
     }
+    .log-thinking { color: var(--ink-3); font-style: italic; border-left: 2px solid var(--purple); background: var(--purple-bg); }
+    .log-status { color: var(--amber); font-weight: 600; border-left: 2px solid var(--amber); background: var(--amber-bg); }
+    .log-error { color: var(--red); font-weight: 600; border-left: 2px solid var(--red); background: var(--red-bg); }
+    .log-complete { background: var(--green-bg); border-left: 2px solid var(--green); color: var(--green); font-weight: 600; font-size: .82rem; padding: 8px 10px; }
 
-    /* ─── Status Badge ────────────────────────── */
+    .log-tool-streaming {
+      background: var(--bg-code); border-left: 2px solid var(--green);
+      color: var(--ink-3); font-size: .73rem;
+      white-space: pre-wrap; word-break: break-all;
+      max-height: 180px; overflow-y: auto;
+    }
+    .log-tool-streaming .streaming-header {
+      color: var(--green); font-weight: 600; font-size: .75rem;
+      margin-bottom: 3px; display: flex; align-items: center; gap: 5px;
+    }
+    .log-tool-streaming .streaming-header .pulse {
+      display: inline-block; width: 6px; height: 6px;
+      background: var(--green); border-radius: 50%;
+      animation: pulse 1s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity:.25; } 50% { opacity:1; } }
+    .log-tool-streaming .streaming-stats { color: var(--ink-4); font-size: .66rem; margin-top: 3px; }
+
+    /* ─── Status Bar ──────────────────────────── */
     .status-bar {
       display: none;
-      padding: 14px 20px;
-      border-radius: var(--radius-sm);
-      margin-bottom: 20px;
-      background: rgba(59, 130, 246, 0.1);
-      border: 1px solid rgba(59, 130, 246, 0.2);
-      font-weight: 500;
-      font-size: 0.9rem;
-      align-items: center;
-      gap: 10px;
+      padding: 10px 14px; border-radius: var(--r-sm);
+      margin-bottom: 14px;
+      background: var(--green-bg); border: 1px solid var(--green-border);
+      font-weight: 500; font-size: .84rem;
+      align-items: center; gap: 8px; color: var(--green);
     }
-
-    .status-bar.active {
-      display: flex;
-    }
+    .status-bar.active { display: flex; }
 
     .spinner {
-      width: 18px;
-      height: 18px;
-      border: 2px solid var(--border-glass);
-      border-top-color: var(--accent-blue);
+      width: 14px; height: 14px;
+      border: 2px solid var(--green-border);
+      border-top-color: var(--green);
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      animation: spin .65s linear infinite;
     }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ─── Result Card ─────────────────────────── */
     .result-card {
-      display: none;
-      margin-top: 24px;
-      text-align: center;
-      padding: 32px;
-      background: rgba(34, 197, 94, 0.05);
-      border: 1px solid rgba(34, 197, 94, 0.2);
+      display: none; margin-top: 14px;
+      text-align: center; padding: 28px 24px;
+      background: var(--green-bg); border: 1px solid var(--green-border);
     }
-
-    .result-card.active {
-      display: block;
-    }
-
-    .result-icon {
-      font-size: 3rem;
-      margin-bottom: 12px;
-    }
-
-    .result-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .result-sub {
-      color: var(--text-secondary);
-      margin-bottom: 20px;
-    }
-
-    /* ─── API Key Toggle ──────────────────────── */
-    .password-wrapper {
-      position: relative;
-    }
-
-    .password-wrapper input {
-      padding-right: 44px;
-    }
-
-    .toggle-password {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 1.1rem;
-      padding: 4px;
-    }
-
-    /* ─── Temperature slider ──────────────────── */
-    .slider-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .slider-group input[type=range] {
-      flex: 1;
-      padding: 0;
-      height: 6px;
-      -webkit-appearance: none;
-      appearance: none;
-      background: var(--border-glass);
-      border-radius: 3px;
-      border: none;
-    }
-
-    .slider-group input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 18px;
-      height: 18px;
-      background: var(--accent-blue);
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid var(--bg-primary);
-      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-    }
-
-    .slider-value {
-      min-width: 36px;
-      text-align: center;
-      font-weight: 600;
-      color: var(--accent-blue);
-      font-size: 0.9rem;
-    }
+    .result-card.active { display: block; }
+    .result-icon { font-size: 2rem; margin-bottom: 6px; }
+    .result-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+    .result-sub { color: var(--ink-3); margin-bottom: 14px; font-size: .86rem; }
 
     /* ─── Responsive ──────────────────────────── */
     @media (max-width: 640px) {
-      .container {
-        padding: 16px;
-      }
-
-      .logo {
-        font-size: 1.5rem;
-      }
-
-      .card {
-        padding: 20px;
-      }
-
-      .lang-switch {
-        position: static;
-        margin-top: 16px;
-        display: inline-flex;
-      }
+      .container { padding: 0 14px 36px; }
+      header { padding: 28px 0 20px; }
+      .logo-text { font-size: 1.3rem; }
+      .card { padding: 18px; }
+      .lang-switch { position: static; margin-top: 10px; display: inline-flex; }
+      .book { flex: 0 0 130px; }
+      .book-cover { width: 130px; height: 170px; }
     }
   </style>
 </head>
 
 <body>
-  <div class="bg-effects">
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
-    <div class="bg-orb orb-3"></div>
-  </div>
-
   <div class="container">
     <!-- Header -->
     <header>
       <div class="logo">
         <img src="/static/logo.png" alt="Paper Granny" class="logo-img">
-        <span>Paper Granny</span>
+        <span class="logo-text">Paper Granny</span>
       </div>
       <p class="subtitle" data-i18n="subtitle">arXiv 论文智能解读 — LangGraph ReAct Agent</p>
-
-      <!-- Language Switcher -->
       <div class="lang-switch">
         <button class="lang-btn active" onclick="switchLang('zh')" id="langBtnZh">中文</button>
         <button class="lang-btn" onclick="switchLang('en')" id="langBtnEn">EN</button>
@@ -646,7 +615,7 @@
     </header>
 
     <!-- Main Input -->
-    <div class="card" style="margin-bottom: 24px;">
+    <div class="card" style="margin-bottom: 14px;">
       <div class="form-group">
         <label data-i18n="label_arxiv">arXiv 论文链接或 ID</label>
         <input type="text" id="arxivUrl" class="input-large"
@@ -659,7 +628,7 @@
     <div class="config-grid">
       <!-- LLM Config -->
       <div class="card">
-        <div class="card-title"><span class="icon">🤖</span> <span data-i18n="title_llm">LLM 配置</span></div>
+        <div class="card-title">🤖 <span data-i18n="title_llm">LLM 配置</span></div>
 
         <div class="form-group">
           <label>Provider</label>
@@ -686,39 +655,35 @@
 
         <div class="form-group">
           <label data-i18n="label_model">模型</label>
-          <!-- shown only when provider has presets -->
-          <select id="modelPreset" style="display:none" onchange="onModelPresetChange()">
-          </select>
-          <!-- shown for free-text providers, or when 'custom' chosen in select -->
+          <select id="modelPreset" style="display:none" onchange="onModelPresetChange()"></select>
           <input type="text" id="model" placeholder="gpt-5.4-mini" autocomplete="off" style="margin-top:0">
         </div>
 
         <div class="form-group">
           <label>API Key</label>
-          <div class="password-wrapper">
+          <div class="pw-wrap">
             <input type="password" id="apiKey" placeholder="sk-...">
-            <button class="toggle-password" onclick="toggleApiKey()" data-i18n-title="toggle_show_hide" title="显示/隐藏">👁</button>
+            <button class="pw-toggle" onclick="toggleApiKey()" data-i18n-title="toggle_show_hide" title="显示/隐藏">👁</button>
           </div>
         </div>
 
         <div class="form-group" id="baseUrlGroup">
-          <label>Base URL <span style="font-weight:400;text-transform:none;letter-spacing:0" data-i18n="label_baseurl_hint">(可选，自定义 API
-              地址)</span></label>
+          <label>Base URL <span style="font-weight:400;text-transform:none;letter-spacing:0" data-i18n="label_baseurl_hint">(可选，自定义 API 地址)</span></label>
           <input type="text" id="baseUrl" placeholder="https://api.openai.com/v1">
         </div>
 
         <div class="form-group">
           <label>Temperature</label>
-          <div class="slider-group">
+          <div class="slider-row">
             <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.3">
-            <span class="slider-value" id="tempValue">0.3</span>
+            <span class="slider-val" id="tempValue">0.3</span>
           </div>
         </div>
       </div>
 
-      <!-- Template & Language Config -->
+      <!-- Template & Language -->
       <div class="card">
-        <div class="card-title"><span class="icon">🎨</span> <span data-i18n="title_template">模板选择</span></div>
+        <div class="card-title">🎨 <span data-i18n="title_template">模板与语言</span></div>
 
         <div class="form-group">
           <label data-i18n="label_latex_template">LaTeX 模板</label>
@@ -728,12 +693,12 @@
         </div>
 
         <div id="templateInfo"
-          style="margin-top: 16px; padding: 14px; background: var(--bg-glass); border-radius: var(--radius-sm); color: var(--text-secondary); font-size: 0.85rem;"
+          style="margin-top:10px; padding:10px 12px; background:var(--bg-subtle); border-radius:var(--r-sm); color:var(--ink-3); font-size:.8rem; border:1px solid var(--border-light);"
           data-i18n="template_info_hint">
           选择模板后将显示详细信息
         </div>
 
-        <div class="form-group" style="margin-top: 20px;">
+        <div class="form-group" style="margin-top:16px;">
           <label data-i18n="label_report_lang">🌐 报告语言</label>
           <select id="language">
             <option value="中文">🇨🇳 中文</option>
@@ -745,28 +710,31 @@
             <option value="Español">🇪🇸 Español</option>
           </select>
         </div>
-
-        <!-- History -->
-        <div style="margin-top: 24px;">
-          <div class="card-title" style="margin-bottom: 12px;"><span class="icon">📂</span> <span data-i18n="title_history">已生成的报告</span></div>
-          <div id="papersList" style="font-size: 0.85rem; color: var(--text-secondary);" data-i18n="loading">
-            加载中...
-          </div>
-        </div>
       </div>
     </div>
 
-    <!-- Run Button + Save Config Button -->
-    <div style="display:flex; gap:12px; align-items:center;">
+    <!-- Run + Save -->
+    <div style="display:flex; gap:10px; align-items:center;">
       <button class="btn btn-primary" id="runBtn" onclick="startAgent()" style="flex:1;">
-        <span>🚀</span>
-        <span data-i18n="btn_run">开始解读</span>
+        🚀 <span data-i18n="btn_run">开始解读</span>
       </button>
-      <button class="btn" id="saveConfigBtn" onclick="saveConfigToServer()"
-        style="background:rgba(99,102,241,0.15); border:1px solid rgba(99,102,241,0.4); color:var(--accent-blue); padding:0 20px; height:52px; border-radius:var(--radius-sm); font-size:0.9rem; cursor:pointer; white-space:nowrap; transition:all 0.2s;"
-        title="保存当前配置到 config.local.yaml">
+      <button class="btn btn-save" id="saveConfigBtn" onclick="saveConfigToServer()">
         <span id="saveConfigText" data-i18n="btn_save_config">💾 保存配置</span>
       </button>
+    </div>
+
+    <!-- ═══ Bookshelf Gallery ═══ -->
+    <div class="bookshelf-section" id="bookshelfSection">
+      <div class="bookshelf-header">
+        <div class="bookshelf-title">📚 <span data-i18n="title_history">已生成的报告</span></div>
+        <div class="bookshelf-count" id="bookshelfCount"></div>
+      </div>
+      <div class="bookshelf" id="bookshelf">
+        <div class="bookshelf-track" id="bookshelfTrack"></div>
+        <div class="shelf-surface"></div>
+        <button class="shelf-arrow shelf-arrow-left" onclick="scrollShelf(-1)">‹</button>
+        <button class="shelf-arrow shelf-arrow-right" onclick="scrollShelf(1)">›</button>
+      </div>
     </div>
 
     <!-- Status Bar -->
@@ -777,17 +745,17 @@
 
     <!-- Agent Panel -->
     <div class="agent-panel card" id="agentPanel">
-      <div class="card-title"><span class="icon">🧠</span> <span data-i18n="title_agent_log">Agent 推理过程</span></div>
+      <div class="card-title">🧠 <span data-i18n="title_agent_log">Agent 推理过程</span></div>
       <div class="agent-log" id="agentLog"></div>
     </div>
 
     <!-- Result Card -->
     <div class="result-card card" id="resultCard">
-      <div class="result-icon">🎉</div>
+      <div class="result-icon">✅</div>
       <div class="result-title" data-i18n="result_title">论文解读完成！</div>
       <div class="result-sub" id="resultSub"></div>
       <a class="btn btn-download" id="downloadBtn" href="#" target="_blank">
-        <span data-i18n="btn_download">📄 下载 PDF 报告</span>
+        📄 <span data-i18n="btn_download">下载 PDF 报告</span>
       </a>
     </div>
   </div>
@@ -803,7 +771,7 @@
         label_model: '模型',
         label_baseurl_hint: '(可选，自定义 API 地址)',
         toggle_show_hide: '显示/隐藏',
-        title_template: '模板选择',
+        title_template: '模板与语言',
         label_latex_template: 'LaTeX 模板',
         template_info_hint: '选择模板后将显示详细信息',
         label_report_lang: '🌐 报告语言',
@@ -812,13 +780,13 @@
         btn_run: '开始解读',
         btn_running: 'Agent 运行中...',
         btn_save_config: '💾 保存配置',
-        save_config_ok: '✅ 已保存到 config.local.yaml',
+        save_config_ok: '✅ 已保存',
         save_config_fail: '❌ 保存失败',
         status_preparing: '准备中...',
         title_agent_log: 'Agent 推理过程',
         result_title: '论文解读完成！',
-        btn_download: '📄 下载 PDF 报告',
-        no_reports: '暂无已生成的报告',
+        btn_download: '下载 PDF 报告',
+        no_reports: '暂无已生成的报告，解读论文后将展示在这里',
         load_failed: '加载失败',
         download_pdf: '下载 PDF →',
         no_pdf: '无 PDF',
@@ -833,6 +801,7 @@
         provider_dashscope_coding: '百炼 Coding Plan',
         provider_siliconflow: 'SiliconFlow 硅基流动',
         provider_ollama: 'Ollama (本地)',
+        shelf_count: '{n} 份报告',
       },
       en: {
         subtitle: 'AI-Powered arXiv Paper Interpretation — LangGraph ReAct Agent',
@@ -842,7 +811,7 @@
         label_model: 'Model',
         label_baseurl_hint: '(optional, custom API endpoint)',
         toggle_show_hide: 'Show/Hide',
-        title_template: 'Template',
+        title_template: 'Template & Language',
         label_latex_template: 'LaTeX Template',
         template_info_hint: 'Select a template to see details',
         label_report_lang: '🌐 Report Language',
@@ -851,13 +820,13 @@
         btn_run: 'Start Interpretation',
         btn_running: 'Agent Running...',
         btn_save_config: '💾 Save Config',
-        save_config_ok: '✅ Saved to config.local.yaml',
+        save_config_ok: '✅ Saved',
         save_config_fail: '❌ Save failed',
         status_preparing: 'Preparing...',
         title_agent_log: 'Agent Reasoning',
         result_title: 'Interpretation Complete!',
-        btn_download: '📄 Download PDF Report',
-        no_reports: 'No reports generated yet',
+        btn_download: 'Download PDF Report',
+        no_reports: 'No reports yet — interpret a paper to see it here',
         load_failed: 'Failed to load',
         download_pdf: 'Download PDF →',
         no_pdf: 'No PDF',
@@ -872,59 +841,37 @@
         provider_dashscope_coding: 'Bailian Coding Plan',
         provider_siliconflow: 'SiliconFlow',
         provider_ollama: 'Ollama (Local)',
+        shelf_count: '{n} reports',
       },
     };
 
     let currentLang = 'zh';
-
-    function t(key) {
-      return (I18N[currentLang] && I18N[currentLang][key]) || I18N['zh'][key] || key;
-    }
+    function t(key) { return (I18N[currentLang] && I18N[currentLang][key]) || I18N['zh'][key] || key; }
 
     function switchLang(lang) {
       currentLang = lang;
       localStorage.setItem('scholar_granny_ui_lang', lang);
-
-      // Update active button
       document.getElementById('langBtnZh').classList.toggle('active', lang === 'zh');
       document.getElementById('langBtnEn').classList.toggle('active', lang === 'en');
-
-      // Update all data-i18n elements
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (I18N[lang][key] !== undefined) {
-          el.textContent = I18N[lang][key];
-        }
+        if (I18N[lang][key] !== undefined) el.textContent = I18N[lang][key];
       });
-
-      // Update placeholders
       document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
-        if (I18N[lang][key] !== undefined) {
-          el.placeholder = I18N[lang][key];
-        }
+        if (I18N[lang][key] !== undefined) el.placeholder = I18N[lang][key];
       });
-
-      // Update title attributes
       document.querySelectorAll('[data-i18n-title]').forEach(el => {
         const key = el.getAttribute('data-i18n-title');
-        if (I18N[lang][key] !== undefined) {
-          el.title = I18N[lang][key];
-        }
+        if (I18N[lang][key] !== undefined) el.title = I18N[lang][key];
       });
-
-      // Update optgroup labels
       document.querySelectorAll('[data-i18n-label]').forEach(el => {
         const key = el.getAttribute('data-i18n-label');
-        if (I18N[lang][key] !== undefined) {
-          el.label = I18N[lang][key];
-        }
+        if (I18N[lang][key] !== undefined) el.label = I18N[lang][key];
       });
-
-      // Update page title
-      document.title = lang === 'zh'
-        ? 'Scholar Granny — arXiv 论文智能解读'
-        : 'Scholar Granny — AI Paper Interpretation';
+      document.title = lang === 'zh' ? 'Scholar Granny — arXiv 论文智能解读' : 'Scholar Granny — AI Paper Interpretation';
+      // Re-render bookshelf for language switch
+      if (window._cachedPapers) renderBookshelf(window._cachedPapers);
     }
 
     // ─── Provider Presets ─────────────────────
@@ -942,23 +889,19 @@
       vllm:               { model: '',                         basePlaceholder: 'http://localhost:8000/v1' },
     };
 
-    // ─── State ────────────────────────────────
     let running = false;
     let eventSource = null;
-
-    // ─── LocalStorage 持久化 ──────────────────
     const STORAGE_KEY = 'scholar_granny_settings';
 
     function saveSettings() {
-      const settings = {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
         provider: document.getElementById('provider').value,
         model: document.getElementById('model').value,
         apiKey: document.getElementById('apiKey').value,
         baseUrl: document.getElementById('baseUrl').value,
         temperature: document.getElementById('temperature').value,
         language: document.getElementById('language').value,
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+      }));
     }
 
     async function saveConfigToServer() {
@@ -966,44 +909,30 @@
       const textEl = document.getElementById('saveConfigText');
       btn.disabled = true;
       textEl.textContent = '⏳ ...';
-
-      const body = {
-        provider:    document.getElementById('provider').value,
-        model:       document.getElementById('model').value,
-        api_key:     document.getElementById('apiKey').value,
-        base_url:    document.getElementById('baseUrl').value || null,
-        temperature: parseFloat(document.getElementById('temperature').value),
-        template:    document.getElementById('template').value,
-      };
-
       try {
         const res = await fetch('/api/config', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
+          body: JSON.stringify({
+            provider: document.getElementById('provider').value,
+            model: document.getElementById('model').value,
+            api_key: document.getElementById('apiKey').value,
+            base_url: document.getElementById('baseUrl').value || null,
+            temperature: parseFloat(document.getElementById('temperature').value),
+            template: document.getElementById('template').value,
+          }),
         });
         const data = await res.json();
-        if (data.ok) {
-          textEl.textContent = t('save_config_ok');
-          setTimeout(() => {
-            textEl.textContent = t('btn_save_config');
-            btn.disabled = false;
-          }, 2500);
-        } else {
-          textEl.textContent = t('save_config_fail') + ': ' + (data.error || '');
-          btn.disabled = false;
-        }
-      } catch (e) {
-        textEl.textContent = t('save_config_fail');
-        btn.disabled = false;
-      }
+        textEl.textContent = data.ok ? t('save_config_ok') : t('save_config_fail');
+        if (data.ok) setTimeout(() => { textEl.textContent = t('btn_save_config'); btn.disabled = false; }, 2000);
+        else btn.disabled = false;
+      } catch (e) { textEl.textContent = t('save_config_fail'); btn.disabled = false; }
     }
 
     function restoreSettings() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const s = JSON.parse(raw);
+        const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (!s) return;
         if (s.provider) document.getElementById('provider').value = s.provider;
         if (s.model) document.getElementById('model').value = s.model;
         if (s.apiKey) document.getElementById('apiKey').value = s.apiKey;
@@ -1014,45 +943,34 @@
         }
         if (s.language) document.getElementById('language').value = s.language;
         onProviderChange();
-      } catch (e) { console.warn('Failed to restore settings:', e); }
+      } catch (e) {}
     }
 
     // ─── Init ─────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
-      // Restore UI language
       const savedLang = localStorage.getItem('scholar_granny_ui_lang');
-      if (savedLang && I18N[savedLang]) {
-        switchLang(savedLang);
-      }
-
+      if (savedLang && I18N[savedLang]) switchLang(savedLang);
       loadTemplates();
       loadPapers();
       loadConfig();
-
-      // Auto-save on any config change
-      const autoSaveIds = ['provider', 'model', 'apiKey', 'baseUrl', 'temperature', 'language'];
-      autoSaveIds.forEach(id => {
+      ['provider','model','apiKey','baseUrl','temperature','language'].forEach(id => {
         document.getElementById(id).addEventListener('change', saveSettings);
         document.getElementById(id).addEventListener('input', saveSettings);
       });
-
       document.getElementById('provider').addEventListener('change', onProviderChange);
-      document.getElementById('temperature').addEventListener('input', (e) => {
+      document.getElementById('temperature').addEventListener('input', e => {
         document.getElementById('tempValue').textContent = e.target.value;
       });
       document.getElementById('template').addEventListener('change', onTemplateChange);
-
-      // Enter key
-      document.getElementById('arxivUrl').addEventListener('keydown', (e) => {
+      document.getElementById('arxivUrl').addEventListener('keydown', e => {
         if (e.key === 'Enter' && !running) startAgent();
       });
     });
 
-    // ─── API Calls ────────────────────────────
+    // ─── API ──────────────────────────────────
     async function loadTemplates() {
       try {
-        const res = await fetch('/api/templates');
-        const data = await res.json();
+        const data = await (await fetch('/api/templates')).json();
         const sel = document.getElementById('template');
         sel.innerHTML = '';
         data.templates.forEach(t => {
@@ -1062,53 +980,97 @@
           sel.appendChild(opt);
         });
         onTemplateChange();
-      } catch (e) {
-        console.error('Failed to load templates:', e);
-      }
+      } catch (e) {}
     }
+
+    // ─── Bookshelf ────────────────────────────
+    window._cachedPapers = [];
 
     async function loadPapers() {
       try {
-        const res = await fetch('/api/papers');
-        const data = await res.json();
-        const div = document.getElementById('papersList');
-        if (data.papers.length === 0) {
-          div.textContent = t('no_reports');
-          return;
-        }
-        div.innerHTML = data.papers.map(p =>
-          `<div style="padding:6px 0; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-glass);">
-            <span>📄 ${p.arxiv_id}</span>
-            ${p.has_pdf ? `<a href="/api/papers/${p.arxiv_id}/pdf" target="_blank" style="color:var(--accent-teal); text-decoration:none; font-size:0.8rem;">${t('download_pdf')}</a>` : `<span style="color:var(--text-muted)">${t('no_pdf')}</span>`}
-          </div>`
-        ).join('');
+        const data = await (await fetch('/api/papers')).json();
+        window._cachedPapers = data.papers;
+        renderBookshelf(data.papers);
       } catch (e) {
-        document.getElementById('papersList').textContent = t('load_failed');
+        document.getElementById('bookshelfTrack').innerHTML =
+          `<div class="bookshelf-empty"><div class="bookshelf-empty-icon">📚</div>${t('load_failed')}</div>`;
       }
     }
 
-    // 从服务端加载的多 provider 配置缓存
+    function renderBookshelf(papers) {
+      const track = document.getElementById('bookshelfTrack');
+      const countEl = document.getElementById('bookshelfCount');
+
+      if (!papers.length) {
+        track.innerHTML = '';
+        document.getElementById('bookshelf').innerHTML =
+          `<div class="bookshelf-empty"><div class="bookshelf-empty-icon">📚</div>${t('no_reports')}</div>`;
+        countEl.textContent = '';
+        return;
+      }
+
+      countEl.textContent = t('shelf_count').replace('{n}', papers.length);
+
+      // Restore bookshelf structure if it was replaced by empty state
+      const shelf = document.getElementById('bookshelf');
+      if (!shelf.querySelector('.bookshelf-track')) {
+        shelf.innerHTML = `
+          <div class="bookshelf-track" id="bookshelfTrack"></div>
+          <div class="shelf-surface"></div>
+          <button class="shelf-arrow shelf-arrow-left" onclick="scrollShelf(-1)">‹</button>
+          <button class="shelf-arrow shelf-arrow-right" onclick="scrollShelf(1)">›</button>`;
+      }
+      const realTrack = document.getElementById('bookshelfTrack');
+
+      realTrack.innerHTML = papers.map(p => `
+        <div class="book" title="${p.arxiv_id}">
+          <div class="book-cover" onclick="${p.has_pdf ? `window.open('/api/papers/${p.arxiv_id}/pdf','_blank')` : ''}" style="${p.has_pdf ? 'cursor:pointer' : ''}">
+            <button class="book-delete" onclick="event.stopPropagation();deletePaper('${p.arxiv_id}')" title="${currentLang === 'zh' ? '删除' : 'Delete'}">✕</button>
+            ${p.has_pdf ? `<span class="book-badge">PDF</span>` : ''}
+            ${p.has_pdf
+              ? `<img src="/api/papers/${p.arxiv_id}/thumbnail" alt="${p.arxiv_id}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="book-cover-placeholder" style="display:none"><span class="pdf-icon">📄</span><span class="pdf-label">${p.arxiv_id}</span></div>`
+              : `<div class="book-cover-placeholder"><span class="pdf-icon">📝</span><span class="pdf-label">${currentLang === 'zh' ? '生成中' : 'Pending'}</span></div>`
+            }
+          </div>
+          <div class="book-id">${p.arxiv_id}</div>
+        </div>
+      `).join('');
+    }
+
+    function scrollShelf(dir) {
+      const track = document.getElementById('bookshelfTrack');
+      if (track) track.scrollBy({ left: dir * 360, behavior: 'smooth' });
+    }
+
+    async function deletePaper(arxivId) {
+      const msg = currentLang === 'zh'
+        ? `确定删除论文 ${arxivId} 的所有文件（源码、报告、PDF）？`
+        : `Delete all files for paper ${arxivId} (source, report, PDF)?`;
+      if (!confirm(msg)) return;
+      try {
+        const res = await fetch(`/api/papers/${arxivId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.ok) loadPapers();
+      } catch (e) { console.error('Delete failed:', e); }
+    }
+
     let savedProviders = {};
 
     async function loadConfig() {
       try {
-        const res = await fetch('/api/config');
-        const cfg = await res.json();
-        // 缓存 providers 字典，供切换 provider 时自动填入
+        const cfg = await (await fetch('/api/config')).json();
         if (cfg.providers) savedProviders = cfg.providers;
         document.getElementById('provider').value = cfg.provider;
         document.getElementById('model').value = cfg.model;
         document.getElementById('temperature').value = cfg.temperature;
         document.getElementById('tempValue').textContent = cfg.temperature;
-        // 自动填入当前 provider 的 api_key / base_url
         const p = savedProviders[cfg.provider];
         if (p) {
           if (p.api_key) document.getElementById('apiKey').value = p.api_key;
           if (p.base_url) document.getElementById('baseUrl').value = p.base_url;
         }
         onProviderChange();
-      } catch (e) { }
-      // localStorage 优先覆盖服务器配置
+      } catch (e) {}
       restoreSettings();
     }
 
@@ -1116,14 +1078,8 @@
     function onModelPresetChange() {
       const sel = document.getElementById('modelPreset');
       const input = document.getElementById('model');
-      if (sel.value === '__custom__') {
-        input.style.display = '';   // show text input below the select
-        input.value = '';
-        input.focus();
-      } else {
-        input.style.display = 'none';
-        input.value = sel.value;
-      }
+      if (sel.value === '__custom__') { input.style.display = ''; input.value = ''; input.focus(); }
+      else { input.style.display = 'none'; input.value = sel.value; }
       saveSettings();
     }
 
@@ -1131,72 +1087,34 @@
       const provider = document.getElementById('provider').value;
       const modelInput = document.getElementById('model');
       const modelSelect = document.getElementById('modelPreset');
-
       const cfg = PROVIDER_DEFAULTS[provider] || PROVIDER_DEFAULTS.openai;
       document.getElementById('baseUrl').placeholder = cfg.basePlaceholder;
 
-      // Rebuild preset select options
       const suggestions = cfg.suggestions || [];
       if (suggestions.length > 0) {
-        // Build <select> options
         modelSelect.innerHTML = '';
-        suggestions.forEach(m => {
-          const opt = document.createElement('option');
-          opt.value = m;
-          opt.textContent = m;
-          modelSelect.appendChild(opt);
-        });
-        const customOpt = document.createElement('option');
-        customOpt.value = '__custom__';
-        customOpt.textContent = 'Custom…';
-        modelSelect.appendChild(customOpt);
+        suggestions.forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = m; modelSelect.appendChild(o); });
+        const co = document.createElement('option'); co.value = '__custom__'; co.textContent = 'Custom…'; modelSelect.appendChild(co);
         modelSelect.style.display = '';
-        // default: hide free-text input, sync value from select
         modelInput.style.display = 'none';
-      } else {
-        modelSelect.style.display = 'none';
-        modelInput.style.display = '';
-      }
+      } else { modelSelect.style.display = 'none'; modelInput.style.display = ''; }
 
-      // 从服务端已保存的 provider 配置中自动填入 api_key / model / base_url
       const saved = savedProviders[provider];
-      let targetModel = '';
-      if (saved && saved.model) {
-        targetModel = saved.model;
-      } else {
-        targetModel = cfg.model;
-      }
-
-      // Apply targetModel
+      let targetModel = (saved && saved.model) ? saved.model : cfg.model;
       if (suggestions.length > 0) {
         const match = suggestions.find(m => m === targetModel);
-        if (match) {
-          modelSelect.value = match;
-          modelInput.style.display = 'none';
-          modelInput.value = match;
-        } else {
-          // custom value
-          modelSelect.value = '__custom__';
-          modelInput.style.display = '';
-          modelInput.value = targetModel;
-        }
-      } else {
-        modelInput.value = targetModel;
-      }
+        if (match) { modelSelect.value = match; modelInput.style.display = 'none'; modelInput.value = match; }
+        else { modelSelect.value = '__custom__'; modelInput.style.display = ''; modelInput.value = targetModel; }
+      } else { modelInput.value = targetModel; }
 
-      if (saved) {
-        document.getElementById('apiKey').value = saved.api_key || '';
-        document.getElementById('baseUrl').value = saved.base_url || '';
-      } else {
-        document.getElementById('apiKey').value = '';
-        document.getElementById('baseUrl').value = '';
-      }
+      if (saved) { document.getElementById('apiKey').value = saved.api_key || ''; document.getElementById('baseUrl').value = saved.base_url || ''; }
+      else { document.getElementById('apiKey').value = ''; document.getElementById('baseUrl').value = ''; }
     }
 
     function onTemplateChange() {
       const name = document.getElementById('template').value;
       document.getElementById('templateInfo').innerHTML =
-        `<strong>📄 ${name}</strong><br>${currentLang === 'zh' ? '使用此模板的配色方案和盒子样式生成解读报告' : 'Generate report using this template\'s color scheme and box styles'}`;
+        `<strong>📄 ${name}</strong><br><span style="color:var(--ink-4)">${currentLang === 'zh' ? '使用此模板的配色方案和盒子样式生成解读报告' : 'Generate report using this template\'s color scheme and box styles'}</span>`;
     }
 
     function toggleApiKey() {
@@ -1207,23 +1125,16 @@
     // ─── Run Agent ────────────────────────────
     function startAgent() {
       const url = document.getElementById('arxivUrl').value.trim();
-      if (!url) {
-        document.getElementById('arxivUrl').focus();
-        return;
-      }
-
+      if (!url) { document.getElementById('arxivUrl').focus(); return; }
       running = true;
       const btn = document.getElementById('runBtn');
       btn.disabled = true;
-      btn.innerHTML = `<div class="spinner"></div><span>${t('btn_running')}</span>`;
-
-      // Show panels
+      btn.innerHTML = `<div class="spinner"></div> ${t('btn_running')}`;
       document.getElementById('statusBar').classList.add('active');
       document.getElementById('agentPanel').classList.add('active');
       document.getElementById('resultCard').classList.remove('active');
       document.getElementById('agentLog').innerHTML = '';
 
-      // Build request
       const body = {
         arxiv_url: url,
         provider: document.getElementById('provider').value,
@@ -1234,102 +1145,49 @@
         template: document.getElementById('template').value,
         language: document.getElementById('language').value,
       };
-
       addLog('status', `${t('log_send')}: ${body.provider}/${body.model} → ${url}`);
 
-      // SSE via fetch + ReadableStream
-      fetch('/api/run', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      }).then(response => {
-        if (!response.ok) {
-          return response.text().then(text => {
-            throw new Error(`${t('server_error')} (${response.status}): ${text}`);
-          });
-        }
-
+      fetch('/api/run', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) })
+      .then(response => {
+        if (!response.ok) return response.text().then(text => { throw new Error(`${t('server_error')} (${response.status}): ${text}`); });
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
-
         function pump() {
-          reader.read().then(({ done, value }) => {
+          reader.read().then(({done, value}) => {
             if (done) { onFinish(); return; }
-
-            // Normalize CRLF → LF (sse_starlette uses \r\n)
-            buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n');
-
-            // Process complete SSE blocks (separated by \n\n)
+            buffer += decoder.decode(value, {stream:true}).replace(/\r\n/g, '\n');
             let idx;
             while ((idx = buffer.indexOf('\n\n')) !== -1) {
               const block = buffer.slice(0, idx);
               buffer = buffer.slice(idx + 2);
               if (block.trim()) processSSEBlock(block);
             }
-
             pump();
-          }).catch(err => {
-            console.error('Stream error:', err);
-            addLog('error', `${t('log_stream_error')}: ${err.message}`);
-            onFinish();
-          });
+          }).catch(err => { addLog('error', `${t('log_stream_error')}: ${err.message}`); onFinish(); });
         }
         pump();
-
-      }).catch(err => {
-        console.error('Fetch error:', err);
-        addLog('error', `${t('log_connect_error')}: ${err.message}`);
-        onFinish();
-      });
+      }).catch(err => { addLog('error', `${t('log_connect_error')}: ${err.message}`); onFinish(); });
     }
 
     function processSSEBlock(block) {
-      let eventType = 'message';
-      let data = '';
-
+      let eventType = 'message', data = '';
       for (const line of block.split('\n')) {
-        if (line.startsWith('event:')) {
-          eventType = line.slice(6).trim();
-        } else if (line.startsWith('data:')) {
-          data += line.slice(5).trim();
-        }
+        if (line.startsWith('event:')) eventType = line.slice(6).trim();
+        else if (line.startsWith('data:')) data += line.slice(5).trim();
       }
-
       if (!data) return;
-
       let payload;
-      try { payload = JSON.parse(data); } catch (e) { return; }
-
+      try { payload = JSON.parse(data); } catch(e) { return; }
       switch (eventType) {
-        case 'status':
-          document.getElementById('statusText').textContent = payload.message;
-          addLog('status', payload.message);
-          break;
-        case 'task':
-          // skip
-          break;
-        case 'tool_start':
-          resetToolStreaming();
-          addLog('tool-start', `🔧 ${payload.tool}  →  ${payload.input}`);
-          break;
-        case 'tool_end':
-          resetToolStreaming();
-          addLog('tool-end', payload.output);
-          break;
-        case 'thinking':
-          appendThinking(payload.content);
-          break;
-        case 'tool_streaming':
-          appendToolStreaming(payload.tool, payload.content);
-          break;
-        case 'complete':
-          addLog('complete', payload.message);
-          showResult(payload);
-          break;
-        case 'error':
-          addLog('error', `❌ ${payload.message}`);
-          break;
+        case 'status': document.getElementById('statusText').textContent = payload.message; addLog('status', payload.message); break;
+        case 'task': break;
+        case 'tool_start': resetToolStreaming(); addLog('tool-start', `🔧 ${payload.tool}  →  ${payload.input}`); break;
+        case 'tool_end': resetToolStreaming(); addLog('tool-end', payload.output); break;
+        case 'thinking': appendThinking(payload.content); break;
+        case 'tool_streaming': appendToolStreaming(payload.tool, payload.content); break;
+        case 'complete': addLog('complete', payload.message); showResult(payload); break;
+        case 'error': addLog('error', `❌ ${payload.message}`); break;
       }
     }
 
@@ -1352,94 +1210,69 @@
         log.appendChild(lastThinkingEl);
       }
       lastThinkingEl.textContent += text;
-      // Break on tool call
       if (text.includes('\n')) lastThinkingEl = null;
       log.scrollTop = log.scrollHeight;
     }
 
-    // ─── Tool Streaming (write_file 等大量生成时的实时进度) ───
-    let toolStreamingEl = null;
-    let toolStreamingContent = null;
-    let toolStreamingStats = null;
-    let toolStreamingCharCount = 0;
-    let toolStreamingStartTime = 0;
+    let toolStreamingEl = null, toolStreamingContent = null, toolStreamingStats = null;
+    let toolStreamingCharCount = 0, toolStreamingStartTime = 0;
 
     function appendToolStreaming(toolName, text) {
       const log = document.getElementById('agentLog');
-
-      // 新建流式输出块
       if (!toolStreamingEl) {
         toolStreamingEl = document.createElement('div');
         toolStreamingEl.className = 'log-entry log-tool-streaming';
-
         const header = document.createElement('div');
         header.className = 'streaming-header';
         header.innerHTML = `<span class="pulse"></span> ${toolName || 'write_file'} ${currentLang === 'zh' ? '生成中...' : 'generating...'}`;
         toolStreamingEl.appendChild(header);
-
         toolStreamingContent = document.createElement('div');
-        toolStreamingContent.style.cssText = 'max-height:150px; overflow-y:auto;';
+        toolStreamingContent.style.cssText = 'max-height:140px; overflow-y:auto;';
         toolStreamingEl.appendChild(toolStreamingContent);
-
         toolStreamingStats = document.createElement('div');
         toolStreamingStats.className = 'streaming-stats';
         toolStreamingEl.appendChild(toolStreamingStats);
-
         log.appendChild(toolStreamingEl);
         toolStreamingCharCount = 0;
         toolStreamingStartTime = Date.now();
         lastThinkingEl = null;
       }
-
       toolStreamingCharCount += text.length;
       toolStreamingContent.textContent += text;
-
-      // 更新统计
-      const elapsed = ((Date.now() - toolStreamingStartTime) / 1000).toFixed(1);
-      toolStreamingStats.textContent = `${toolStreamingCharCount.toLocaleString()} chars · ${elapsed}s`;
-
-      // 自动滚动到底部
+      toolStreamingStats.textContent = `${toolStreamingCharCount.toLocaleString()} chars · ${((Date.now()-toolStreamingStartTime)/1000).toFixed(1)}s`;
       toolStreamingContent.scrollTop = toolStreamingContent.scrollHeight;
       log.scrollTop = log.scrollHeight;
     }
 
     function resetToolStreaming() {
       if (toolStreamingEl) {
-        // 移除脉冲动画，标记为完成
         const header = toolStreamingEl.querySelector('.streaming-header');
         if (header) {
           const pulse = header.querySelector('.pulse');
           if (pulse) pulse.remove();
-          header.innerHTML = `✅ ${header.textContent.replace('生成中...', '').replace('generating...', '').trim()} ${currentLang === 'zh' ? '完成' : 'done'}`;
+          header.innerHTML = `✅ ${header.textContent.replace('生成中...','').replace('generating...','').trim()} ${currentLang === 'zh' ? '完成' : 'done'}`;
         }
       }
-      toolStreamingEl = null;
-      toolStreamingContent = null;
-      toolStreamingStats = null;
+      toolStreamingEl = toolStreamingContent = toolStreamingStats = null;
     }
 
     function showResult(payload) {
-      const card = document.getElementById('resultCard');
-      card.classList.add('active');
+      document.getElementById('resultCard').classList.add('active');
       document.getElementById('resultSub').textContent =
-        currentLang === 'zh'
-          ? `论文 ${payload.arxiv_id} 解读完成`
-          : `Paper ${payload.arxiv_id} interpretation complete`;
+        currentLang === 'zh' ? `论文 ${payload.arxiv_id} 解读完成` : `Paper ${payload.arxiv_id} interpretation complete`;
       if (payload.has_pdf && payload.pdf_url) {
         const btn = document.getElementById('downloadBtn');
         btn.href = payload.pdf_url;
         btn.style.display = 'inline-flex';
-      } else {
-        document.getElementById('downloadBtn').style.display = 'none';
-      }
-      loadPapers(); // refresh list
+      } else { document.getElementById('downloadBtn').style.display = 'none'; }
+      loadPapers();
     }
 
     function onFinish() {
       running = false;
       const btn = document.getElementById('runBtn');
       btn.disabled = false;
-      btn.innerHTML = `<span>🚀</span><span>${t('btn_run')}</span>`;
+      btn.innerHTML = `🚀 <span>${t('btn_run')}</span>`;
       document.getElementById('statusBar').classList.remove('active');
       lastThinkingEl = null;
       resetToolStreaming();

@@ -24,6 +24,7 @@ pyyaml>=6.0
 # Utilities
 rich>=13.0.0          # Beautiful terminal output
 Pillow>=10.0.0        # Image dimension detection
+pymupdf>=1.24.0       # PDF thumbnail generation
 
 # Testing
 pytest>=8.0.0

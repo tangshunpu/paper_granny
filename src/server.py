@@ -194,9 +194,52 @@ async def download_pdf(arxiv_id: str):
         return FileResponse(
             str(latest),
             media_type="application/pdf",
-            filename=latest.name,
+            headers={"Content-Disposition": f"inline; filename=\"{latest.name}\""},
         )
     return JSONResponse({"error": "PDF not found"}, status_code=404)
+
+
+@app.get("/api/papers/{arxiv_id}/thumbnail")
+async def pdf_thumbnail(arxiv_id: str):
+    """返回 PDF 第一页的缩略图 (PNG)。需要 pymupdf (fitz)。"""
+    papers_dir = _project_root() / "papers" / arxiv_id
+    pdf_files = sorted(papers_dir.glob("*.pdf"), key=lambda p: p.stat().st_mtime, reverse=True)
+    if not pdf_files:
+        return JSONResponse({"error": "PDF not found"}, status_code=404)
+
+    thumb_path = papers_dir / ".thumbnail.png"
+    latest_pdf = pdf_files[0]
+
+    # 使用缓存：如果缩略图比 PDF 新则直接返回
+    if thumb_path.exists() and thumb_path.stat().st_mtime >= latest_pdf.stat().st_mtime:
+        return FileResponse(str(thumb_path), media_type="image/png")
+
+    try:
+        import fitz  # pymupdf
+        doc = fitz.open(str(latest_pdf))
+        page = doc[0]
+        # 缩放到 ~300px 宽
+        zoom = 300 / page.rect.width
+        mat = fitz.Matrix(zoom, zoom)
+        pix = page.get_pixmap(matrix=mat)
+        pix.save(str(thumb_path))
+        doc.close()
+        return FileResponse(str(thumb_path), media_type="image/png")
+    except ImportError:
+        return JSONResponse({"error": "pymupdf not installed"}, status_code=501)
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+@app.delete("/api/papers/{arxiv_id}")
+async def delete_paper(arxiv_id: str):
+    """删除指定论文的整个目录（包括源码、报告、PDF）"""
+    import shutil
+    papers_dir = _project_root() / "papers" / arxiv_id
+    if not papers_dir.exists():
+        return JSONResponse({"error": "Not found"}, status_code=404)
+    shutil.rmtree(papers_dir)
+    return {"ok": True, "arxiv_id": arxiv_id}
 
 
 @app.post("/api/run")
