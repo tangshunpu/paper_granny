@@ -50,13 +50,13 @@ Scholar Granny 是一个 AI Agent，能够自动下载 arXiv 论文 LaTeX 源码
 **一条命令完成全部安装**（Python、XeLaTeX、中文字体、依赖包），并注册为后台常驻服务：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tangshunpu/paper_granny/main/deploy.sh | bash
+curl -fsSL https://github.com/tangshunpu/paper_granny/releases/latest/download/deploy.sh | bash
 ```
 
 或使用 `wget`：
 
 ```bash
-wget -qO- https://raw.githubusercontent.com/tangshunpu/paper_granny/main/deploy.sh | bash
+wget -qO- https://github.com/tangshunpu/paper_granny/releases/latest/download/deploy.sh | bash
 ```
 
 脚本自动检测平台（macOS / Ubuntu / Debian / CentOS / Fedora / Arch），安装所有依赖，并注册 **systemd 服务**（Linux）或 **launchd 代理**（macOS）后台常驻运行。
