@@ -76,9 +76,21 @@ async def get_templates():
     return {"templates": templates}
 
 
+def _mask_api_key(key: str) -> str:
+    """将 API key 脱敏，只保留前3位和后4位。"""
+    if not key or len(key) <= 8:
+        return "****" if key else ""
+    return key[:3] + "..." + key[-4:]
+
+
+def _is_masked(value: str) -> bool:
+    """判断值是否是脱敏后的 key（含 '...' 且长度较短）。"""
+    return bool(value) and "..." in value and len(value) <= 11
+
+
 @app.get("/api/config")
 async def get_config():
-    """获取当前配置，包含所有已保存的 provider 设置"""
+    """获取当前配置，包含所有已保存的 provider 设置（api_key 脱敏返回）"""
     import yaml as _yaml
     config = load_config()
     project_root = Path(__file__).parent.parent
@@ -93,12 +105,20 @@ async def get_config():
         except Exception:
             pass
 
+    # 脱敏所有 api_key
+    safe_providers = {}
+    for name, pcfg in providers_cfg.items():
+        safe_pcfg = dict(pcfg)
+        if "api_key" in safe_pcfg:
+            safe_pcfg["api_key"] = _mask_api_key(safe_pcfg["api_key"])
+        safe_providers[name] = safe_pcfg
+
     return {
         "provider": config.llm.provider,
         "model": config.llm.model,
         "temperature": config.llm.temperature,
         "template": config.template.default,
-        "providers": providers_cfg,   # {openai: {api_key, model, base_url}, ...}
+        "providers": safe_providers,
     }
 
 
@@ -135,7 +155,8 @@ async def save_config(request: Request):
     if provider:
         providers = existing.get("providers", {})
         p_cfg = providers.get(provider, {})
-        if body.get("api_key"):
+        if body.get("api_key") and not _is_masked(body["api_key"]):
+            # 只有传入完整新 key 时才更新，脱敏值不覆盖原始 key
             p_cfg["api_key"] = body["api_key"]
         if body.get("model"):
             p_cfg["model"] = body["model"]
