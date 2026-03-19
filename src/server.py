@@ -8,6 +8,7 @@ import asyncio
 import json
 import logging
 import re
+import shutil
 import time
 import uuid
 from pathlib import Path
@@ -231,6 +232,21 @@ async def run_agent_sse(request: Request):
 
     async def event_generator():
         try:
+            # Step 0: 检查 xelatex 是否已安装
+            if not shutil.which("xelatex"):
+                yield _sse_event("error", {
+                    "message": (
+                        "❌ LaTeX (xelatex) not found!\n\n"
+                        "Paper Granny requires XeLaTeX to compile PDF reports.\n\n"
+                        "Please install LaTeX first:\n"
+                        "  • macOS: install MacTeX (https://tug.org/mactex/)\n"
+                        "  • Linux: sudo apt install texlive-xetex  (or texlive-full)\n"
+                        "  • Windows: install TeX Live (https://tug.org/texlive/)\n\n"
+                        "Then restart the server and try again."
+                    )
+                })
+                return
+
             # Step 1: 创建 LLM
             logger.info("[SSE] Step 1: 创建 LLM %s/%s", provider, model)
             yield _sse_event("status", {"step": "init", "message": f"🤖 初始化 LLM: {provider}/{model}"})
