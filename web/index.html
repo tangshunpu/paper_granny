@@ -686,7 +686,11 @@
 
         <div class="form-group">
           <label data-i18n="label_model">模型</label>
-          <input type="text" id="model" placeholder="gpt-4o">
+          <!-- shown only when provider has presets -->
+          <select id="modelPreset" style="display:none" onchange="onModelPresetChange()">
+          </select>
+          <!-- shown for free-text providers, or when 'custom' chosen in select -->
+          <input type="text" id="model" placeholder="gpt-5.4-mini" autocomplete="off" style="margin-top:0">
         </div>
 
         <div class="form-group">
@@ -925,7 +929,7 @@
 
     // ─── Provider Presets ─────────────────────
     const PROVIDER_DEFAULTS = {
-      openai:             { model: 'gpt-4o',                  basePlaceholder: 'https://api.openai.com/v1' },
+      openai:             { model: 'gpt-5.4-mini',            basePlaceholder: 'https://api.openai.com/v1', suggestions: ['gpt-5.4', 'gpt-5.4-mini', 'gpt-5.4-nano'] },
       claude:             { model: 'claude-sonnet-4-20250514', basePlaceholder: 'https://api.anthropic.com' },
       gemini:             { model: 'gemini-2.5-flash',         basePlaceholder: '' },
       openrouter:         { model: 'google/gemini-2.5-flash',  basePlaceholder: 'https://openrouter.ai/api/v1' },
@@ -1109,24 +1113,81 @@
     }
 
     // ─── Event Handlers ───────────────────────
+    function onModelPresetChange() {
+      const sel = document.getElementById('modelPreset');
+      const input = document.getElementById('model');
+      if (sel.value === '__custom__') {
+        input.style.display = '';   // show text input below the select
+        input.value = '';
+        input.focus();
+      } else {
+        input.style.display = 'none';
+        input.value = sel.value;
+      }
+      saveSettings();
+    }
+
     function onProviderChange() {
       const provider = document.getElementById('provider').value;
       const modelInput = document.getElementById('model');
+      const modelSelect = document.getElementById('modelPreset');
 
       const cfg = PROVIDER_DEFAULTS[provider] || PROVIDER_DEFAULTS.openai;
       document.getElementById('baseUrl').placeholder = cfg.basePlaceholder;
 
+      // Rebuild preset select options
+      const suggestions = cfg.suggestions || [];
+      if (suggestions.length > 0) {
+        // Build <select> options
+        modelSelect.innerHTML = '';
+        suggestions.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m;
+          opt.textContent = m;
+          modelSelect.appendChild(opt);
+        });
+        const customOpt = document.createElement('option');
+        customOpt.value = '__custom__';
+        customOpt.textContent = 'Custom…';
+        modelSelect.appendChild(customOpt);
+        modelSelect.style.display = '';
+        // default: hide free-text input, sync value from select
+        modelInput.style.display = 'none';
+      } else {
+        modelSelect.style.display = 'none';
+        modelInput.style.display = '';
+      }
+
       // 从服务端已保存的 provider 配置中自动填入 api_key / model / base_url
       const saved = savedProviders[provider];
+      let targetModel = '';
+      if (saved && saved.model) {
+        targetModel = saved.model;
+      } else {
+        targetModel = cfg.model;
+      }
+
+      // Apply targetModel
+      if (suggestions.length > 0) {
+        const match = suggestions.find(m => m === targetModel);
+        if (match) {
+          modelSelect.value = match;
+          modelInput.style.display = 'none';
+          modelInput.value = match;
+        } else {
+          // custom value
+          modelSelect.value = '__custom__';
+          modelInput.style.display = '';
+          modelInput.value = targetModel;
+        }
+      } else {
+        modelInput.value = targetModel;
+      }
+
       if (saved) {
-        if (saved.model) modelInput.value = saved.model;
-        else if (!modelInput.value || Object.values(PROVIDER_DEFAULTS).some(d => d.model === modelInput.value))
-          modelInput.value = cfg.model;
         document.getElementById('apiKey').value = saved.api_key || '';
         document.getElementById('baseUrl').value = saved.base_url || '';
       } else {
-        // 没有保存过该 provider —— 始终填入该 provider 的默认值，清空 key/url
-        modelInput.value = cfg.model;
         document.getElementById('apiKey').value = '';
         document.getElementById('baseUrl').value = '';
       }
