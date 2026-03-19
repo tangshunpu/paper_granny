@@ -418,11 +418,86 @@
       border: 1px solid var(--yellow-border);
     }
 
+    /* Search box */
+    .papers-search {
+      position: relative;
+      flex: 1;
+      max-width: 320px;
+    }
+
+    .papers-search input {
+      width: 100%;
+      padding: 6px 12px 6px 30px;
+      font-size: .8rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .papers-search input:focus {
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 3px rgba(255, 157, 0, 0.12);
+    }
+
+    .papers-search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ink-4);
+      font-size: .78rem;
+      pointer-events: none;
+    }
+
+    .papers-search-clear {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--ink-4);
+      cursor: pointer;
+      font-size: .72rem;
+      padding: 2px 4px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .papers-search-clear:hover {
+      background: var(--bg-hover);
+      color: var(--ink-3);
+    }
+
+    .search-highlight {
+      background: rgba(255, 157, 0, 0.2);
+      border-radius: 2px;
+      padding: 0 1px;
+    }
+
+    .papers-no-match {
+      text-align: center;
+      padding: 24px 16px;
+      color: var(--ink-4);
+      font-size: .85rem;
+      border: 1px dashed var(--border);
+      border-radius: var(--r);
+      background: var(--bg);
+    }
+
     /* Sort controls */
     .sort-controls {
       display: flex;
       align-items: center;
       gap: 4px;
+    }
+
+    .sort-label {
+      font-size: .72rem;
+      color: var(--ink-4);
+      margin-right: 2px;
+      white-space: nowrap;
     }
 
     .sort-btn {
@@ -437,6 +512,9 @@
       cursor: pointer;
       transition: all .15s;
       white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
     }
 
     .sort-btn:hover {
@@ -448,6 +526,16 @@
       background: var(--yellow-bg);
       border-color: var(--yellow-border);
       color: var(--yellow-hover);
+    }
+
+    .sort-btn .sort-arrow {
+      font-size: .6rem;
+      opacity: 0;
+      transition: opacity .15s;
+    }
+
+    .sort-btn.active .sort-arrow {
+      opacity: 1;
     }
 
     /* Individual paper card */
@@ -1009,13 +1097,20 @@
               <div class="papers-title">📚 <span data-i18n="title_history">已生成的报告</span></div>
               <div class="papers-count" id="papersCount" style="display:none"></div>
             </div>
+            <div class="papers-search" id="papersSearch" style="display:none">
+              <span class="papers-search-icon">🔍</span>
+              <input type="text" id="papersSearchInput" data-i18n-placeholder="search_placeholder"
+                placeholder="搜索标题、作者、ID..." oninput="onSearchInput()">
+              <button class="papers-search-clear" id="papersSearchClear" onclick="clearSearch()">✕</button>
+            </div>
             <div class="sort-controls" id="sortControls" style="display:none">
-              <button class="sort-btn active" data-sort="generated" onclick="sortPapers('generated')"
-                data-i18n="sort_generated">生成时间</button>
-              <button class="sort-btn" data-sort="published" onclick="sortPapers('published')"
-                data-i18n="sort_published">发布时间</button>
-              <button class="sort-btn" data-sort="title" onclick="sortPapers('title')"
-                data-i18n="sort_title">标题</button>
+              <span class="sort-label" data-i18n="sort_label">排序:</span>
+              <button class="sort-btn active" data-sort="generated" onclick="sortPapers('generated')">
+                <span data-i18n="sort_generated">生成时间</span><span class="sort-arrow">↓</span></button>
+              <button class="sort-btn" data-sort="published" onclick="sortPapers('published')">
+                <span data-i18n="sort_published">发布时间</span><span class="sort-arrow">↓</span></button>
+              <button class="sort-btn" data-sort="title" onclick="sortPapers('title')">
+                <span data-i18n="sort_title">标题</span><span class="sort-arrow">↓</span></button>
             </div>
           </div>
           <div id="papersList"></div>
@@ -1161,10 +1256,13 @@
         provider_ollama: 'Ollama (本地)',
         shelf_count: '{n} 份',
         confirm_delete: '确定删除论文 {id} 的所有文件？',
+        sort_label: '排序:',
         sort_generated: '生成时间',
         sort_published: '发布时间',
         sort_title: '标题',
         untitled: '（无标题）',
+        search_placeholder: '搜索标题、作者、ID...',
+        search_no_match: '没有找到匹配的报告',
       },
       en: {
         page_title: '📄 Paper Interpretations',
@@ -1210,10 +1308,13 @@
         provider_ollama: 'Ollama (Local)',
         shelf_count: '{n}',
         confirm_delete: 'Delete all files for paper {id}?',
+        sort_label: 'Sort:',
         sort_generated: 'Generated',
         sort_published: 'Published',
         sort_title: 'Title',
         untitled: '(Untitled)',
+        search_placeholder: 'Search title, author, ID...',
+        search_no_match: 'No matching reports found',
       },
     };
 
@@ -1355,6 +1456,7 @@
     // ─── Papers List (HF-style) ──────────────
     window._cachedPapers = [];
     let currentSort = 'generated';
+    let sortAsc = false; // false = descending (newest first), true = ascending
 
     async function loadPapers() {
       try {
@@ -1368,23 +1470,32 @@
     }
 
     function sortPapers(mode) {
-      currentSort = mode;
-      // Update button active states
+      if (currentSort === mode) {
+        sortAsc = !sortAsc; // toggle direction
+      } else {
+        currentSort = mode;
+        sortAsc = mode === 'title'; // title defaults ascending, dates default descending
+      }
+      // Update button active states and arrow direction
       document.querySelectorAll('.sort-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.sort === mode);
+        const isActive = btn.dataset.sort === mode;
+        btn.classList.toggle('active', isActive);
+        const arrow = btn.querySelector('.sort-arrow');
+        if (arrow) arrow.textContent = sortAsc ? '↑' : '↓';
       });
       renderPapers(window._cachedPapers);
     }
 
     function getSorted(papers) {
       const list = [...papers];
+      const dir = sortAsc ? 1 : -1;
       switch (currentSort) {
         case 'generated':
-          return list.sort((a, b) => (b.generated || '').localeCompare(a.generated || ''));
+          return list.sort((a, b) => dir * (a.generated || '').localeCompare(b.generated || ''));
         case 'published':
-          return list.sort((a, b) => (b.published || '').localeCompare(a.published || ''));
+          return list.sort((a, b) => dir * (a.published || '').localeCompare(b.published || ''));
         case 'title':
-          return list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+          return list.sort((a, b) => dir * (a.title || '').localeCompare(b.title || ''));
         default:
           return list;
       }
@@ -1394,28 +1505,136 @@
       return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    // ─── Fuzzy Search ──────────────────────────
+    let searchQuery = '';
+
+    function onSearchInput() {
+      const input = document.getElementById('papersSearchInput');
+      const clearBtn = document.getElementById('papersSearchClear');
+      searchQuery = input.value.trim();
+      clearBtn.style.display = searchQuery ? 'block' : 'none';
+      renderPapers(window._cachedPapers);
+    }
+
+    function clearSearch() {
+      document.getElementById('papersSearchInput').value = '';
+      searchQuery = '';
+      document.getElementById('papersSearchClear').style.display = 'none';
+      renderPapers(window._cachedPapers);
+    }
+
+    /**
+     * Fuzzy match: checks if all characters in the query appear in order within the text.
+     * Returns { match: bool, score: number, indices: number[] }.
+     * Lower score = better match (consecutive chars and early positions are rewarded).
+     */
+    function fuzzyMatch(text, query) {
+      const textLower = text.toLowerCase();
+      const queryLower = query.toLowerCase();
+      const indices = [];
+      let ti = 0;
+      for (let qi = 0; qi < queryLower.length; qi++) {
+        const found = textLower.indexOf(queryLower[qi], ti);
+        if (found === -1) return { match: false, score: Infinity, indices: [] };
+        indices.push(found);
+        ti = found + 1;
+      }
+      // Score: penalize gaps between matched chars, reward early matches
+      let score = indices[0] || 0; // earlier start = better
+      for (let i = 1; i < indices.length; i++) {
+        score += (indices[i] - indices[i - 1] - 1); // gap penalty
+      }
+      return { match: true, score, indices };
+    }
+
+    /**
+     * Try fuzzy match across multiple fields, return best result.
+     */
+    function fuzzyMatchPaper(paper, query) {
+      const fields = [
+        { text: paper.title || '', weight: 0 },
+        { text: paper.arxiv_id || '', weight: 0 },
+        { text: paper.authors || '', weight: 2 },
+        { text: paper.abstract || '', weight: 5 },
+      ];
+      let bestScore = Infinity;
+      let bestField = null;
+      let bestIndices = [];
+      for (const f of fields) {
+        const r = fuzzyMatch(f.text, query);
+        if (r.match) {
+          const adjusted = r.score + f.weight;
+          if (adjusted < bestScore) {
+            bestScore = adjusted;
+            bestField = f.text;
+            bestIndices = r.indices;
+          }
+        }
+      }
+      return { match: bestField !== null, score: bestScore, field: bestField, indices: bestIndices };
+    }
+
+    /**
+     * Highlight matched characters in text (using pre-computed indices from fuzzyMatch).
+     */
+    function highlightFuzzy(text, query) {
+      const r = fuzzyMatch(text, query);
+      if (!r.match) return escHtml(text);
+      const chars = [...text];
+      const escaped = chars.map(c => escHtml(c));
+      // Mark matched indices (in reverse to not shift positions)
+      for (let i = r.indices.length - 1; i >= 0; i--) {
+        const idx = r.indices[i];
+        escaped[idx] = `<span class="search-highlight">${escaped[idx]}</span>`;
+      }
+      return escaped.join('');
+    }
+
     function renderPapers(papers) {
       const listEl = document.getElementById('papersList');
       const countEl = document.getElementById('papersCount');
       const sortEl = document.getElementById('sortControls');
+      const searchEl = document.getElementById('papersSearch');
 
       if (!papers.length) {
         listEl.innerHTML = `<div class="papers-empty"><div class="papers-empty-icon">📚</div>${t('no_reports')}</div>`;
         countEl.style.display = 'none';
         sortEl.style.display = 'none';
+        searchEl.style.display = 'none';
         return;
       }
 
       countEl.textContent = t('shelf_count').replace('{n}', papers.length);
       countEl.style.display = '';
       sortEl.style.display = 'flex';
+      searchEl.style.display = papers.length >= 2 ? '' : 'none';
 
-      const sorted = getSorted(papers);
+      // Filter by search query
+      let filtered;
+      if (searchQuery) {
+        filtered = papers
+          .map(p => ({ paper: p, ...fuzzyMatchPaper(p, searchQuery) }))
+          .filter(r => r.match)
+          .sort((a, b) => a.score - b.score)
+          .map(r => r.paper);
+      } else {
+        filtered = getSorted(papers);
+      }
 
-      listEl.innerHTML = sorted.map(p => {
+      if (searchQuery && !filtered.length) {
+        listEl.innerHTML = `<div class="papers-no-match">🔍 ${t('search_no_match')}</div>`;
+        return;
+      }
+
+      const q = searchQuery; // capture for highlight
+
+      listEl.innerHTML = filtered.map(p => {
         const title = p.title || t('untitled');
         const hasAbstract = p.abstract && p.abstract.length > 0;
-        const abstractText = hasAbstract ? escHtml(p.abstract) : '';
+        const displayTitle = q ? highlightFuzzy(title, q) : escHtml(title);
+        const displayAuthors = (q && p.authors) ? highlightFuzzy(p.authors, q) : escHtml(p.authors || '');
+        const displayAbstract = (q && hasAbstract) ? highlightFuzzy(p.abstract, q) : escHtml(p.abstract || '');
+        const displayId = q ? highlightFuzzy(p.arxiv_id, q) : p.arxiv_id;
         const arxivUrl = `https://arxiv.org/abs/${p.arxiv_id}`;
         const thumbUrl = `/api/papers/${p.arxiv_id}/thumbnail`;
 
@@ -1428,15 +1647,15 @@
             <div class="paper-thumb-placeholder" style="display:none">📄</div>
           </div>
           <div class="paper-info">
-            <a class="paper-title-link" href="${arxivUrl}" target="_blank">${escHtml(title)}</a>
+            <a class="paper-title-link" href="${arxivUrl}" target="_blank">${displayTitle}</a>
             <div class="paper-meta-row">
-              <span class="paper-arxiv-id">${p.arxiv_id}</span>
+              <span class="paper-arxiv-id">${displayId}</span>
               ${p.has_pdf ? `<span class="sep">·</span><span class="paper-pdf-badge">PDF</span>` : ''}
-              ${p.authors ? `<span class="sep">·</span><span>${escHtml(p.authors)}</span>` : ''}
+              ${p.authors ? `<span class="sep">·</span><span>${displayAuthors}</span>` : ''}
               ${p.published ? `<span class="sep">·</span><span>${p.published}</span>` : ''}
               ${p.generated ? `<span class="sep">·</span><span>⏱ ${p.generated}</span>` : ''}
             </div>
-            ${hasAbstract ? `<div class="paper-abstract">${abstractText}</div>` : ''}
+            ${hasAbstract ? `<div class="paper-abstract">${displayAbstract}</div>` : ''}
             <div class="paper-actions">
               <a class="paper-action-btn" href="${arxivUrl}" target="_blank">📄 ${t('read_original')}</a>
               ${p.has_pdf

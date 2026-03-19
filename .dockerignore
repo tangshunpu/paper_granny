@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.git/
+.gitignore
+papers/
+*.pdf
+.env
+config.local.yaml
+.claude/
+.mypy_cache/
+.pytest_cache/
+docs/
+tests/
+example/
+*.md
+!requirements.txt

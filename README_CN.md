@@ -45,7 +45,46 @@ Scholar Granny 是一个 AI Agent，能够自动下载 arXiv 论文 LaTeX 源码
 
 ## 🚀 快速开始
 
-### 📦 安装
+### ⚡ 一键部署
+
+**一条命令完成全部安装**（Python、XeLaTeX、中文字体、依赖包），并注册为后台常驻服务：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/tangshunpu/paper_granny/main/deploy.sh | bash
+```
+
+或使用 `wget`：
+
+```bash
+wget -qO- https://raw.githubusercontent.com/tangshunpu/paper_granny/main/deploy.sh | bash
+```
+
+脚本自动检测平台（macOS / Ubuntu / Debian / CentOS / Fedora / Arch），安装所有依赖，并注册 **systemd 服务**（Linux）或 **launchd 代理**（macOS）后台常驻运行。
+
+部署完成后访问 `http://localhost:8000` 即可使用。
+
+> **自定义安装路径：** `INSTALL_DIR=/opt/paper_granny bash deploy.sh`
+> **自定义端口：** `PORT=9000 bash deploy.sh`
+
+管理服务（Linux）：
+```bash
+sudo systemctl status paper-granny     # 查看状态
+sudo systemctl restart paper-granny    # 重启
+journalctl -u paper-granny -f          # 查看日志
+```
+
+### 🐳 Docker 部署
+
+```bash
+git clone https://github.com/tangshunpu/paper_granny.git && cd paper_granny
+cp .env.example .env   # 编辑 .env 填入 API Key
+docker compose up -d
+# 访问 http://localhost:8000
+```
+
+Docker 镜像已预装 TeX Live + XeLaTeX + 中文字体，`papers/` 目录挂载持久化。
+
+### 📦 手动安装
 
 ```bash
 git clone https://github.com/tangshunpu/paper_granny.git

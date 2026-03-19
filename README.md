@@ -57,7 +57,39 @@ Paper Granny is an AI Agent that automatically downloads arXiv paper LaTeX sourc
 
 ## 🚀 Quick Start
 
-### 📦 Installation
+### ⚡ One-Click Deployment
+
+**One command to install everything** (Python, XeLaTeX, Chinese fonts, dependencies) and start as a background service:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/tangshunpu/paper_granny/main/deploy.sh | bash
+```
+
+or with `wget`:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/tangshunpu/paper_granny/main/deploy.sh | bash
+```
+
+The script auto-detects your platform (macOS / Ubuntu / Debian / CentOS / Fedora / Arch), installs all dependencies, and registers a **systemd service** (Linux) or **launchd agent** (macOS) for background persistence.
+
+After deployment, visit `http://localhost:8000` to start using it.
+
+> **Custom install path:** `INSTALL_DIR=/opt/paper_granny bash deploy.sh`
+> **Custom port:** `PORT=9000 bash deploy.sh`
+
+### 🐳 Docker Deployment
+
+```bash
+git clone https://github.com/tangshunpu/paper_granny.git && cd paper_granny
+cp .env.example .env   # Edit .env to add your API key
+docker compose up -d
+# Visit http://localhost:8000
+```
+
+The Docker image comes with TeX Live + XeLaTeX + Chinese fonts pre-installed. The `papers/` directory is mounted for persistent output.
+
+### 📦 Manual Installation
 
 ```bash
 git clone https://github.com/tangshunpu/paper_granny.git
