@@ -18,18 +18,30 @@ Scholar Granny 是一个 AI Agent，能够自动下载 arXiv 论文 LaTeX 源码
 
 
 ## 📑 模型推荐
-| 提供方 | 模型 | 价格 | 推荐指数 | 示例 |
-|--------|------|:----:|:--------:|------|
-| OpenAI | `gpt-5.4` | 💰💰💰 | ⭐⭐⭐⭐⭐ | [Gated Attention for Large Language Models: Nonlinearity, Sparsity, and Attention-Sink-Free](example/GA.pdf) |
-| 阿里云百炼 | `qwen3.5-plus` | 💰 | ⭐⭐⭐⭐ | [Language Models are Few-Shot Learners](example/Language_Models_are_Few-Shot_Learners.pdf) |
-| 阿里云百炼 | `glm-5` | 💰 | ⭐⭐⭐⭐ | [Deep Residual Learning for Image Recognition（中文）](example/Deep_Residual_Learning_for_Image_Recognition.pdf) |
-| Google | `gemini-3-flash-preview` | 🆓 | ⭐⭐⭐ | [Denoising Diffusion Probabilistic Models](example/ddpm.pdf) |
-| 本地部署 | `qwen3.5-35b-a3b-4bit` | 🆓 | ⭐⭐⭐ | [ReAct: Synergizing Reasoning and Acting in Language Models](example/ReAct.pdf) |
-| OpenAI | `gpt-5-mini` | 💰 | ⭐ | [Attention Is All You Need](example/Attention_Is_All_You_Need.pdf) |
-| OpenAI | `gpt-5.3-codex` | 💰💰💰 | ❌ | Bug |
-| OpenRouter | `claude-opus-4.6` | 💰💰💰💰💰💰 | ❌ | Bug |
+
+| 提供方       | 模型                       | 价格         | 推荐指数   |
+|--------------|---------------------------|:------------:|:----------:|
+| OpenAI       | `gpt-5.4`                 | 💰💰💰      | ⭐⭐⭐⭐⭐ |
+| ↳            | `gpt-5-mini`              | 💰           | ⭐         |
+| ↳            | `gpt-5.3-codex`           | 💰💰💰      | ❌         |
+| 阿里云百炼   | `qwen3.5-plus`            | 💰           | ⭐⭐⭐⭐   |
+| ↳            | `glm-5`                   | 💰           | ⭐⭐⭐⭐   |
+| Google       | `gemini-3-flash-preview`  | 🆓           | ⭐⭐⭐     |
+| 本地部署     | `qwen3.5-35b-a3b-4bit`   | 🆓           | ⭐⭐⭐     |
+| OpenRouter   | `claude-opus-4.6`         | 💰💰💰💰💰💰 | ❌        |
 
 > 建议使用2026的新模型，如GPT-5.4、Claude 4.5、DeepSeek V3、Qwen 3.5, GLM-5等，这些模型在Agent任务上表现更加出色。之前的模型往往不能准确定位Latex编译错误
+
+## 📄 示例报告
+
+| 论文                                                        | 模型                      | PDF   |
+|-------------------------------------------------------------|--------------------------|-------|
+| Gated Attention for Large Language Models                   | `gpt-5.4`                | [PDF](example/GA.pdf) |
+| Language Models are Few-Shot Learners                       | `qwen3.5-plus`           | [PDF](example/Language_Models_are_Few-Shot_Learners.pdf) |
+| Deep Residual Learning for Image Recognition（中文）         | `glm-5`                  | [PDF](example/Deep_Residual_Learning_for_Image_Recognition.pdf) |
+| Denoising Diffusion Probabilistic Models                    | `gemini-3-flash-preview` | [PDF](example/ddpm.pdf) |
+| ReAct: Synergizing Reasoning and Acting in Language Models  | `qwen3.5-35b-a3b-4bit`  | [PDF](example/ReAct.pdf) |
+| Attention Is All You Need                                   | `gpt-5-mini`             | [PDF](example/Attention_Is_All_You_Need.pdf) |
 
 ## 🚀 快速开始
 

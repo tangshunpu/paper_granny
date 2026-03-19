@@ -77,14 +77,86 @@ async def get_templates():
 
 @app.get("/api/config")
 async def get_config():
-    """获取当前配置"""
+    """获取当前配置，包含所有已保存的 provider 设置"""
+    import yaml as _yaml
     config = load_config()
+    project_root = Path(__file__).parent.parent
+    local_config_path = project_root / "config.local.yaml"
+
+    # 读取 providers 字典（各 provider 独立存储的 api_key/model/base_url）
+    providers_cfg: dict = {}
+    if local_config_path.exists():
+        try:
+            raw = _yaml.safe_load(local_config_path.read_text(encoding="utf-8")) or {}
+            providers_cfg = raw.get("providers", {})
+        except Exception:
+            pass
+
     return {
         "provider": config.llm.provider,
         "model": config.llm.model,
         "temperature": config.llm.temperature,
         "template": config.template.default,
+        "providers": providers_cfg,   # {openai: {api_key, model, base_url}, ...}
     }
+
+
+@app.post("/api/config")
+async def save_config(request: Request):
+    """将 Web UI 当前 provider 的设置保存到 config.local.yaml（按 provider 分区存储）"""
+    import yaml as _yaml
+    body = await request.json()
+
+    project_root = Path(__file__).parent.parent
+    local_config_path = project_root / "config.local.yaml"
+
+    # 读取现有 local config
+    existing: dict = {}
+    if local_config_path.exists():
+        try:
+            existing = _yaml.safe_load(local_config_path.read_text(encoding="utf-8")) or {}
+        except Exception:
+            existing = {}
+
+    provider = body.get("provider", "")
+
+    # ── 更新 llm（全局活跃 provider/model/temperature）──
+    llm = existing.get("llm", {})
+    if provider:
+        llm["provider"] = provider
+    if body.get("model"):
+        llm["model"] = body["model"]
+    if body.get("temperature") is not None:
+        llm["temperature"] = float(body["temperature"])
+    existing["llm"] = llm
+
+    # ── 按 provider 分别存储 api_key / model / base_url ──
+    if provider:
+        providers = existing.get("providers", {})
+        p_cfg = providers.get(provider, {})
+        if body.get("api_key"):
+            p_cfg["api_key"] = body["api_key"]
+        if body.get("model"):
+            p_cfg["model"] = body["model"]
+        if body.get("base_url"):
+            p_cfg["base_url"] = body["base_url"]
+        elif "base_url" in p_cfg and not body.get("base_url"):
+            p_cfg.pop("base_url", None)
+        providers[provider] = p_cfg
+        existing["providers"] = providers
+
+    # ── 更新 template ──
+    if body.get("template"):
+        existing.setdefault("template", {})["default"] = body["template"]
+
+    try:
+        local_config_path.write_text(
+            _yaml.dump(existing, allow_unicode=True, default_flow_style=False),
+            encoding="utf-8",
+        )
+        return {"ok": True, "saved_to": str(local_config_path)}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
 
 
 @app.get("/api/providers")
@@ -113,14 +185,15 @@ async def list_papers():
 
 @app.get("/api/papers/{arxiv_id}/pdf")
 async def download_pdf(arxiv_id: str):
-    """下载生成的 PDF"""
+    """下载生成的 PDF（返回最新生成的文件）"""
     papers_dir = _project_root() / "papers" / arxiv_id
-    pdf_files = list(papers_dir.glob("*.pdf"))
+    pdf_files = sorted(papers_dir.glob("*.pdf"), key=lambda p: p.stat().st_mtime, reverse=True)
     if pdf_files:
+        latest = pdf_files[0]
         return FileResponse(
-            str(pdf_files[0]),
+            str(latest),
             media_type="application/pdf",
-            filename=pdf_files[0].name,
+            filename=latest.name,
         )
     return JSONResponse({"error": "PDF not found"}, status_code=404)
 
@@ -199,7 +272,8 @@ async def run_agent_sse(request: Request):
                 "6. 读取 report_writer 技能指南，学习报告写作规范\n"
                 "7. 生成完整的 LaTeX 解读报告 (使用模板的 preamble + 你的解读内容)\n"
                 "8. 使用 compile_pdf 编译 PDF\n"
-                "9. 报告最终结果\n"
+                "9. compile_pdf 成功后：直接输出一段纯文字总结（论文标题 + PDF路径），"
+                "不要再调用任何工具，不要用 run_shell echo 汇报——否则会无限循环。\n"
             )
 
             yield _sse_event("status", {"step": "running", "message": "🚀 Agent 开始工作..."})
@@ -341,7 +415,7 @@ def _extract_arxiv_id(url: str) -> str:
 def _find_pdf(arxiv_id: str) -> Optional[str]:
     papers_dir = _project_root() / "papers" / arxiv_id
     if papers_dir.exists():
-        pdfs = list(papers_dir.glob("*.pdf"))
+        pdfs = sorted(papers_dir.glob("*.pdf"), key=lambda p: p.stat().st_mtime, reverse=True)
         if pdfs:
             return str(pdfs[0])
     return None

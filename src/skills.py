@@ -86,10 +86,26 @@ def build_system_prompt(
 4. **自主决策**: 你决定阅读哪些文件、如何组织解读、何时写报告
 5. **模板一致**: 用 `read_template` 获取样式，严格使用模板定义的环境和命令
 
+## 终止规则（必须遵守）
+
+当 `compile_pdf` 成功返回「✅ 编译成功」后，你必须**立即停止调用任何工具**，
+直接输出一段纯文字总结，例如：
+
+```
+✅ 论文解读完成！
+- 论文：<论文标题>
+- PDF 报告：papers/<arxiv_id>/<arxiv_id>.pdf
+- 摘要：<一句话概括>
+```
+
+**严禁**使用 `run_shell echo` 汇报完成状态——这会导致 Agent 无限循环。
+**唯一正确的终止方式：直接输出文字，不调用任何工具。**
+
 ## 目录约定
 
 - 论文源码: `papers/{{arxiv_id}}/source/`
-- 解读报告: `papers/{{arxiv_id}}/report.tex`
+- LaTeX 源文件: `papers/{{arxiv_id}}/report.tex`
+- **最终报告（PDF）**: `papers/{{arxiv_id}}/{{arxiv_id}}.pdf`（由 compile_pdf 自动生成）
 - 图片从源码目录引用
 
 ## 系统环境

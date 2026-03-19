@@ -21,18 +21,39 @@ Paper Granny is an AI Agent that automatically downloads arXiv paper LaTeX sourc
 - 🔑 **Web-based API Key Configuration** — Configure API keys, select providers and models directly from the web UI — no need to edit config files or environment variables
 
 ## 📑 Model Recommendation
-| Provider | Model | Price | Rating | Example |
-|----------|------|:-----:|:------:|--------|
-| OpenAI | `gpt-5.4` | 💰💰💰 | ⭐⭐⭐⭐⭐ | [Gated Attention for Large Language Models: Nonlinearity, Sparsity, and Attention-Sink-Free](example/GA.pdf) |
-| DashScope | `qwen3.5-plus` | 💰 | ⭐⭐⭐⭐ | [Language Models are Few-Shot Learners](example/Language_Models_are_Few-Shot_Learners.pdf) |
-| DashScope | `glm-5` | 💰 | ⭐⭐⭐⭐ | [Deep Residual Learning for Image Recognition (Chinese)](example/Deep_Residual_Learning_for_Image_Recognition.pdf) |
-| Google | `gemini-3-flash-preview` | 🆓  | ⭐⭐⭐ | [Denoising Diffusion Probabilistic Models](example/ddpm.pdf) |
-| Local | `qwen3.5-35b-a3b-4bit` | 🆓 | ⭐⭐⭐ | [ReAct: Synergizing Reasoning and Acting in Language Models](example/ReAct.pdf) |
-| OpenAI | `gpt-5-mini` | 💰 | ⭐ | [Attention Is All You Need](example/Attention_Is_All_You_Need.pdf) |
-| OpenAI | `gpt-5.3-codex` | 💰💰💰 | ❌ | Bug |
-| OpenRouter | `claude-opus-4.6` | 💰💰💰💰💰💰 | ❌ | Bug |
 
-> We recommend using 2026 latest models such as GPT-5.4, Claude 4.5, DeepSeek V3, Qwen 3.5, GLM-5, etc. These models perform significantly better on Agent tasks. Older models often fail to accurately locate LaTeX compilation errors.
+| Rec | Provider   | Model                    | Doc | Code | Price |
+|-----|------------|--------------------------|-----|------|-------|
+| ⭐⭐⭐⭐⭐ | OpenRouter | `mimo-v2-pro`            | A  | A+   | 💰💰     |
+| ⭐⭐⭐⭐ | OpenAI     | `gpt-5.4-mini`           | A   | A+    | 💰💰 |
+| ⭐⭐⭐⭐ | OpenAI     | `gpt-5.4`                | A+  | A+   | 💰💰💰💰 |
+| ⭐⭐⭐⭐  | DashScope  | `glm-5`                  | A   | A    | 💰       |
+| ⭐⭐⭐⭐  | OpenRouter | `mimo-v2-omni`           | A   | A    | 💰       |
+| ⭐⭐⭐  | OpenRouter | `minimax-m2.7`           | A   | B    | 💰       |
+| ⭐⭐⭐   | OpenRouter | `deepseek-v3.2`          | A   | B    | 💰       |
+| ⭐⭐⭐  | DashScope  | `qwen3.5-plus`           | B   | A    | 💰       |
+| ⭐⭐⭐   | Google     | `gemini-3-flash`         | B   | B    | 🆓       |
+| ⭐⭐    | Local      | `qwen3.5-35b-a3b`        | B   | A    | 🆓       |
+| ⭐     | OpenAI     | `gpt-5.4-nano`           | B   | B    | 💰💰   |
+| ⭐     | OpenAI     | `gpt-5-mini`             | C   | B    | 💰💰💰   |
+| ❌     | NVIDIA     | `nemotron-3-super`       | —   | F    | 💰       |
+| 🔧     | OpenAI     | `gpt-5.3-codex`          | -   | -    | 💰💰💰💰 |
+| 🔧     | OpenRouter | `claude-opus-4.6`        | -  | -    | 💰💰💰💰💰💰 |
+
+> We recommend using the latest 2026 models such as GPT-5.4, Claude 4.5, DeepSeek V3, Qwen 3.5, and GLM-5, as they demonstrate significantly better performance on agent-based tasks.
+
+> In our evaluation, Code Reliability specifically measures a model’s ability to correctly compile and debug Latex code. Models with high scores can typically generate executable outputs without requiring iterative fixes, whereas older models often fail to accurately locate and resolve compilation errors.
+
+## 📄 Example Reports
+
+| Paper                                                       | Model                     | PDF   |
+|-------------------------------------------------------------|--------------------------|-------|
+| Gated Attention for Large Language Models                   | `gpt-5.4`                | [PDF](example/GA.pdf) |
+| Language Models are Few-Shot Learners                       | `qwen3.5-plus`           | [PDF](example/Language_Models_are_Few-Shot_Learners.pdf) |
+| Deep Residual Learning for Image Recognition (Chinese)      | `glm-5`                  | [PDF](example/Deep_Residual_Learning_for_Image_Recognition.pdf) |
+| Denoising Diffusion Probabilistic Models                    | `gemini-3-flash-preview` | [PDF](example/ddpm.pdf) |
+| ReAct: Synergizing Reasoning and Acting in Language Models  | `qwen3.5-35b-a3b-4bit`  | [PDF](example/ReAct.pdf) |
+| Attention Is All You Need                                   | `gpt-5-mini`             | [PDF](example/Attention_Is_All_You_Need.pdf) |
 
 ## 🚀 Quick Start
 

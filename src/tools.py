@@ -842,6 +842,16 @@ def compile_pdf(tex_path: str, runs: int = 2, cleanup: bool = True) -> str:
     if not pdf_path.exists():
         return f"[ERROR] 编译似乎成功但未生成 PDF: {pdf_path}"
 
+    # 将 PDF 重命名为 arxiv ID（父目录名），例如 report.pdf → 2603.03251.pdf
+    arxiv_id = report_dir.name
+    final_pdf_path = report_dir / f"{arxiv_id}.pdf"
+    if pdf_path != final_pdf_path:
+        # 删除旧的同名文件（如果存在）
+        if final_pdf_path.exists():
+            final_pdf_path.unlink()
+        pdf_path.rename(final_pdf_path)
+        pdf_path = final_pdf_path
+
     pdf_size = pdf_path.stat().st_size
     size_str = f"{pdf_size / 1024:.1f} KB" if pdf_size < 1024 * 1024 else f"{pdf_size / 1024 / 1024:.1f} MB"
 

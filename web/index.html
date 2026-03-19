@@ -752,11 +752,18 @@
       </div>
     </div>
 
-    <!-- Run Button -->
-    <button class="btn btn-primary" id="runBtn" onclick="startAgent()">
-      <span>🚀</span>
-      <span data-i18n="btn_run">开始解读</span>
-    </button>
+    <!-- Run Button + Save Config Button -->
+    <div style="display:flex; gap:12px; align-items:center;">
+      <button class="btn btn-primary" id="runBtn" onclick="startAgent()" style="flex:1;">
+        <span>🚀</span>
+        <span data-i18n="btn_run">开始解读</span>
+      </button>
+      <button class="btn" id="saveConfigBtn" onclick="saveConfigToServer()"
+        style="background:rgba(99,102,241,0.15); border:1px solid rgba(99,102,241,0.4); color:var(--accent-blue); padding:0 20px; height:52px; border-radius:var(--radius-sm); font-size:0.9rem; cursor:pointer; white-space:nowrap; transition:all 0.2s;"
+        title="保存当前配置到 config.local.yaml">
+        <span id="saveConfigText" data-i18n="btn_save_config">💾 保存配置</span>
+      </button>
+    </div>
 
     <!-- Status Bar -->
     <div class="status-bar" id="statusBar">
@@ -800,6 +807,9 @@
         loading: '加载中...',
         btn_run: '开始解读',
         btn_running: 'Agent 运行中...',
+        btn_save_config: '💾 保存配置',
+        save_config_ok: '✅ 已保存到 config.local.yaml',
+        save_config_fail: '❌ 保存失败',
         status_preparing: '准备中...',
         title_agent_log: 'Agent 推理过程',
         result_title: '论文解读完成！',
@@ -836,6 +846,9 @@
         loading: 'Loading...',
         btn_run: 'Start Interpretation',
         btn_running: 'Agent Running...',
+        btn_save_config: '💾 Save Config',
+        save_config_ok: '✅ Saved to config.local.yaml',
+        save_config_fail: '❌ Save failed',
         status_preparing: 'Preparing...',
         title_agent_log: 'Agent Reasoning',
         result_title: 'Interpretation Complete!',
@@ -944,6 +957,44 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     }
 
+    async function saveConfigToServer() {
+      const btn = document.getElementById('saveConfigBtn');
+      const textEl = document.getElementById('saveConfigText');
+      btn.disabled = true;
+      textEl.textContent = '⏳ ...';
+
+      const body = {
+        provider:    document.getElementById('provider').value,
+        model:       document.getElementById('model').value,
+        api_key:     document.getElementById('apiKey').value,
+        base_url:    document.getElementById('baseUrl').value || null,
+        temperature: parseFloat(document.getElementById('temperature').value),
+        template:    document.getElementById('template').value,
+      };
+
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          textEl.textContent = t('save_config_ok');
+          setTimeout(() => {
+            textEl.textContent = t('btn_save_config');
+            btn.disabled = false;
+          }, 2500);
+        } else {
+          textEl.textContent = t('save_config_fail') + ': ' + (data.error || '');
+          btn.disabled = false;
+        }
+      } catch (e) {
+        textEl.textContent = t('save_config_fail');
+        btn.disabled = false;
+      }
+    }
+
     function restoreSettings() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -1032,14 +1083,25 @@
       }
     }
 
+    // 从服务端加载的多 provider 配置缓存
+    let savedProviders = {};
+
     async function loadConfig() {
       try {
         const res = await fetch('/api/config');
         const cfg = await res.json();
+        // 缓存 providers 字典，供切换 provider 时自动填入
+        if (cfg.providers) savedProviders = cfg.providers;
         document.getElementById('provider').value = cfg.provider;
         document.getElementById('model').value = cfg.model;
         document.getElementById('temperature').value = cfg.temperature;
         document.getElementById('tempValue').textContent = cfg.temperature;
+        // 自动填入当前 provider 的 api_key / base_url
+        const p = savedProviders[cfg.provider];
+        if (p) {
+          if (p.api_key) document.getElementById('apiKey').value = p.api_key;
+          if (p.base_url) document.getElementById('baseUrl').value = p.base_url;
+        }
         onProviderChange();
       } catch (e) { }
       // localStorage 优先覆盖服务器配置
@@ -1050,13 +1112,24 @@
     function onProviderChange() {
       const provider = document.getElementById('provider').value;
       const modelInput = document.getElementById('model');
-      const baseUrlGroup = document.getElementById('baseUrlGroup');
 
       const cfg = PROVIDER_DEFAULTS[provider] || PROVIDER_DEFAULTS.openai;
-      if (!modelInput.value || Object.values(PROVIDER_DEFAULTS).some(d => d.model === modelInput.value)) {
-        modelInput.value = cfg.model;
-      }
       document.getElementById('baseUrl').placeholder = cfg.basePlaceholder;
+
+      // 从服务端已保存的 provider 配置中自动填入 api_key / model / base_url
+      const saved = savedProviders[provider];
+      if (saved) {
+        if (saved.model) modelInput.value = saved.model;
+        else if (!modelInput.value || Object.values(PROVIDER_DEFAULTS).some(d => d.model === modelInput.value))
+          modelInput.value = cfg.model;
+        document.getElementById('apiKey').value = saved.api_key || '';
+        document.getElementById('baseUrl').value = saved.base_url || '';
+      } else {
+        // 没有保存过该 provider —— 始终填入该 provider 的默认值，清空 key/url
+        modelInput.value = cfg.model;
+        document.getElementById('apiKey').value = '';
+        document.getElementById('baseUrl').value = '';
+      }
     }
 
     function onTemplateChange() {

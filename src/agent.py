@@ -209,7 +209,8 @@ def run_agent(
         "6. 读取 report_writer 技能指南，学习报告写作规范\n"
         "7. 生成完整的 LaTeX 解读报告 (使用模板的 preamble + 你的解读内容)\n"
         "8. 使用 compile_pdf 编译 PDF\n"
-        "9. 报告最终结果\n"
+        "9. compile_pdf 成功后：直接输出一段纯文字总结（论文标题 + PDF路径），"
+        "不要再调用任何工具，不要用 run_shell echo 汇报——否则会无限循环。\n"
     )
 
     user_message = "\n".join(task_parts)

@@ -21,12 +21,12 @@ OPENAI_COMPATIBLE_PROVIDERS = {
     "openai": {
         "base_url": None,  # 使用 SDK 默认值
         "env_key": "OPENAI_API_KEY",
-        "default_model": "gpt-4o",
+        "default_model": "gpt-5.4-mini",
     },
     "openrouter": {
         "base_url": "https://openrouter.ai/api/v1",
         "env_key": "OPENROUTER_API_KEY",
-        "default_model": "google/gemini-2.5-flash",
+        "default_model": "xiaomi/mimo-v2-pro",
     },
     "kimi": {
         "base_url": "https://api.moonshot.cn/v1",
@@ -46,7 +46,7 @@ OPENAI_COMPATIBLE_PROVIDERS = {
     "deepseek": {
         "base_url": "https://api.deepseek.com/v1",
         "env_key": "DEEPSEEK_API_KEY",
-        "default_model": "deepseek-chat",
+        "default_model": "deepseek-v3.2",
     },
     "siliconflow": {
         "base_url": "https://api.siliconflow.cn/v1",
@@ -90,7 +90,7 @@ def get_supported_providers() -> list[dict]:
     # 加上 Gemini (非 OpenAI 兼容)
     result.append({
         "name": "gemini",
-        "default_model": "gemini-2.5-flash",
+        "default_model": "gemini-3-flash",
         "base_url": "",
         "needs_api_key": True,
     })
