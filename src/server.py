@@ -167,19 +167,88 @@ async def get_providers():
     return {"providers": get_supported_providers()}
 
 
+def _fetch_arxiv_metadata(arxiv_id: str, paper_dir: Path) -> dict:
+    """从 arXiv API 获取论文元数据并缓存到 metadata.json。"""
+    meta_path = paper_dir / "metadata.json"
+    if meta_path.exists():
+        try:
+            return json.loads(meta_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+
+    # 从 arXiv Atom API 获取
+    meta = {"title": "", "abstract": "", "authors": "", "published": ""}
+    try:
+        import requests
+        import xml.etree.ElementTree as ET
+
+        clean_id = arxiv_id.split("v")[0]  # 去除版本号
+        resp = requests.get(
+            f"https://export.arxiv.org/api/query?id_list={clean_id}&max_results=1",
+            timeout=10,
+        )
+        if resp.status_code == 200:
+            ns = {"atom": "http://www.w3.org/2005/Atom"}
+            root = ET.fromstring(resp.text)
+            entry = root.find("atom:entry", ns)
+            if entry is not None:
+                title_el = entry.find("atom:title", ns)
+                summary_el = entry.find("atom:summary", ns)
+                published_el = entry.find("atom:published", ns)
+                authors = entry.findall("atom:author/atom:name", ns)
+
+                meta["title"] = " ".join((title_el.text or "").split()) if title_el is not None else ""
+                meta["abstract"] = " ".join((summary_el.text or "").split()) if summary_el is not None else ""
+                meta["authors"] = ", ".join(a.text for a in authors[:5])
+                if len(authors) > 5:
+                    meta["authors"] += f" et al. ({len(authors)})"
+                meta["published"] = (published_el.text or "")[:10] if published_el is not None else ""
+
+        # 缓存到文件
+        if meta["title"]:
+            meta_path.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception as e:
+        logger.warning("Failed to fetch arXiv metadata for %s: %s", arxiv_id, e)
+
+    return meta
+
+
 @app.get("/api/papers")
 async def list_papers():
-    """列出已生成的论文报告"""
+    """列出已生成的论文报告，包含标题、摘要和时间信息"""
     papers_dir = _project_root() / "papers"
     papers = []
     if papers_dir.exists():
         for paper_dir in sorted(papers_dir.iterdir()):
             if paper_dir.is_dir():
-                pdf_files = list(paper_dir.glob("*.pdf"))
+                pdf_files = [f for f in paper_dir.glob("*.pdf") if f.name != "original.pdf"]
+                arxiv_id = paper_dir.name
+
+                # 获取元数据（title, abstract, authors, published）
+                meta = _fetch_arxiv_metadata(arxiv_id, paper_dir)
+
+                # 生成时间：取 PDF 或目录的 mtime
+                generated_ts = ""
+                if pdf_files:
+                    generated_ts = time.strftime(
+                        "%Y-%m-%d %H:%M",
+                        time.localtime(max(f.stat().st_mtime for f in pdf_files)),
+                    )
+                elif paper_dir.exists():
+                    generated_ts = time.strftime(
+                        "%Y-%m-%d %H:%M",
+                        time.localtime(paper_dir.stat().st_mtime),
+                    )
+
                 papers.append({
-                    "arxiv_id": paper_dir.name,
+                    "arxiv_id": arxiv_id,
                     "has_pdf": len(pdf_files) > 0,
                     "pdf_name": pdf_files[0].name if pdf_files else None,
+                    "title": meta.get("title", ""),
+                    "abstract": meta.get("abstract", ""),
+                    "authors": meta.get("authors", ""),
+                    "published": meta.get("published", ""),
+                    "generated": generated_ts,
                 })
     return {"papers": papers}
 
@@ -188,7 +257,10 @@ async def list_papers():
 async def download_pdf(arxiv_id: str):
     """下载生成的 PDF（返回最新生成的文件）"""
     papers_dir = _project_root() / "papers" / arxiv_id
-    pdf_files = sorted(papers_dir.glob("*.pdf"), key=lambda p: p.stat().st_mtime, reverse=True)
+    pdf_files = sorted(
+        (f for f in papers_dir.glob("*.pdf") if f.name != "original.pdf"),
+        key=lambda p: p.stat().st_mtime, reverse=True,
+    )
     if pdf_files:
         latest = pdf_files[0]
         return FileResponse(
@@ -199,24 +271,49 @@ async def download_pdf(arxiv_id: str):
     return JSONResponse({"error": "PDF not found"}, status_code=404)
 
 
+def _ensure_arxiv_pdf(arxiv_id: str, papers_dir: Path) -> Path | None:
+    """确保原始 arXiv PDF 存在，不存在则从 arxiv.org 下载。"""
+    original_pdf = papers_dir / "original.pdf"
+    if original_pdf.exists():
+        return original_pdf
+    try:
+        import requests as req
+        url = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
+        resp = req.get(url, timeout=30, headers={"User-Agent": "PaperGranny/1.0"})
+        if resp.status_code == 200 and len(resp.content) > 1000:
+            papers_dir.mkdir(parents=True, exist_ok=True)
+            original_pdf.write_bytes(resp.content)
+            return original_pdf
+    except Exception:
+        pass
+    return None
+
+
 @app.get("/api/papers/{arxiv_id}/thumbnail")
 async def pdf_thumbnail(arxiv_id: str):
-    """返回 PDF 第一页的缩略图 (PNG)。需要 pymupdf (fitz)。"""
+    """返回原始论文第一页的缩略图 (PNG)。优先使用原始 arXiv PDF，回退到生成的报告 PDF。"""
     papers_dir = _project_root() / "papers" / arxiv_id
-    pdf_files = sorted(papers_dir.glob("*.pdf"), key=lambda p: p.stat().st_mtime, reverse=True)
-    if not pdf_files:
-        return JSONResponse({"error": "PDF not found"}, status_code=404)
+    if not papers_dir.exists():
+        return JSONResponse({"error": "Paper not found"}, status_code=404)
 
     thumb_path = papers_dir / ".thumbnail.png"
-    latest_pdf = pdf_files[0]
 
-    # 使用缓存：如果缩略图比 PDF 新则直接返回
-    if thumb_path.exists() and thumb_path.stat().st_mtime >= latest_pdf.stat().st_mtime:
+    # 优先用原始 PDF，回退到报告 PDF
+    source_pdf = _ensure_arxiv_pdf(arxiv_id, papers_dir)
+    if source_pdf is None:
+        # 回退：使用报告 PDF
+        pdf_files = sorted(papers_dir.glob("*.pdf"), key=lambda p: p.stat().st_mtime, reverse=True)
+        source_pdf = pdf_files[0] if pdf_files else None
+    if source_pdf is None:
+        return JSONResponse({"error": "No PDF available"}, status_code=404)
+
+    # 使用缓存：如果缩略图比源 PDF 新则直接返回
+    if thumb_path.exists() and thumb_path.stat().st_mtime >= source_pdf.stat().st_mtime:
         return FileResponse(str(thumb_path), media_type="image/png")
 
     try:
         import fitz  # pymupdf
-        doc = fitz.open(str(latest_pdf))
+        doc = fitz.open(str(source_pdf))
         page = doc[0]
         # 缩放到 ~300px 宽
         zoom = 300 / page.rect.width

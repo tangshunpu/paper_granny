@@ -7,6 +7,7 @@ Skill 加载与注入模块
 
 import platform
 import shutil
+from datetime import date
 from pathlib import Path
 from typing import Optional
 
@@ -18,7 +19,10 @@ def _project_root() -> Path:
 def _detect_env() -> str:
     """检测运行环境，返回供 system prompt 使用的环境描述。"""
     system = platform.system()  # Darwin / Linux / Windows
-    parts = [f"操作系统: {system}"]
+    parts = [
+        f"今天日期: {date.today().isoformat()}",
+        f"操作系统: {system}",
+    ]
 
     # 检测可用的下载工具
     download_tools = []

@@ -4,48 +4,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scholar Granny — arXiv 论文智能解读</title>
-  <meta name="description"
-    content="Scholar Granny: AI-powered arXiv paper interpretation agent with beautiful PDF reports">
+  <title>Paper Granny — arXiv 论文智能解读</title>
+  <meta name="description" content="Paper Granny: AI-powered arXiv paper interpretation agent">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <style>
-    /* ─── Reset ───────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
       --bg: #ffffff;
-      --bg-page: #f9fafb;
-      --bg-subtle: #f3f4f6;
-      --bg-code: #f6f7f8;
+      --bg-page: #f5f5f5;
+      --bg-hover: #f7f7f7;
+      --bg-input: #ffffff;
       --border: #e5e7eb;
-      --border-light: #f0f1f3;
+      --border-light: #eee;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
 
-      --ink: #111827;
+      --ink: #1a1a2e;
       --ink-2: #374151;
       --ink-3: #6b7280;
       --ink-4: #9ca3af;
 
-      --green: #10a37f;
-      --green-hover: #0d8c6d;
-      --green-bg: rgba(16,163,127,0.07);
-      --green-border: rgba(16,163,127,0.22);
+      /* HF-inspired warm palette */
+      --yellow: #ff9d00;
+      --yellow-hover: #e68e00;
+      --yellow-bg: #fff8ee;
+      --yellow-border: #ffe4b5;
+      --orange: #ff6b35;
+      --coral: #ff4b4b;
 
       --blue: #2563eb;
-      --blue-bg: rgba(37,99,235,0.06);
+      --blue-bg: rgba(37, 99, 235, 0.06);
       --purple: #7c3aed;
-      --purple-bg: rgba(124,58,237,0.06);
-      --amber: #d97706;
-      --amber-bg: rgba(217,119,6,0.06);
-      --red: #dc2626;
-      --red-bg: rgba(220,38,38,0.06);
+      --purple-bg: rgba(124, 58, 237, 0.05);
+      --green: #10b981;
+      --green-bg: rgba(16, 185, 129, 0.07);
+      --green-border: rgba(16, 185, 129, 0.2);
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.06);
 
       --r: 12px;
       --r-sm: 8px;
-      --font: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
-      --mono: 'JetBrains Mono', 'SF Mono', monospace;
-      --ease: cubic-bezier(.4,0,.2,1);
+      --r-lg: 16px;
+      --font: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --ease: cubic-bezier(.4, 0, .2, 1);
     }
 
     body {
@@ -56,707 +69,1048 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ─── Layout ──────────────────────────────── */
-    .container {
-      max-width: 920px;
+    /* ═══ Top Nav Bar (HF-style) ═══ */
+    .topnav {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topnav-inner {
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 0 24px 56px;
-    }
-
-    /* ─── Header ──────────────────────────────── */
-    header {
-      text-align: center;
-      padding: 44px 0 32px;
-      position: relative;
-    }
-
-    .logo {
-      display: inline-flex;
+      height: 52px;
+      display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
     }
 
-    .logo-img {
-      height: 42px;
-      border-radius: 10px;
+    .topnav-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .logo-text {
-      font-size: 1.55rem;
+    .topnav-logo {
+      height: 28px;
+      border-radius: 6px;
+    }
+
+    .topnav-brand {
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--ink);
-      letter-spacing: -0.02em;
+      text-decoration: none;
     }
 
-    .subtitle {
-      margin-top: 6px;
-      color: var(--ink-3);
-      font-size: 0.85rem;
-      font-weight: 400;
-    }
-
-    /* ─── Language Toggle ─────────────────────── */
-    .lang-switch {
-      position: absolute;
-      top: 44px;
-      right: 0;
+    .topnav-right {
       display: flex;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 3px;
+      align-items: center;
+      gap: 6px;
     }
 
     .lang-btn {
       background: none;
-      border: none;
-      color: var(--ink-4);
+      border: 1px solid transparent;
+      color: var(--ink-3);
       font-family: var(--font);
-      font-size: 0.76rem;
+      font-size: .8rem;
       font-weight: 600;
-      padding: 4px 12px;
-      border-radius: 14px;
+      padding: 4px 10px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all .2s var(--ease);
+      transition: all .15s;
     }
-    .lang-btn.active { background: var(--green); color: #fff; }
-    .lang-btn:hover:not(.active) { color: var(--ink-2); }
 
-    /* ─── Card ────────────────────────────────── */
+    .lang-btn.active {
+      background: var(--yellow);
+      color: #fff;
+      border-color: var(--yellow);
+    }
+
+    .lang-btn:hover:not(.active) {
+      background: var(--bg-hover);
+      border-color: var(--border);
+    }
+
+    /* ═══ Page Container ═══ */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ═══ Page Header ═══ */
+    .page-header {
+      padding: 28px 0 20px;
+    }
+
+    .page-title {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+      color: var(--ink-3);
+      font-size: .92rem;
+    }
+
+    /* ═══ Two-Column Layout ═══ */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ═══ Cards ═══ */
     .card {
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--r);
-      padding: 24px;
-      transition: box-shadow .25s var(--ease);
+      padding: 20px;
     }
-    .card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
 
     .card-title {
-      font-size: 0.92rem;
-      font-weight: 600;
-      margin-bottom: 18px;
+      font-size: .88rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
-      gap: 7px;
-      color: var(--ink);
+      gap: 6px;
     }
 
-    /* ─── Grid ────────────────────────────────── */
-    .config-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 14px;
+    /* ═══ Input Area (main column top) ═══ */
+    .input-section {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 20px;
+      margin-bottom: 16px;
     }
-    @media (max-width: 768px) { .config-grid { grid-template-columns: 1fr; } }
 
-    /* ─── Forms ───────────────────────────────── */
-    .form-group { margin-bottom: 14px; }
-    .form-group:last-child { margin-bottom: 0; }
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-row input {
+      flex: 1;
+    }
+
+    /* ═══ Forms ═══ */
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
 
     label {
       display: block;
-      font-size: 0.7rem;
+      font-size: .78rem;
       font-weight: 600;
       color: var(--ink-3);
-      margin-bottom: 5px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
+      margin-bottom: 4px;
     }
 
-    input, select {
+    input,
+    select {
       width: 100%;
-      padding: 9px 13px;
-      background: var(--bg-page);
+      padding: 8px 12px;
+      background: var(--bg-input);
       border: 1px solid var(--border);
       border-radius: var(--r-sm);
       color: var(--ink);
       font-family: var(--font);
-      font-size: 0.87rem;
-      transition: all .2s var(--ease);
+      font-size: .88rem;
+      transition: border-color .15s, box-shadow .15s;
       outline: none;
     }
-    input:focus, select:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(16,163,127,0.1);
-      background: var(--bg);
+
+    input:focus,
+    select:focus {
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 3px rgba(255, 157, 0, 0.12);
     }
-    input::placeholder { color: var(--ink-4); }
+
+    input::placeholder {
+      color: var(--ink-4);
+    }
 
     select {
       cursor: pointer;
       appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M5 7L1 3h8z' fill='%239ca3af'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 12px center;
-    }
-    select option { background: var(--bg); color: var(--ink); }
-
-    .input-large {
-      font-size: 1rem;
-      padding: 13px 16px;
-      border-radius: var(--r);
+      background-position: right 10px center;
     }
 
-    /* ─── Buttons ─────────────────────────────── */
+    select option {
+      background: var(--bg);
+    }
+
+    /* ═══ Buttons ═══ */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       border: none;
       border-radius: var(--r-sm);
       font-family: var(--font);
       font-weight: 600;
       cursor: pointer;
-      transition: all .2s var(--ease);
+      transition: all .15s var(--ease);
+      font-size: .88rem;
     }
 
     .btn-primary {
-      background: var(--green);
+      background: var(--yellow);
       color: #fff;
-      width: 100%;
-      font-size: 0.95rem;
-      padding: 13px;
-      border-radius: var(--r);
-    }
-    .btn-primary:hover:not(:disabled) {
-      background: var(--green-hover);
-      box-shadow: 0 4px 14px rgba(16,163,127,0.22);
-    }
-    .btn-primary:disabled { opacity: .55; cursor: not-allowed; }
-
-    .btn-save {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--ink-3);
-      padding: 0 18px;
-      height: 46px;
-      font-size: 0.82rem;
-      border-radius: var(--r-sm);
+      padding: 9px 20px;
       white-space: nowrap;
     }
-    .btn-save:hover:not(:disabled) {
-      border-color: var(--green-border);
-      color: var(--green);
-      background: var(--green-bg);
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--yellow-hover);
     }
 
-    .btn-download {
-      background: var(--green);
-      color: #fff;
-      padding: 10px 20px;
-      text-decoration: none;
-      font-size: 0.88rem;
-      border-radius: var(--r-sm);
+    .btn-primary:disabled {
+      opacity: .5;
+      cursor: not-allowed;
     }
-    .btn-download:hover { background: var(--green-hover); }
 
-    /* ─── Password toggle ─────────────────────── */
-    .pw-wrap { position: relative; }
-    .pw-wrap input { padding-right: 38px; }
+    .btn-outline {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--ink-2);
+      padding: 8px 14px;
+      font-size: .82rem;
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      border-color: var(--yellow-border);
+      background: var(--yellow-bg);
+      color: var(--yellow-hover);
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: .78rem;
+      border-radius: 6px;
+    }
+
+    /* ═══ Password ═══ */
+    .pw-wrap {
+      position: relative;
+    }
+
+    .pw-wrap input {
+      padding-right: 36px;
+    }
+
     .pw-toggle {
-      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; color: var(--ink-4); cursor: pointer;
-      font-size: .95rem; padding: 3px; transition: color .15s;
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--ink-4);
+      cursor: pointer;
+      font-size: .88rem;
+      padding: 2px;
     }
-    .pw-toggle:hover { color: var(--ink-3); }
 
-    /* ─── Slider ──────────────────────────────── */
-    .slider-row { display: flex; align-items: center; gap: 10px; }
-    .slider-row input[type=range] {
-      flex: 1; padding: 0; height: 3px;
-      -webkit-appearance: none; appearance: none;
-      background: var(--border); border-radius: 2px; border: none;
+    .pw-toggle:hover {
+      color: var(--ink-3);
     }
+
+    /* ═══ Slider ═══ */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slider-row input[type=range] {
+      flex: 1;
+      padding: 0;
+      height: 3px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--border);
+      border-radius: 2px;
+      border: none;
+    }
+
     .slider-row input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 15px; height: 15px; background: var(--green);
-      border-radius: 50%; cursor: pointer;
-      border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      width: 14px;
+      height: 14px;
+      background: var(--yellow);
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
     }
+
     .slider-val {
-      min-width: 28px; text-align: center;
-      font-weight: 700; color: var(--green);
-      font-size: .82rem; font-family: var(--mono);
+      min-width: 26px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--yellow-hover);
+      font-size: .82rem;
+      font-family: var(--mono);
     }
 
-    /* ═══════════════════════════════════════════
-       Bookshelf — Horizontal scrolling PDF gallery
-       ═══════════════════════════════════════════ */
-    .bookshelf-section {
-      margin-top: 20px;
+    /* ═══════════════════════════════════════
+       Paper Cards — HF Daily Papers Style
+       ═══════════════════════════════════════ */
+    .papers-section {
+      margin-bottom: 20px;
     }
 
-    .bookshelf-header {
+    .papers-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
-    .bookshelf-title {
-      font-size: 0.92rem;
-      font-weight: 600;
+    .papers-header-left {
       display: flex;
       align-items: center;
-      gap: 7px;
+      gap: 8px;
     }
 
-    .bookshelf-count {
-      font-size: 0.75rem;
-      color: var(--ink-4);
-      font-weight: 500;
-    }
-
-    .bookshelf {
-      position: relative;
-    }
-
-    .bookshelf-track {
+    .papers-title {
+      font-size: 1rem;
+      font-weight: 700;
       display: flex;
-      gap: 16px;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scroll-behavior: smooth;
-      padding: 8px 4px 20px;
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+      align-items: center;
+      gap: 6px;
     }
-    .bookshelf-track::-webkit-scrollbar { display: none; }
 
-    /* Individual book card */
-    .book {
-      flex: 0 0 160px;
-      scroll-snap-align: start;
-      text-decoration: none;
-      color: var(--ink);
-      transition: transform .25s var(--ease);
+    .papers-count {
+      background: var(--yellow-bg);
+      color: var(--yellow-hover);
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid var(--yellow-border);
     }
-    .book:hover { transform: translateY(-4px); }
 
-    .book-cover {
-      width: 160px;
-      height: 210px;
-      border-radius: 6px;
-      overflow: hidden;
-      background: var(--bg-subtle);
+    /* Sort controls */
+    .sort-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sort-btn {
+      background: none;
       border: 1px solid var(--border);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06), 2px 4px 12px rgba(0,0,0,0.04);
-      position: relative;
-      transition: box-shadow .25s var(--ease);
-    }
-    .book:hover .book-cover {
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1), 2px 8px 24px rgba(0,0,0,0.06);
+      color: var(--ink-3);
+      font-family: var(--font);
+      font-size: .73rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
     }
 
-    .book-cover img {
+    .sort-btn:hover {
+      border-color: #ccc;
+      color: var(--ink-2);
+    }
+
+    .sort-btn.active {
+      background: var(--yellow-bg);
+      border-color: var(--yellow-border);
+      color: var(--yellow-hover);
+    }
+
+    /* Individual paper card */
+    .paper-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 14px;
+      display: flex;
+      gap: 14px;
+      transition: box-shadow .2s, border-color .2s;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .paper-card:hover {
+      box-shadow: var(--shadow);
+      border-color: #d5d5d5;
+    }
+
+    /* Thumbnail on left — paper page ratio (≈ A4 = 1:1.414) */
+    .paper-thumb {
+      flex: 0 0 100px;
+      height: 141px;
+      border-radius: 4px;
+      overflow: hidden;
+      background: var(--bg-page);
+      border: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: transform .2s;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
+    }
+
+    .paper-thumb:hover {
+      transform: scale(1.03);
+    }
+
+    .paper-thumb img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    /* Placeholder when no thumbnail */
-    .book-cover-placeholder {
+    .paper-thumb-placeholder {
       width: 100%;
       height: 100%;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      background: linear-gradient(145deg, #f8fafc 0%, #eef2f7 100%);
-    }
-    .book-cover-placeholder .pdf-icon {
-      font-size: 2.2rem;
-      opacity: .5;
-    }
-    .book-cover-placeholder .pdf-label {
-      font-size: 0.68rem;
-      font-weight: 600;
-      color: var(--ink-4);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      font-size: 1.8rem;
+      opacity: .3;
+      background: linear-gradient(135deg, #fef3e2 0%, #fde8c8 100%);
     }
 
-    /* Book spine shadow (left edge) */
-    .book-cover::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 4px;
-      background: linear-gradient(to right, rgba(0,0,0,0.08), transparent);
-      z-index: 1;
+    /* Content on right */
+    .paper-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
     }
 
-    .book-id {
-      margin-top: 8px;
-      font-size: 0.76rem;
-      font-weight: 600;
-      color: var(--ink-2);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .book-badge {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: var(--green);
-      color: #fff;
-      font-size: 0.6rem;
+    .paper-title-link {
+      font-size: .9rem;
       font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 4px;
-      letter-spacing: 0.04em;
-      z-index: 2;
+      color: var(--ink);
+      text-decoration: none;
+      cursor: pointer;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
-    /* Delete button on book cover */
-    .book-delete {
-      position: absolute;
-      top: 6px;
-      left: 6px;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.55);
-      color: #fff;
-      border: none;
-      font-size: 0.72rem;
-      line-height: 1;
-      cursor: pointer;
+    .paper-title-link:hover {
+      color: var(--yellow-hover);
+    }
+
+    .paper-meta-row {
       display: flex;
       align-items: center;
-      justify-content: center;
-      z-index: 3;
-      opacity: 0;
-      transition: opacity .2s, background .15s;
-      backdrop-filter: blur(4px);
-    }
-    .book:hover .book-delete { opacity: 1; }
-    .book-delete:hover { background: var(--red); }
-
-    /* Shelf surface */
-    .shelf-surface {
-      height: 8px;
-      background: linear-gradient(180deg, #e8e6e1 0%, #d5d3ce 40%, #c9c7c2 100%);
-      border-radius: 0 0 4px 4px;
-      margin-top: -12px;
-      position: relative;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    }
-    .shelf-surface::after {
-      content: '';
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 1px;
-      background: rgba(255,255,255,0.6);
+      gap: 6px;
+      flex-wrap: wrap;
+      font-size: .73rem;
+      color: var(--ink-4);
     }
 
-    /* Scroll arrows */
-    .shelf-arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-70%);
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--bg);
+    .paper-meta-row .sep {
+      color: var(--border);
+    }
+
+    .paper-arxiv-id {
+      font-weight: 600;
+      color: var(--ink-3);
+    }
+
+    .paper-abstract {
+      font-size: .78rem;
+      color: var(--ink-3);
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-top: 1px;
+    }
+
+    .paper-pdf-badge {
+      background: var(--green-bg);
+      color: var(--green);
+      font-size: .65rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--green-border);
+      text-transform: uppercase;
+      letter-spacing: .03em;
+    }
+
+    .paper-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .paper-action-btn {
+      background: none;
       border: 1px solid var(--border);
       color: var(--ink-3);
-      font-size: 0.85rem;
+      font-family: var(--font);
+      font-size: .75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all .15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+    }
+
+    .paper-action-btn:hover {
+      border-color: var(--yellow-border);
+      color: var(--yellow-hover);
+      background: var(--yellow-bg);
+    }
+
+    .paper-action-btn.primary {
+      background: var(--green-bg);
+      border-color: var(--green-border);
+      color: var(--green);
+    }
+
+    .paper-action-btn.primary:hover {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+    }
+
+    .paper-action-btn.danger:hover {
+      border-color: rgba(239, 68, 68, 0.3);
+      color: var(--red);
+      background: var(--red-bg);
+    }
+
+    /* Delete button top-right */
+    .paper-delete {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 22px;
+      height: 22px;
+      border-radius: 5px;
+      background: none;
+      border: 1px solid transparent;
+      color: var(--ink-4);
+      font-size: .72rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 5;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all .2s var(--ease);
       opacity: 0;
+      transition: all .15s;
     }
-    .bookshelf:hover .shelf-arrow { opacity: 1; }
-    .shelf-arrow:hover { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
-    .shelf-arrow-left { left: -12px; }
-    .shelf-arrow-right { right: -12px; }
 
-    /* Empty bookshelf */
-    .bookshelf-empty {
+    .paper-card:hover .paper-delete {
+      opacity: 1;
+    }
+
+    .paper-delete:hover {
+      background: var(--red-bg);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: var(--red);
+    }
+
+    /* Empty state */
+    .papers-empty {
       text-align: center;
-      padding: 36px 20px;
+      padding: 32px 16px;
       color: var(--ink-4);
-      font-size: 0.85rem;
+      font-size: .88rem;
       border: 1px dashed var(--border);
       border-radius: var(--r);
       background: var(--bg);
     }
-    .bookshelf-empty-icon {
-      font-size: 2rem;
-      margin-bottom: 8px;
+
+    .papers-empty-icon {
+      font-size: 1.8rem;
+      margin-bottom: 6px;
       opacity: .4;
     }
 
-    /* ─── Agent Panel ─────────────────────────── */
-    .agent-panel { display: none; margin-top: 14px; }
-    .agent-panel.active { display: block; }
+    /* ═══ Agent Panel ═══ */
+    .agent-panel {
+      display: none;
+      margin-bottom: 16px;
+    }
+
+    .agent-panel.active {
+      display: block;
+    }
 
     .agent-log {
-      max-height: 480px;
+      max-height: 420px;
       overflow-y: auto;
       padding: 2px 0;
       font-family: var(--mono);
-      font-size: .77rem;
+      font-size: .76rem;
       line-height: 1.7;
     }
-    .agent-log::-webkit-scrollbar { width: 4px; }
-    .agent-log::-webkit-scrollbar-track { background: transparent; }
-    .agent-log::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .agent-log::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .agent-log::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .agent-log::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
 
     .log-entry {
-      padding: 5px 10px;
+      padding: 4px 10px;
       border-radius: 4px;
       margin-bottom: 2px;
-      animation: logIn .25s var(--ease) both;
-    }
-    @keyframes logIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to   { opacity: 1; transform: translateY(0); }
+      animation: logIn .2s var(--ease) both;
     }
 
-    .log-tool-start { background: var(--blue-bg); border-left: 2px solid var(--blue); color: var(--blue); }
+    @keyframes logIn {
+      from {
+        opacity: 0;
+        transform: translateY(3px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .log-tool-start {
+      background: var(--blue-bg);
+      border-left: 2px solid var(--blue);
+      color: var(--blue);
+    }
+
     .log-tool-end {
-      background: var(--bg-code); color: var(--ink-3); font-size: .73rem;
-      max-height: 100px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;
+      background: var(--bg-page);
+      color: var(--ink-3);
+      font-size: .72rem;
+      max-height: 90px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
       border-left: 2px solid var(--border);
     }
-    .log-thinking { color: var(--ink-3); font-style: italic; border-left: 2px solid var(--purple); background: var(--purple-bg); }
-    .log-status { color: var(--amber); font-weight: 600; border-left: 2px solid var(--amber); background: var(--amber-bg); }
-    .log-error { color: var(--red); font-weight: 600; border-left: 2px solid var(--red); background: var(--red-bg); }
-    .log-complete { background: var(--green-bg); border-left: 2px solid var(--green); color: var(--green); font-weight: 600; font-size: .82rem; padding: 8px 10px; }
+
+    .log-thinking {
+      color: var(--ink-3);
+      font-style: italic;
+      border-left: 2px solid var(--purple);
+      background: var(--purple-bg);
+    }
+
+    .log-status {
+      color: var(--yellow-hover);
+      font-weight: 600;
+      border-left: 2px solid var(--yellow);
+      background: var(--yellow-bg);
+    }
+
+    .log-error {
+      color: var(--red);
+      font-weight: 600;
+      border-left: 2px solid var(--red);
+      background: var(--red-bg);
+    }
+
+    .log-complete {
+      background: var(--green-bg);
+      border-left: 2px solid var(--green);
+      color: var(--green);
+      font-weight: 600;
+      font-size: .8rem;
+      padding: 6px 10px;
+    }
 
     .log-tool-streaming {
-      background: var(--bg-code); border-left: 2px solid var(--green);
-      color: var(--ink-3); font-size: .73rem;
-      white-space: pre-wrap; word-break: break-all;
-      max-height: 180px; overflow-y: auto;
+      background: var(--bg-page);
+      border-left: 2px solid var(--green);
+      color: var(--ink-3);
+      font-size: .72rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 160px;
+      overflow-y: auto;
     }
+
     .log-tool-streaming .streaming-header {
-      color: var(--green); font-weight: 600; font-size: .75rem;
-      margin-bottom: 3px; display: flex; align-items: center; gap: 5px;
+      color: var(--green);
+      font-weight: 600;
+      font-size: .74rem;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
+
     .log-tool-streaming .streaming-header .pulse {
-      display: inline-block; width: 6px; height: 6px;
-      background: var(--green); border-radius: 50%;
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
       animation: pulse 1s ease-in-out infinite;
     }
-    @keyframes pulse { 0%,100% { opacity:.25; } 50% { opacity:1; } }
-    .log-tool-streaming .streaming-stats { color: var(--ink-4); font-size: .66rem; margin-top: 3px; }
 
-    /* ─── Status Bar ──────────────────────────── */
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: .2;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .log-tool-streaming .streaming-stats {
+      color: var(--ink-4);
+      font-size: .65rem;
+      margin-top: 2px;
+    }
+
+    /* ═══ Status Bar ═══ */
     .status-bar {
       display: none;
-      padding: 10px 14px; border-radius: var(--r-sm);
-      margin-bottom: 14px;
-      background: var(--green-bg); border: 1px solid var(--green-border);
-      font-weight: 500; font-size: .84rem;
-      align-items: center; gap: 8px; color: var(--green);
+      padding: 10px 14px;
+      border-radius: var(--r-sm);
+      margin-bottom: 12px;
+      background: var(--yellow-bg);
+      border: 1px solid var(--yellow-border);
+      font-weight: 500;
+      font-size: .84rem;
+      align-items: center;
+      gap: 8px;
+      color: var(--yellow-hover);
     }
-    .status-bar.active { display: flex; }
+
+    .status-bar.active {
+      display: flex;
+    }
 
     .spinner {
-      width: 14px; height: 14px;
-      border: 2px solid var(--green-border);
-      border-top-color: var(--green);
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--yellow-border);
+      border-top-color: var(--yellow);
       border-radius: 50%;
-      animation: spin .65s linear infinite;
+      animation: spin .6s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ─── Result Card ─────────────────────────── */
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ═══ Result Card ═══ */
     .result-card {
-      display: none; margin-top: 14px;
-      text-align: center; padding: 28px 24px;
-      background: var(--green-bg); border: 1px solid var(--green-border);
+      display: none;
+      margin-bottom: 12px;
+      text-align: center;
+      padding: 24px 20px;
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      border-radius: var(--r);
     }
-    .result-card.active { display: block; }
-    .result-icon { font-size: 2rem; margin-bottom: 6px; }
-    .result-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
-    .result-sub { color: var(--ink-3); margin-bottom: 14px; font-size: .86rem; }
 
-    /* ─── Responsive ──────────────────────────── */
+    .result-card.active {
+      display: block;
+    }
+
+    .result-icon {
+      font-size: 1.8rem;
+      margin-bottom: 4px;
+    }
+
+    .result-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .result-sub {
+      color: var(--ink-3);
+      margin-bottom: 12px;
+      font-size: .84rem;
+    }
+
+    .btn-download {
+      background: var(--green);
+      color: #fff;
+      padding: 8px 18px;
+      text-decoration: none;
+      font-size: .85rem;
+      font-weight: 600;
+      border-radius: var(--r-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: background .15s;
+    }
+
+    .btn-download:hover {
+      background: #0da574;
+    }
+
+    /* ═══ Sidebar config toggle ═══ */
+    .sidebar-toggle {
+      display: none;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar-toggle {
+        display: flex;
+      }
+
+      .sidebar.collapsed {
+        display: none;
+      }
+    }
+
+    /* ═══ Responsive ═══ */
     @media (max-width: 640px) {
-      .container { padding: 0 14px 36px; }
-      header { padding: 28px 0 20px; }
-      .logo-text { font-size: 1.3rem; }
-      .card { padding: 18px; }
-      .lang-switch { position: static; margin-top: 10px; display: inline-flex; }
-      .book { flex: 0 0 130px; }
-      .book-cover { width: 130px; height: 170px; }
+      .container {
+        padding: 0 12px;
+      }
+
+      .topnav {
+        padding: 0 12px;
+      }
+
+      .page-title {
+        font-size: 1.3rem;
+      }
+
+      .paper-card {
+        flex-direction: column;
+      }
+
+      .paper-thumb {
+        flex: none;
+        width: 100%;
+        height: 200px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <!-- Header -->
-    <header>
-      <div class="logo">
-        <img src="/static/logo.png" alt="Paper Granny" class="logo-img">
-        <span class="logo-text">Paper Granny</span>
+
+  <!-- ═══ Top Navigation ═══ -->
+  <nav class="topnav">
+    <div class="topnav-inner">
+      <div class="topnav-left">
+        <img src="/static/logo.png" alt="Logo" class="topnav-logo">
+        <span class="topnav-brand">Paper Granny</span>
       </div>
-      <p class="subtitle" data-i18n="subtitle">arXiv 论文智能解读 — LangGraph ReAct Agent</p>
-      <div class="lang-switch">
+      <div class="topnav-right">
         <button class="lang-btn active" onclick="switchLang('zh')" id="langBtnZh">中文</button>
         <button class="lang-btn" onclick="switchLang('en')" id="langBtnEn">EN</button>
       </div>
-    </header>
+    </div>
+  </nav>
 
-    <!-- Main Input -->
-    <div class="card" style="margin-bottom: 14px;">
-      <div class="form-group">
-        <label data-i18n="label_arxiv">arXiv 论文链接或 ID</label>
-        <input type="text" id="arxivUrl" class="input-large"
-          data-i18n-placeholder="placeholder_arxiv"
-          placeholder="https://arxiv.org/abs/2603.03251 或直接输入 2603.03251">
-      </div>
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-title" data-i18n="page_title">📄 论文解读报告</div>
+      <div class="page-subtitle" data-i18n="subtitle">arXiv 论文智能解读 — LangGraph ReAct Agent</div>
     </div>
 
-    <!-- Config Grid -->
-    <div class="config-grid">
-      <!-- LLM Config -->
-      <div class="card">
-        <div class="card-title">🤖 <span data-i18n="title_llm">LLM 配置</span></div>
-
-        <div class="form-group">
-          <label>Provider</label>
-          <select id="provider">
-            <optgroup data-i18n-label="group_commercial" label="商业 API">
-              <option value="openai">OpenAI</option>
-              <option value="claude">Claude (Anthropic)</option>
-              <option value="gemini">Gemini (Google)</option>
-              <option value="openrouter">OpenRouter</option>
-            </optgroup>
-            <optgroup data-i18n-label="group_china" label="国内服务">
-              <option value="deepseek">DeepSeek</option>
-              <option value="kimi">Kimi (Moonshot)</option>
-              <option value="dashscope" data-i18n="provider_dashscope">通义千问 (DashScope)</option>
-              <option value="dashscope-coding" data-i18n="provider_dashscope_coding">百炼 Coding Plan</option>
-              <option value="siliconflow" data-i18n="provider_siliconflow">SiliconFlow 硅基流动</option>
-            </optgroup>
-            <optgroup data-i18n-label="group_local" label="本地 / 自部署">
-              <option value="ollama" data-i18n="provider_ollama">Ollama (本地)</option>
-              <option value="vllm">vLLM</option>
-            </optgroup>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label data-i18n="label_model">模型</label>
-          <select id="modelPreset" style="display:none" onchange="onModelPresetChange()"></select>
-          <input type="text" id="model" placeholder="gpt-5.4-mini" autocomplete="off" style="margin-top:0">
-        </div>
-
-        <div class="form-group">
-          <label>API Key</label>
-          <div class="pw-wrap">
-            <input type="password" id="apiKey" placeholder="sk-...">
-            <button class="pw-toggle" onclick="toggleApiKey()" data-i18n-title="toggle_show_hide" title="显示/隐藏">👁</button>
+    <!-- Two-Column Layout -->
+    <div class="main-layout">
+      <!-- ═══ Left Column: Input + Papers ═══ -->
+      <div class="main-col">
+        <!-- Input Section -->
+        <div class="input-section">
+          <div class="form-group" style="margin-bottom:10px">
+            <label data-i18n="label_arxiv">arXiv 论文链接或 ID</label>
+            <div class="input-row">
+              <input type="text" id="arxivUrl" data-i18n-placeholder="placeholder_arxiv"
+                placeholder="https://arxiv.org/abs/2603.03251 或直接输入 ID">
+              <button class="btn btn-primary" id="runBtn" onclick="startAgent()">
+                🚀 <span data-i18n="btn_run">开始解读</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <div class="form-group" id="baseUrlGroup">
-          <label>Base URL <span style="font-weight:400;text-transform:none;letter-spacing:0" data-i18n="label_baseurl_hint">(可选，自定义 API 地址)</span></label>
-          <input type="text" id="baseUrl" placeholder="https://api.openai.com/v1">
+        <!-- Status Bar -->
+        <div class="status-bar" id="statusBar">
+          <div class="spinner"></div>
+          <span id="statusText" data-i18n="status_preparing">准备中...</span>
         </div>
 
-        <div class="form-group">
-          <label>Temperature</label>
-          <div class="slider-row">
-            <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.3">
-            <span class="slider-val" id="tempValue">0.3</span>
+        <!-- Result Card -->
+        <div class="result-card card" id="resultCard">
+          <div class="result-icon">✅</div>
+          <div class="result-title" data-i18n="result_title">论文解读完成！</div>
+          <div class="result-sub" id="resultSub"></div>
+          <a class="btn-download" id="downloadBtn" href="#" target="_blank">
+            📄 <span data-i18n="btn_download">下载 PDF 报告</span>
+          </a>
+        </div>
+
+        <!-- Agent Panel -->
+        <div class="agent-panel card" id="agentPanel">
+          <div class="card-title">🧠 <span data-i18n="title_agent_log">Agent 推理过程</span></div>
+          <div class="agent-log" id="agentLog"></div>
+        </div>
+
+        <!-- ═══ Papers List (HF-style) ═══ -->
+        <div class="papers-section">
+          <div class="papers-header">
+            <div class="papers-header-left">
+              <div class="papers-title">📚 <span data-i18n="title_history">已生成的报告</span></div>
+              <div class="papers-count" id="papersCount" style="display:none"></div>
+            </div>
+            <div class="sort-controls" id="sortControls" style="display:none">
+              <button class="sort-btn active" data-sort="generated" onclick="sortPapers('generated')"
+                data-i18n="sort_generated">生成时间</button>
+              <button class="sort-btn" data-sort="published" onclick="sortPapers('published')"
+                data-i18n="sort_published">发布时间</button>
+              <button class="sort-btn" data-sort="title" onclick="sortPapers('title')"
+                data-i18n="sort_title">标题</button>
+            </div>
+          </div>
+          <div id="papersList"></div>
+        </div>
+      </div>
+
+      <!-- ═══ Right Column: Sidebar Config ═══ -->
+      <div class="sidebar" id="sidebar">
+        <button class="btn btn-outline sidebar-toggle" onclick="toggleSidebar()" data-i18n="btn_toggle_config">⚙️
+          配置面板</button>
+
+        <!-- LLM Config -->
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-title">🤖 <span data-i18n="title_llm">LLM 配置</span></div>
+          <div class="form-group">
+            <label>Provider</label>
+            <select id="provider">
+              <optgroup data-i18n-label="group_commercial" label="商业 API">
+                <option value="openai">OpenAI</option>
+                <option value="claude">Claude (Anthropic)</option>
+                <option value="gemini">Gemini (Google)</option>
+                <option value="openrouter">OpenRouter</option>
+              </optgroup>
+              <optgroup data-i18n-label="group_china" label="国内服务">
+                <option value="deepseek">DeepSeek</option>
+                <option value="kimi">Kimi (Moonshot)</option>
+                <option value="dashscope" data-i18n="provider_dashscope">通义千问 (DashScope)</option>
+                <option value="dashscope-coding" data-i18n="provider_dashscope_coding">百炼 Coding Plan</option>
+                <option value="siliconflow" data-i18n="provider_siliconflow">SiliconFlow 硅基流动</option>
+              </optgroup>
+              <optgroup data-i18n-label="group_local" label="本地 / 自部署">
+                <option value="ollama" data-i18n="provider_ollama">Ollama (本地)</option>
+                <option value="vllm">vLLM</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group">
+            <label data-i18n="label_model">模型</label>
+            <select id="modelPreset" style="display:none" onchange="onModelPresetChange()"></select>
+            <input type="text" id="model" placeholder="gpt-5.4-mini" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label>API Key</label>
+            <div class="pw-wrap">
+              <input type="password" id="apiKey" placeholder="sk-...">
+              <button class="pw-toggle" onclick="toggleApiKey()" data-i18n-title="toggle_show_hide"
+                title="显示/隐藏">👁</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Base URL <span style="font-weight:400" data-i18n="label_baseurl_hint">(可选)</span></label>
+            <input type="text" id="baseUrl" placeholder="https://api.openai.com/v1">
+          </div>
+          <div class="form-group">
+            <label>Temperature</label>
+            <div class="slider-row">
+              <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.3">
+              <span class="slider-val" id="tempValue">0.3</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Template & Language -->
-      <div class="card">
-        <div class="card-title">🎨 <span data-i18n="title_template">模板与语言</span></div>
-
-        <div class="form-group">
-          <label data-i18n="label_latex_template">LaTeX 模板</label>
-          <select id="template">
-            <option value="Modern Colorful" data-i18n="loading">加载中...</option>
-          </select>
+        <!-- Template & Language -->
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-title">🎨 <span data-i18n="title_template">模板与语言</span></div>
+          <div class="form-group">
+            <label data-i18n="label_latex_template">LaTeX 模板</label>
+            <select id="template">
+              <option value="Modern Colorful" data-i18n="loading">加载中...</option>
+            </select>
+          </div>
+          <div id="templateInfo"
+            style="margin-top:8px; padding:8px 10px; background:var(--bg-page); border-radius:6px; color:var(--ink-3); font-size:.78rem; border:1px solid var(--border-light);"
+            data-i18n="template_info_hint">
+            选择模板后将显示详细信息
+          </div>
+          <div class="form-group" style="margin-top:12px">
+            <label data-i18n="label_report_lang">🌐 报告语言</label>
+            <select id="language">
+              <option value="中文">🇨🇳 中文</option>
+              <option value="English">🇺🇸 English</option>
+              <option value="日本語">🇯🇵 日本語</option>
+              <option value="한국어">🇰🇷 한국어</option>
+              <option value="Français">🇫🇷 Français</option>
+              <option value="Deutsch">🇩🇪 Deutsch</option>
+              <option value="Español">🇪🇸 Español</option>
+            </select>
+          </div>
         </div>
 
-        <div id="templateInfo"
-          style="margin-top:10px; padding:10px 12px; background:var(--bg-subtle); border-radius:var(--r-sm); color:var(--ink-3); font-size:.8rem; border:1px solid var(--border-light);"
-          data-i18n="template_info_hint">
-          选择模板后将显示详细信息
-        </div>
-
-        <div class="form-group" style="margin-top:16px;">
-          <label data-i18n="label_report_lang">🌐 报告语言</label>
-          <select id="language">
-            <option value="中文">🇨🇳 中文</option>
-            <option value="English">🇺🇸 English</option>
-            <option value="日本語">🇯🇵 日本語</option>
-            <option value="한국어">🇰🇷 한국어</option>
-            <option value="Français">🇫🇷 Français</option>
-            <option value="Deutsch">🇩🇪 Deutsch</option>
-            <option value="Español">🇪🇸 Español</option>
-          </select>
-        </div>
+        <!-- Save Config -->
+        <button class="btn btn-outline" id="saveConfigBtn" onclick="saveConfigToServer()" style="width:100%">
+          <span id="saveConfigText" data-i18n="btn_save_config">💾 保存配置</span>
+        </button>
       </div>
-    </div>
-
-    <!-- Run + Save -->
-    <div style="display:flex; gap:10px; align-items:center;">
-      <button class="btn btn-primary" id="runBtn" onclick="startAgent()" style="flex:1;">
-        🚀 <span data-i18n="btn_run">开始解读</span>
-      </button>
-      <button class="btn btn-save" id="saveConfigBtn" onclick="saveConfigToServer()">
-        <span id="saveConfigText" data-i18n="btn_save_config">💾 保存配置</span>
-      </button>
-    </div>
-
-    <!-- ═══ Bookshelf Gallery ═══ -->
-    <div class="bookshelf-section" id="bookshelfSection">
-      <div class="bookshelf-header">
-        <div class="bookshelf-title">📚 <span data-i18n="title_history">已生成的报告</span></div>
-        <div class="bookshelf-count" id="bookshelfCount"></div>
-      </div>
-      <div class="bookshelf" id="bookshelf">
-        <div class="bookshelf-track" id="bookshelfTrack"></div>
-        <div class="shelf-surface"></div>
-        <button class="shelf-arrow shelf-arrow-left" onclick="scrollShelf(-1)">‹</button>
-        <button class="shelf-arrow shelf-arrow-right" onclick="scrollShelf(1)">›</button>
-      </div>
-    </div>
-
-    <!-- Status Bar -->
-    <div class="status-bar" id="statusBar">
-      <div class="spinner"></div>
-      <span id="statusText" data-i18n="status_preparing">准备中...</span>
-    </div>
-
-    <!-- Agent Panel -->
-    <div class="agent-panel card" id="agentPanel">
-      <div class="card-title">🧠 <span data-i18n="title_agent_log">Agent 推理过程</span></div>
-      <div class="agent-log" id="agentLog"></div>
-    </div>
-
-    <!-- Result Card -->
-    <div class="result-card card" id="resultCard">
-      <div class="result-icon">✅</div>
-      <div class="result-title" data-i18n="result_title">论文解读完成！</div>
-      <div class="result-sub" id="resultSub"></div>
-      <a class="btn btn-download" id="downloadBtn" href="#" target="_blank">
-        📄 <span data-i18n="btn_download">下载 PDF 报告</span>
-      </a>
     </div>
   </div>
 
@@ -764,12 +1118,13 @@
     // ─── i18n ──────────────────────────────────
     const I18N = {
       zh: {
+        page_title: '📄 论文解读报告',
         subtitle: 'arXiv 论文智能解读 — LangGraph ReAct Agent',
         label_arxiv: 'arXiv 论文链接或 ID',
-        placeholder_arxiv: 'https://arxiv.org/abs/2603.03251 或直接输入 2603.03251',
+        placeholder_arxiv: 'https://arxiv.org/abs/2603.03251 或直接输入 ID',
         title_llm: 'LLM 配置',
         label_model: '模型',
-        label_baseurl_hint: '(可选，自定义 API 地址)',
+        label_baseurl_hint: '(可选)',
         toggle_show_hide: '显示/隐藏',
         title_template: '模板与语言',
         label_latex_template: 'LaTeX 模板',
@@ -778,8 +1133,9 @@
         title_history: '已生成的报告',
         loading: '加载中...',
         btn_run: '开始解读',
-        btn_running: 'Agent 运行中...',
+        btn_running: '运行中...',
         btn_save_config: '💾 保存配置',
+        btn_toggle_config: '⚙️ 配置面板',
         save_config_ok: '✅ 已保存',
         save_config_fail: '❌ 保存失败',
         status_preparing: '准备中...',
@@ -788,8 +1144,10 @@
         btn_download: '下载 PDF 报告',
         no_reports: '暂无已生成的报告，解读论文后将展示在这里',
         load_failed: '加载失败',
-        download_pdf: '下载 PDF →',
-        no_pdf: '无 PDF',
+        read_original: '阅读原文',
+        read_report: '阅读报告',
+        delete_paper: '删除',
+        no_pdf: '处理中',
         log_send: '🚀 发送请求',
         log_stream_error: '流读取错误',
         log_connect_error: '连接失败',
@@ -801,15 +1159,21 @@
         provider_dashscope_coding: '百炼 Coding Plan',
         provider_siliconflow: 'SiliconFlow 硅基流动',
         provider_ollama: 'Ollama (本地)',
-        shelf_count: '{n} 份报告',
+        shelf_count: '{n} 份',
+        confirm_delete: '确定删除论文 {id} 的所有文件？',
+        sort_generated: '生成时间',
+        sort_published: '发布时间',
+        sort_title: '标题',
+        untitled: '（无标题）',
       },
       en: {
+        page_title: '📄 Paper Interpretations',
         subtitle: 'AI-Powered arXiv Paper Interpretation — LangGraph ReAct Agent',
         label_arxiv: 'arXiv Paper URL or ID',
-        placeholder_arxiv: 'https://arxiv.org/abs/2603.03251 or enter ID 2603.03251',
+        placeholder_arxiv: 'https://arxiv.org/abs/2603.03251 or enter ID',
         title_llm: 'LLM Settings',
         label_model: 'Model',
-        label_baseurl_hint: '(optional, custom API endpoint)',
+        label_baseurl_hint: '(optional)',
         toggle_show_hide: 'Show/Hide',
         title_template: 'Template & Language',
         label_latex_template: 'LaTeX Template',
@@ -817,19 +1181,22 @@
         label_report_lang: '🌐 Report Language',
         title_history: 'Generated Reports',
         loading: 'Loading...',
-        btn_run: 'Start Interpretation',
-        btn_running: 'Agent Running...',
+        btn_run: 'Interpret',
+        btn_running: 'Running...',
         btn_save_config: '💾 Save Config',
+        btn_toggle_config: '⚙️ Settings',
         save_config_ok: '✅ Saved',
-        save_config_fail: '❌ Save failed',
+        save_config_fail: '❌ Failed',
         status_preparing: 'Preparing...',
         title_agent_log: 'Agent Reasoning',
         result_title: 'Interpretation Complete!',
-        btn_download: 'Download PDF Report',
+        btn_download: 'Download PDF',
         no_reports: 'No reports yet — interpret a paper to see it here',
         load_failed: 'Failed to load',
-        download_pdf: 'Download PDF →',
-        no_pdf: 'No PDF',
+        read_original: 'Original',
+        read_report: 'Report',
+        delete_paper: 'Delete',
+        no_pdf: 'Processing',
         log_send: '🚀 Sending request',
         log_stream_error: 'Stream read error',
         log_connect_error: 'Connection failed',
@@ -841,7 +1208,12 @@
         provider_dashscope_coding: 'Bailian Coding Plan',
         provider_siliconflow: 'SiliconFlow',
         provider_ollama: 'Ollama (Local)',
-        shelf_count: '{n} reports',
+        shelf_count: '{n}',
+        confirm_delete: 'Delete all files for paper {id}?',
+        sort_generated: 'Generated',
+        sort_published: 'Published',
+        sort_title: 'Title',
+        untitled: '(Untitled)',
       },
     };
 
@@ -869,28 +1241,26 @@
         const key = el.getAttribute('data-i18n-label');
         if (I18N[lang][key] !== undefined) el.label = I18N[lang][key];
       });
-      document.title = lang === 'zh' ? 'Scholar Granny — arXiv 论文智能解读' : 'Scholar Granny — AI Paper Interpretation';
-      // Re-render bookshelf for language switch
-      if (window._cachedPapers) renderBookshelf(window._cachedPapers);
+      document.title = lang === 'zh' ? 'Paper Granny — arXiv 论文智能解读' : 'Paper Granny — AI Paper Interpretation';
+      if (window._cachedPapers) renderPapers(window._cachedPapers);
     }
 
     // ─── Provider Presets ─────────────────────
     const PROVIDER_DEFAULTS = {
-      openai:             { model: 'gpt-5.4-mini',            basePlaceholder: 'https://api.openai.com/v1', suggestions: ['gpt-5.4', 'gpt-5.4-mini', 'gpt-5.4-nano'] },
-      claude:             { model: 'claude-sonnet-4-20250514', basePlaceholder: 'https://api.anthropic.com' },
-      gemini:             { model: 'gemini-2.5-flash',         basePlaceholder: '' },
-      openrouter:         { model: 'google/gemini-2.5-flash',  basePlaceholder: 'https://openrouter.ai/api/v1' },
-      deepseek:           { model: 'deepseek-chat',            basePlaceholder: 'https://api.deepseek.com/v1' },
-      kimi:               { model: 'moonshot-v1-128k',         basePlaceholder: 'https://api.moonshot.cn/v1' },
-      dashscope:          { model: 'qwen-plus',                basePlaceholder: 'https://dashscope.aliyuncs.com/compatible-mode/v1' },
-      'dashscope-coding': { model: 'qwen-plus',                basePlaceholder: 'https://coding.dashscope.aliyuncs.com/v1' },
-      siliconflow:        { model: 'Qwen/Qwen3-8B',           basePlaceholder: 'https://api.siliconflow.cn/v1' },
-      ollama:             { model: 'llama3',                   basePlaceholder: 'http://localhost:11434/v1' },
-      vllm:               { model: '',                         basePlaceholder: 'http://localhost:8000/v1' },
+      openai: { model: 'gpt-5.4-mini', basePlaceholder: 'https://api.openai.com/v1', suggestions: ['gpt-5.4', 'gpt-5.4-mini', 'gpt-5.4-nano'] },
+      claude: { model: 'claude-sonnet-4-20250514', basePlaceholder: 'https://api.anthropic.com' },
+      gemini: { model: 'gemini-2.5-flash', basePlaceholder: '' },
+      openrouter: { model: 'google/gemini-2.5-flash', basePlaceholder: 'https://openrouter.ai/api/v1' },
+      deepseek: { model: 'deepseek-chat', basePlaceholder: 'https://api.deepseek.com/v1' },
+      kimi: { model: 'moonshot-v1-128k', basePlaceholder: 'https://api.moonshot.cn/v1' },
+      dashscope: { model: 'qwen-plus', basePlaceholder: 'https://dashscope.aliyuncs.com/compatible-mode/v1' },
+      'dashscope-coding': { model: 'qwen-plus', basePlaceholder: 'https://coding.dashscope.aliyuncs.com/v1' },
+      siliconflow: { model: 'Qwen/Qwen3-8B', basePlaceholder: 'https://api.siliconflow.cn/v1' },
+      ollama: { model: 'llama3', basePlaceholder: 'http://localhost:11434/v1' },
+      vllm: { model: '', basePlaceholder: 'http://localhost:8000/v1' },
     };
 
     let running = false;
-    let eventSource = null;
     const STORAGE_KEY = 'scholar_granny_settings';
 
     function saveSettings() {
@@ -907,12 +1277,10 @@
     async function saveConfigToServer() {
       const btn = document.getElementById('saveConfigBtn');
       const textEl = document.getElementById('saveConfigText');
-      btn.disabled = true;
-      textEl.textContent = '⏳ ...';
+      btn.disabled = true; textEl.textContent = '⏳ ...';
       try {
         const res = await fetch('/api/config', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             provider: document.getElementById('provider').value,
             model: document.getElementById('model').value,
@@ -943,17 +1311,19 @@
         }
         if (s.language) document.getElementById('language').value = s.language;
         onProviderChange();
-      } catch (e) {}
+      } catch (e) { }
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
     }
 
     // ─── Init ─────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
       const savedLang = localStorage.getItem('scholar_granny_ui_lang');
       if (savedLang && I18N[savedLang]) switchLang(savedLang);
-      loadTemplates();
-      loadPapers();
-      loadConfig();
-      ['provider','model','apiKey','baseUrl','temperature','language'].forEach(id => {
+      loadTemplates(); loadPapers(); loadConfig();
+      ['provider', 'model', 'apiKey', 'baseUrl', 'temperature', 'language'].forEach(id => {
         document.getElementById(id).addEventListener('change', saveSettings);
         document.getElementById(id).addEventListener('input', saveSettings);
       });
@@ -975,78 +1345,113 @@
         sel.innerHTML = '';
         data.templates.forEach(t => {
           const opt = document.createElement('option');
-          opt.value = t.name;
-          opt.textContent = `${t.name} (${t.size_kb} KB)`;
+          opt.value = t.name; opt.textContent = `${t.name} (${t.size_kb} KB)`;
           sel.appendChild(opt);
         });
         onTemplateChange();
-      } catch (e) {}
+      } catch (e) { }
     }
 
-    // ─── Bookshelf ────────────────────────────
+    // ─── Papers List (HF-style) ──────────────
     window._cachedPapers = [];
+    let currentSort = 'generated';
 
     async function loadPapers() {
       try {
         const data = await (await fetch('/api/papers')).json();
         window._cachedPapers = data.papers;
-        renderBookshelf(data.papers);
+        renderPapers(data.papers);
       } catch (e) {
-        document.getElementById('bookshelfTrack').innerHTML =
-          `<div class="bookshelf-empty"><div class="bookshelf-empty-icon">📚</div>${t('load_failed')}</div>`;
+        document.getElementById('papersList').innerHTML =
+          `<div class="papers-empty"><div class="papers-empty-icon">📚</div>${t('load_failed')}</div>`;
       }
     }
 
-    function renderBookshelf(papers) {
-      const track = document.getElementById('bookshelfTrack');
-      const countEl = document.getElementById('bookshelfCount');
+    function sortPapers(mode) {
+      currentSort = mode;
+      // Update button active states
+      document.querySelectorAll('.sort-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.sort === mode);
+      });
+      renderPapers(window._cachedPapers);
+    }
+
+    function getSorted(papers) {
+      const list = [...papers];
+      switch (currentSort) {
+        case 'generated':
+          return list.sort((a, b) => (b.generated || '').localeCompare(a.generated || ''));
+        case 'published':
+          return list.sort((a, b) => (b.published || '').localeCompare(a.published || ''));
+        case 'title':
+          return list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        default:
+          return list;
+      }
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function renderPapers(papers) {
+      const listEl = document.getElementById('papersList');
+      const countEl = document.getElementById('papersCount');
+      const sortEl = document.getElementById('sortControls');
 
       if (!papers.length) {
-        track.innerHTML = '';
-        document.getElementById('bookshelf').innerHTML =
-          `<div class="bookshelf-empty"><div class="bookshelf-empty-icon">📚</div>${t('no_reports')}</div>`;
-        countEl.textContent = '';
+        listEl.innerHTML = `<div class="papers-empty"><div class="papers-empty-icon">📚</div>${t('no_reports')}</div>`;
+        countEl.style.display = 'none';
+        sortEl.style.display = 'none';
         return;
       }
 
       countEl.textContent = t('shelf_count').replace('{n}', papers.length);
+      countEl.style.display = '';
+      sortEl.style.display = 'flex';
 
-      // Restore bookshelf structure if it was replaced by empty state
-      const shelf = document.getElementById('bookshelf');
-      if (!shelf.querySelector('.bookshelf-track')) {
-        shelf.innerHTML = `
-          <div class="bookshelf-track" id="bookshelfTrack"></div>
-          <div class="shelf-surface"></div>
-          <button class="shelf-arrow shelf-arrow-left" onclick="scrollShelf(-1)">‹</button>
-          <button class="shelf-arrow shelf-arrow-right" onclick="scrollShelf(1)">›</button>`;
-      }
-      const realTrack = document.getElementById('bookshelfTrack');
+      const sorted = getSorted(papers);
 
-      realTrack.innerHTML = papers.map(p => `
-        <div class="book" title="${p.arxiv_id}">
-          <div class="book-cover" onclick="${p.has_pdf ? `window.open('/api/papers/${p.arxiv_id}/pdf','_blank')` : ''}" style="${p.has_pdf ? 'cursor:pointer' : ''}">
-            <button class="book-delete" onclick="event.stopPropagation();deletePaper('${p.arxiv_id}')" title="${currentLang === 'zh' ? '删除' : 'Delete'}">✕</button>
-            ${p.has_pdf ? `<span class="book-badge">PDF</span>` : ''}
-            ${p.has_pdf
-              ? `<img src="/api/papers/${p.arxiv_id}/thumbnail" alt="${p.arxiv_id}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="book-cover-placeholder" style="display:none"><span class="pdf-icon">📄</span><span class="pdf-label">${p.arxiv_id}</span></div>`
-              : `<div class="book-cover-placeholder"><span class="pdf-icon">📝</span><span class="pdf-label">${currentLang === 'zh' ? '生成中' : 'Pending'}</span></div>`
-            }
+      listEl.innerHTML = sorted.map(p => {
+        const title = p.title || t('untitled');
+        const hasAbstract = p.abstract && p.abstract.length > 0;
+        const abstractText = hasAbstract ? escHtml(p.abstract) : '';
+        const arxivUrl = `https://arxiv.org/abs/${p.arxiv_id}`;
+        const thumbUrl = `/api/papers/${p.arxiv_id}/thumbnail`;
+
+        return `
+        <div class="paper-card">
+          <button class="paper-delete" onclick="deletePaper('${p.arxiv_id}')" title="${t('delete_paper')}">✕</button>
+          <div class="paper-thumb" onclick="window.open('${arxivUrl}','_blank')">
+            <img src="${thumbUrl}" alt="${p.arxiv_id}"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="paper-thumb-placeholder" style="display:none">📄</div>
           </div>
-          <div class="book-id">${p.arxiv_id}</div>
-        </div>
-      `).join('');
-    }
-
-    function scrollShelf(dir) {
-      const track = document.getElementById('bookshelfTrack');
-      if (track) track.scrollBy({ left: dir * 360, behavior: 'smooth' });
+          <div class="paper-info">
+            <a class="paper-title-link" href="${arxivUrl}" target="_blank">${escHtml(title)}</a>
+            <div class="paper-meta-row">
+              <span class="paper-arxiv-id">${p.arxiv_id}</span>
+              ${p.has_pdf ? `<span class="sep">·</span><span class="paper-pdf-badge">PDF</span>` : ''}
+              ${p.authors ? `<span class="sep">·</span><span>${escHtml(p.authors)}</span>` : ''}
+              ${p.published ? `<span class="sep">·</span><span>${p.published}</span>` : ''}
+              ${p.generated ? `<span class="sep">·</span><span>⏱ ${p.generated}</span>` : ''}
+            </div>
+            ${hasAbstract ? `<div class="paper-abstract">${abstractText}</div>` : ''}
+            <div class="paper-actions">
+              <a class="paper-action-btn" href="${arxivUrl}" target="_blank">📄 ${t('read_original')}</a>
+              ${p.has_pdf
+            ? `<a class="paper-action-btn primary" href="/api/papers/${p.arxiv_id}/pdf" target="_blank">📖 ${t('read_report')}</a>`
+            : ''
+          }
+              <button class="paper-action-btn danger" onclick="deletePaper('${p.arxiv_id}')">🗑 ${t('delete_paper')}</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
     }
 
     async function deletePaper(arxivId) {
-      const msg = currentLang === 'zh'
-        ? `确定删除论文 ${arxivId} 的所有文件（源码、报告、PDF）？`
-        : `Delete all files for paper ${arxivId} (source, report, PDF)?`;
-      if (!confirm(msg)) return;
+      if (!confirm(t('confirm_delete').replace('{id}', arxivId))) return;
       try {
         const res = await fetch(`/api/papers/${arxivId}`, { method: 'DELETE' });
         const data = await res.json();
@@ -1070,7 +1475,7 @@
           if (p.base_url) document.getElementById('baseUrl').value = p.base_url;
         }
         onProviderChange();
-      } catch (e) {}
+      } catch (e) { }
       restoreSettings();
     }
 
@@ -1089,16 +1494,13 @@
       const modelSelect = document.getElementById('modelPreset');
       const cfg = PROVIDER_DEFAULTS[provider] || PROVIDER_DEFAULTS.openai;
       document.getElementById('baseUrl').placeholder = cfg.basePlaceholder;
-
       const suggestions = cfg.suggestions || [];
       if (suggestions.length > 0) {
         modelSelect.innerHTML = '';
         suggestions.forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = m; modelSelect.appendChild(o); });
         const co = document.createElement('option'); co.value = '__custom__'; co.textContent = 'Custom…'; modelSelect.appendChild(co);
-        modelSelect.style.display = '';
-        modelInput.style.display = 'none';
+        modelSelect.style.display = ''; modelInput.style.display = 'none';
       } else { modelSelect.style.display = 'none'; modelInput.style.display = ''; }
-
       const saved = savedProviders[provider];
       let targetModel = (saved && saved.model) ? saved.model : cfg.model;
       if (suggestions.length > 0) {
@@ -1106,7 +1508,6 @@
         if (match) { modelSelect.value = match; modelInput.style.display = 'none'; modelInput.value = match; }
         else { modelSelect.value = '__custom__'; modelInput.style.display = ''; modelInput.value = targetModel; }
       } else { modelInput.value = targetModel; }
-
       if (saved) { document.getElementById('apiKey').value = saved.api_key || ''; document.getElementById('baseUrl').value = saved.base_url || ''; }
       else { document.getElementById('apiKey').value = ''; document.getElementById('baseUrl').value = ''; }
     }
@@ -1114,7 +1515,7 @@
     function onTemplateChange() {
       const name = document.getElementById('template').value;
       document.getElementById('templateInfo').innerHTML =
-        `<strong>📄 ${name}</strong><br><span style="color:var(--ink-4)">${currentLang === 'zh' ? '使用此模板的配色方案和盒子样式生成解读报告' : 'Generate report using this template\'s color scheme and box styles'}</span>`;
+        `<strong>📄 ${name}</strong><br><span style="color:var(--ink-4)">${currentLang === 'zh' ? '使用此模板的配色方案和盒子样式' : 'Uses this template\'s color scheme'}</span>`;
     }
 
     function toggleApiKey() {
@@ -1147,27 +1548,26 @@
       };
       addLog('status', `${t('log_send')}: ${body.provider}/${body.model} → ${url}`);
 
-      fetch('/api/run', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) })
-      .then(response => {
-        if (!response.ok) return response.text().then(text => { throw new Error(`${t('server_error')} (${response.status}): ${text}`); });
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-        function pump() {
-          reader.read().then(({done, value}) => {
-            if (done) { onFinish(); return; }
-            buffer += decoder.decode(value, {stream:true}).replace(/\r\n/g, '\n');
-            let idx;
-            while ((idx = buffer.indexOf('\n\n')) !== -1) {
-              const block = buffer.slice(0, idx);
-              buffer = buffer.slice(idx + 2);
-              if (block.trim()) processSSEBlock(block);
-            }
-            pump();
-          }).catch(err => { addLog('error', `${t('log_stream_error')}: ${err.message}`); onFinish(); });
-        }
-        pump();
-      }).catch(err => { addLog('error', `${t('log_connect_error')}: ${err.message}`); onFinish(); });
+      fetch('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+        .then(response => {
+          if (!response.ok) return response.text().then(text => { throw new Error(`${t('server_error')} (${response.status}): ${text}`); });
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+          function pump() {
+            reader.read().then(({ done, value }) => {
+              if (done) { onFinish(); return; }
+              buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n');
+              let idx;
+              while ((idx = buffer.indexOf('\n\n')) !== -1) {
+                const block = buffer.slice(0, idx); buffer = buffer.slice(idx + 2);
+                if (block.trim()) processSSEBlock(block);
+              }
+              pump();
+            }).catch(err => { addLog('error', `${t('log_stream_error')}: ${err.message}`); onFinish(); });
+          }
+          pump();
+        }).catch(err => { addLog('error', `${t('log_connect_error')}: ${err.message}`); onFinish(); });
     }
 
     function processSSEBlock(block) {
@@ -1178,7 +1578,7 @@
       }
       if (!data) return;
       let payload;
-      try { payload = JSON.parse(data); } catch(e) { return; }
+      try { payload = JSON.parse(data); } catch (e) { return; }
       switch (eventType) {
         case 'status': document.getElementById('statusText').textContent = payload.message; addLog('status', payload.message); break;
         case 'task': break;
@@ -1227,19 +1627,17 @@
         header.innerHTML = `<span class="pulse"></span> ${toolName || 'write_file'} ${currentLang === 'zh' ? '生成中...' : 'generating...'}`;
         toolStreamingEl.appendChild(header);
         toolStreamingContent = document.createElement('div');
-        toolStreamingContent.style.cssText = 'max-height:140px; overflow-y:auto;';
+        toolStreamingContent.style.cssText = 'max-height:130px; overflow-y:auto;';
         toolStreamingEl.appendChild(toolStreamingContent);
         toolStreamingStats = document.createElement('div');
         toolStreamingStats.className = 'streaming-stats';
         toolStreamingEl.appendChild(toolStreamingStats);
         log.appendChild(toolStreamingEl);
-        toolStreamingCharCount = 0;
-        toolStreamingStartTime = Date.now();
-        lastThinkingEl = null;
+        toolStreamingCharCount = 0; toolStreamingStartTime = Date.now(); lastThinkingEl = null;
       }
       toolStreamingCharCount += text.length;
       toolStreamingContent.textContent += text;
-      toolStreamingStats.textContent = `${toolStreamingCharCount.toLocaleString()} chars · ${((Date.now()-toolStreamingStartTime)/1000).toFixed(1)}s`;
+      toolStreamingStats.textContent = `${toolStreamingCharCount.toLocaleString()} chars · ${((Date.now() - toolStreamingStartTime) / 1000).toFixed(1)}s`;
       toolStreamingContent.scrollTop = toolStreamingContent.scrollHeight;
       log.scrollTop = log.scrollHeight;
     }
@@ -1250,7 +1648,7 @@
         if (header) {
           const pulse = header.querySelector('.pulse');
           if (pulse) pulse.remove();
-          header.innerHTML = `✅ ${header.textContent.replace('生成中...','').replace('generating...','').trim()} ${currentLang === 'zh' ? '完成' : 'done'}`;
+          header.innerHTML = `✅ ${header.textContent.replace('生成中...', '').replace('generating...', '').trim()} ${currentLang === 'zh' ? '完成' : 'done'}`;
         }
       }
       toolStreamingEl = toolStreamingContent = toolStreamingStats = null;
@@ -1262,8 +1660,7 @@
         currentLang === 'zh' ? `论文 ${payload.arxiv_id} 解读完成` : `Paper ${payload.arxiv_id} interpretation complete`;
       if (payload.has_pdf && payload.pdf_url) {
         const btn = document.getElementById('downloadBtn');
-        btn.href = payload.pdf_url;
-        btn.style.display = 'inline-flex';
+        btn.href = payload.pdf_url; btn.style.display = 'inline-flex';
       } else { document.getElementById('downloadBtn').style.display = 'none'; }
       loadPapers();
     }
@@ -1274,8 +1671,7 @@
       btn.disabled = false;
       btn.innerHTML = `🚀 <span>${t('btn_run')}</span>`;
       document.getElementById('statusBar').classList.remove('active');
-      lastThinkingEl = null;
-      resetToolStreaming();
+      lastThinkingEl = null; resetToolStreaming();
     }
   </script>
 </body>
