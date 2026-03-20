@@ -162,6 +162,11 @@ def create_llm(
         if provider == "vllm" and not url:
             raise ValueError("vLLM provider 需要设置 base_url")
 
+        # 自动补全 /v1 后缀（OpenAI 兼容接口标准路径）
+        # 避免用户填写 https://host 而忘记写 /v1 导致请求被拦截
+        if url and not url.rstrip("/").endswith("/v1"):
+            url = url.rstrip("/") + "/v1"
+
         kwargs = {
             "model": model,
             "api_key": key,
@@ -172,6 +177,32 @@ def create_llm(
         }
         if url:
             kwargs["base_url"] = url
+
+        # ── 中转站兼容：覆盖 openai SDK 默认的 User-Agent ──
+        # 部分中转站/反向代理 WAF 会专门拦截 "User-Agent: OpenAI/Python"。
+        # openai SDK 会在 headers 之上强制写入自己的 UA，
+        # 必须用 httpx event_hooks 在请求发出前最后一刻修改，才能真正覆盖。
+        # 仅对自定义 base_url（非 OpenAI 官方）生效。
+        if url and "api.openai.com" not in url:
+            import httpx
+
+            # 同步客户端用同步函数
+            def _override_ua_sync(request: httpx.Request) -> None:
+                request.headers["user-agent"] = "python-httpx/0.27.0"
+
+            # 异步客户端必须用 async 函数，否则 httpx 异步路径会 Connection error
+            async def _override_ua_async(request: httpx.Request) -> None:
+                request.headers["user-agent"] = "python-httpx/0.27.0"
+
+            kwargs["http_client"] = httpx.Client(
+                event_hooks={"request": [_override_ua_sync]},
+                timeout=httpx.Timeout(300.0),
+            )
+            kwargs["http_async_client"] = httpx.AsyncClient(
+                event_hooks={"request": [_override_ua_async]},
+                timeout=httpx.Timeout(300.0),
+            )
+
         return ChatOpenAI(**kwargs)
 
     # ── 不支持 ──

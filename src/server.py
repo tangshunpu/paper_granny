@@ -388,6 +388,23 @@ async def run_agent_sse(request: Request):
     template_name = body.get("template", "ModernColorful")
     language = body.get("language", "中文")
 
+    # ── 如果 api_key 是脱敏值（前端显示用，非真实 key），从本地配置读取真实 key ──
+    # 同时从本地配置补全 base_url（中转站场景：用户保存过 base_url 但未在请求中重新输入）
+    if _is_masked(api_key) or not base_url:
+        import yaml as _yaml
+        project_root = Path(__file__).parent.parent
+        local_config_path = project_root / "config.local.yaml"
+        if local_config_path.exists():
+            try:
+                _local_raw = _yaml.safe_load(local_config_path.read_text(encoding="utf-8")) or {}
+                _p_cfg = _local_raw.get("providers", {}).get(provider, {})
+                if _is_masked(api_key) and _p_cfg.get("api_key"):
+                    api_key = _p_cfg["api_key"]
+                if not base_url and _p_cfg.get("base_url"):
+                    base_url = _p_cfg["base_url"]
+            except Exception:
+                pass
+
     if not arxiv_url:
         return JSONResponse({"error": "arxiv_url is required"}, status_code=400)
 
