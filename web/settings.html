@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper Granny — Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #ffffff;
+      --bg-page: #f5f5f5;
+      --bg-hover: #f7f7f7;
+      --bg-input: #ffffff;
+      --border: #e5e7eb;
+      --border-light: #eee;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+      --ink: #1a1a2e;
+      --ink-2: #374151;
+      --ink-3: #6b7280;
+      --ink-4: #9ca3af;
+      --yellow: #ff9d00;
+      --yellow-hover: #e68e00;
+      --yellow-bg: #fff8ee;
+      --yellow-border: #ffe4b5;
+      --blue: #2563eb;
+      --blue-bg: rgba(37, 99, 235, 0.06);
+      --green: #10b981;
+      --green-bg: rgba(16, 185, 129, 0.07);
+      --green-border: rgba(16, 185, 129, 0.2);
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.06);
+      --r: 12px;
+      --r-sm: 8px;
+      --r-lg: 16px;
+      --font: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --ease: cubic-bezier(.4, 0, .2, 1);
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg-page);
+      color: var(--ink);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ═══ Top Nav ═══ */
+    .topnav {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topnav-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topnav-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topnav-logo {
+      height: 28px;
+      border-radius: 6px;
+    }
+
+    .topnav-brand {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .topnav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link {
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--ink-3);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: all .15s;
+    }
+
+    .nav-link:hover {
+      background: var(--bg-hover);
+      color: var(--ink);
+    }
+
+    .nav-link.active {
+      background: var(--yellow-bg);
+      color: var(--yellow-hover);
+      border: 1px solid var(--yellow-border);
+    }
+
+    /* ═══ Container ═══ */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .page-header {
+      padding: 28px 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .page-header-left h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .page-header-left p {
+      color: var(--ink-3);
+      font-size: .88rem;
+      margin-top: 2px;
+    }
+
+    /* ═══ Cards ═══ */
+    .card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-subtitle {
+      font-size: .78rem;
+      color: var(--ink-4);
+      font-weight: 400;
+    }
+
+    /* ═══ Provider List ═══ */
+    .provider-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+
+    .provider-item {
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all .15s;
+      position: relative;
+    }
+
+    .provider-item:hover {
+      border-color: var(--yellow-border);
+      background: var(--yellow-bg);
+    }
+
+    .provider-item.active {
+      border-color: var(--yellow);
+      background: var(--yellow-bg);
+      box-shadow: 0 0 0 2px rgba(255, 157, 0, 0.15);
+    }
+
+    .provider-item.configured::after {
+      content: '';
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .provider-name {
+      font-weight: 700;
+      font-size: .88rem;
+      margin-bottom: 2px;
+    }
+
+    .provider-desc {
+      font-size: .75rem;
+      color: var(--ink-4);
+    }
+
+    /* ═══ Config Form ═══ */
+    .config-form {
+      display: none;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .config-form.active {
+      display: block;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 16px;
+    }
+
+    .form-grid .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--ink-3);
+      margin-bottom: 4px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: .88rem;
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 3px rgba(255, 157, 0, 0.12);
+    }
+
+    input::placeholder {
+      color: var(--ink-4);
+    }
+
+    .pw-wrap {
+      position: relative;
+    }
+
+    .pw-wrap input {
+      padding-right: 36px;
+    }
+
+    .pw-toggle {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--ink-4);
+      cursor: pointer;
+      font-size: .88rem;
+      padding: 2px;
+    }
+
+    .pw-toggle:hover {
+      color: var(--ink-3);
+    }
+
+    /* ═══ Buttons ═══ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      border-radius: var(--r-sm);
+      font-family: var(--font);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s var(--ease);
+      font-size: .88rem;
+    }
+
+    .btn-primary {
+      background: var(--yellow);
+      color: #fff;
+      padding: 9px 20px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--yellow-hover);
+    }
+
+    .btn-primary:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .btn-outline {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--ink-2);
+      padding: 8px 14px;
+      font-size: .82rem;
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      border-color: var(--yellow-border);
+      background: var(--yellow-bg);
+      color: var(--yellow-hover);
+    }
+
+    .btn-danger {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--ink-3);
+      padding: 8px 14px;
+      font-size: .82rem;
+    }
+
+    .btn-danger:hover {
+      border-color: rgba(239, 68, 68, 0.3);
+      color: var(--red);
+      background: var(--red-bg);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    /* ═══ Default badge ═══ */
+    .default-badge {
+      display: inline-block;
+      font-size: .65rem;
+      font-weight: 700;
+      color: var(--yellow-hover);
+      background: var(--yellow-bg);
+      border: 1px solid var(--yellow-border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+    }
+
+    /* ═══ Template section ═══ */
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .template-item {
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .template-item:hover {
+      border-color: var(--yellow-border);
+      background: var(--yellow-bg);
+    }
+
+    .template-item.active {
+      border-color: var(--yellow);
+      background: var(--yellow-bg);
+    }
+
+    .template-name {
+      font-weight: 700;
+      font-size: .85rem;
+    }
+
+    .template-desc {
+      font-size: .72rem;
+      color: var(--ink-4);
+      margin-top: 2px;
+    }
+
+    /* ═══ Toast ═══ */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--ink);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: var(--r-sm);
+      font-size: .85rem;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .3s var(--ease);
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      background: var(--green);
+    }
+
+    .toast.error {
+      background: var(--red);
+    }
+
+    /* Slider */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slider-row input[type=range] {
+      flex: 1;
+      padding: 0;
+      height: 3px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--border);
+      border-radius: 2px;
+      border: none;
+    }
+
+    .slider-row input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      background: var(--yellow);
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    .slider-val {
+      min-width: 26px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--yellow-hover);
+      font-size: .82rem;
+      font-family: var(--mono);
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M5 7L1 3h8z' fill='%239ca3af'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 0 12px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .provider-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ═══ Top Navigation ═══ -->
+  <nav class="topnav">
+    <div class="topnav-inner">
+      <div class="topnav-left">
+        <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+          <img src="/static/logo.png" alt="Logo" class="topnav-logo">
+          <span class="topnav-brand">Paper Granny</span>
+        </a>
+      </div>
+      <div class="topnav-right">
+        <a href="/" class="nav-link" data-i18n="nav_home">Home</a>
+        <a href="/settings" class="nav-link active" data-i18n="nav_settings">Settings</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="page-header">
+      <div class="page-header-left">
+        <h1 data-i18n="settings_title">Settings</h1>
+        <p data-i18n="settings_subtitle">Manage your LLM providers, API keys, and default preferences</p>
+      </div>
+    </div>
+
+    <!-- ═══ Provider Configuration ═══ -->
+    <div class="card">
+      <div class="card-title">
+        LLM Providers
+        <span class="card-subtitle" data-i18n="providers_hint">Click a provider to configure it</span>
+      </div>
+
+      <div class="provider-grid" id="providerGrid"></div>
+
+      <!-- Config form (shown when a provider is selected) -->
+      <div class="config-form" id="configForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label data-i18n="label_model">Model</label>
+            <input type="text" id="cfgModel" placeholder="gpt-4o">
+          </div>
+          <div class="form-group">
+            <label>API Key</label>
+            <div class="pw-wrap">
+              <input type="password" id="cfgApiKey" placeholder="sk-...">
+              <button class="pw-toggle" onclick="togglePw('cfgApiKey')">&#128065;</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Base URL <span style="font-weight:400" data-i18n="label_optional">(optional)</span></label>
+            <input type="text" id="cfgBaseUrl" placeholder="https://api.openai.com/v1">
+          </div>
+          <div class="form-group">
+            <label>Temperature</label>
+            <div class="slider-row">
+              <input type="range" id="cfgTemperature" min="0" max="1" step="0.1" value="0.3">
+              <span class="slider-val" id="cfgTempValue">0.3</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="saveProvider()" data-i18n="btn_save">Save</button>
+          <button class="btn btn-outline" onclick="setAsDefault()" data-i18n="btn_set_default">Set as Default</button>
+          <button class="btn btn-danger" onclick="deleteProvider()" data-i18n="btn_delete">Delete Config</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Default Template ═══ -->
+    <div class="card">
+      <div class="card-title">
+        <span data-i18n="title_template">Default Template</span>
+      </div>
+      <div class="template-grid" id="templateGrid"></div>
+    </div>
+
+    <!-- ═══ Default Language ═══ -->
+    <div class="card">
+      <div class="card-title">
+        <span data-i18n="title_language">Default Language</span>
+      </div>
+      <div class="form-group" style="max-width:300px">
+        <select id="cfgLanguage" onchange="saveLanguage()">
+          <option value="中文">中文</option>
+          <option value="English">English</option>
+          <option value="日本語">日本語</option>
+          <option value="한국어">한국어</option>
+          <option value="Français">Français</option>
+          <option value="Deutsch">Deutsch</option>
+          <option value="Español">Español</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ═══ Provider presets ═══
+    const PROVIDER_PRESETS = {
+      openai: { label: 'OpenAI', desc: 'GPT-4o, GPT-4o-mini', defaultModel: 'gpt-5.4-mini', basePlaceholder: 'https://api.openai.com/v1', group: 'commercial' },
+      claude: { label: 'Claude (Anthropic)', desc: 'Claude Sonnet, Opus', defaultModel: 'claude-sonnet-4-20250514', basePlaceholder: 'https://api.anthropic.com', group: 'commercial' },
+      gemini: { label: 'Gemini (Google)', desc: 'Gemini 2.5 Flash/Pro', defaultModel: 'gemini-2.5-flash', basePlaceholder: '', group: 'commercial' },
+      openrouter: { label: 'OpenRouter', desc: 'Multi-provider gateway', defaultModel: 'google/gemini-2.5-flash', basePlaceholder: 'https://openrouter.ai/api/v1', group: 'commercial' },
+      deepseek: { label: 'DeepSeek', desc: 'DeepSeek-V3, Chat', defaultModel: 'deepseek-chat', basePlaceholder: 'https://api.deepseek.com/v1', group: 'china' },
+      kimi: { label: 'Kimi (Moonshot)', desc: 'Moonshot 128K', defaultModel: 'moonshot-v1-128k', basePlaceholder: 'https://api.moonshot.cn/v1', group: 'china' },
+      dashscope: { label: 'Qwen (DashScope)', desc: 'Qwen-Plus', defaultModel: 'qwen-plus', basePlaceholder: 'https://dashscope.aliyuncs.com/compatible-mode/v1', group: 'china' },
+      'dashscope-coding': { label: 'Bailian Coding', desc: 'Coding plan', defaultModel: 'qwen-plus', basePlaceholder: 'https://coding.dashscope.aliyuncs.com/v1', group: 'china' },
+      siliconflow: { label: 'SiliconFlow', desc: 'Qwen, Llama etc.', defaultModel: 'Qwen/Qwen3-8B', basePlaceholder: 'https://api.siliconflow.cn/v1', group: 'china' },
+      ollama: { label: 'Ollama', desc: 'Local inference', defaultModel: 'llama3', basePlaceholder: 'http://localhost:11434/v1', group: 'local' },
+      vllm: { label: 'vLLM', desc: 'Self-hosted', defaultModel: '', basePlaceholder: 'http://localhost:8000/v1', group: 'local' },
+    };
+
+    let savedProviders = {};
+    let currentProvider = null;
+    let defaultProvider = 'openai';
+    let defaultModel = '';
+    let defaultTemplate = 'ModernColorful';
+
+    // ═══ Init ═══
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadConfig();
+      renderProviders();
+      await loadTemplates();
+    });
+
+    async function loadConfig() {
+      try {
+        const cfg = await (await fetch('/api/config')).json();
+        savedProviders = cfg.providers || {};
+        defaultProvider = cfg.provider || 'openai';
+        defaultModel = cfg.model || '';
+        defaultTemplate = cfg.template || 'ModernColorful';
+
+        // Restore language
+        const lang = localStorage.getItem('scholar_granny_default_language');
+        if (lang) document.getElementById('cfgLanguage').value = lang;
+      } catch (e) {
+        console.error('Failed to load config:', e);
+      }
+    }
+
+    // ═══ Provider grid ═══
+    function renderProviders() {
+      const grid = document.getElementById('providerGrid');
+      const groups = { commercial: 'Commercial API', china: 'China Services', local: 'Local / Self-hosted' };
+      let html = '';
+
+      for (const [groupKey, groupLabel] of Object.entries(groups)) {
+        const providers = Object.entries(PROVIDER_PRESETS).filter(([, p]) => p.group === groupKey);
+        if (!providers.length) continue;
+        html += `<div style="grid-column:1/-1;font-size:.72rem;font-weight:700;color:var(--ink-4);text-transform:uppercase;letter-spacing:.05em;margin-top:4px">${groupLabel}</div>`;
+        for (const [key, preset] of providers) {
+          const isConfigured = !!savedProviders[key];
+          const isDefault = key === defaultProvider;
+          const isActive = key === currentProvider;
+          html += `
+            <div class="provider-item ${isActive ? 'active' : ''} ${isConfigured ? 'configured' : ''}"
+                 onclick="selectProvider('${key}')">
+              <div class="provider-name">${preset.label}${isDefault ? '<span class="default-badge">DEFAULT</span>' : ''}</div>
+              <div class="provider-desc">${preset.desc}${isConfigured ? ' &middot; configured' : ''}</div>
+            </div>`;
+        }
+      }
+      grid.innerHTML = html;
+    }
+
+    function selectProvider(key) {
+      currentProvider = key;
+      renderProviders();
+
+      const form = document.getElementById('configForm');
+      form.classList.add('active');
+
+      const preset = PROVIDER_PRESETS[key];
+      const saved = savedProviders[key] || {};
+
+      document.getElementById('cfgModel').value = saved.model || preset.defaultModel;
+      document.getElementById('cfgModel').placeholder = preset.defaultModel;
+      document.getElementById('cfgApiKey').value = saved.api_key || '';
+      document.getElementById('cfgBaseUrl').value = saved.base_url || '';
+      document.getElementById('cfgBaseUrl').placeholder = preset.basePlaceholder;
+      document.getElementById('cfgTemperature').value = saved.temperature || 0.3;
+      document.getElementById('cfgTempValue').textContent = saved.temperature || 0.3;
+    }
+
+    // ═══ Save provider ═══
+    async function saveProvider() {
+      if (!currentProvider) return;
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            provider: currentProvider,
+            model: document.getElementById('cfgModel').value,
+            api_key: document.getElementById('cfgApiKey').value,
+            base_url: document.getElementById('cfgBaseUrl').value || null,
+            temperature: parseFloat(document.getElementById('cfgTemperature').value),
+            template: defaultTemplate,
+          }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          showToast('Provider saved', 'success');
+          await loadConfig();
+          renderProviders();
+        } else {
+          showToast('Save failed', 'error');
+        }
+      } catch (e) {
+        showToast('Save failed: ' + e.message, 'error');
+      }
+    }
+
+    async function setAsDefault() {
+      if (!currentProvider) return;
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            provider: currentProvider,
+            model: document.getElementById('cfgModel').value,
+            api_key: document.getElementById('cfgApiKey').value,
+            base_url: document.getElementById('cfgBaseUrl').value || null,
+            temperature: parseFloat(document.getElementById('cfgTemperature').value),
+            template: defaultTemplate,
+          }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          defaultProvider = currentProvider;
+          showToast(`${PROVIDER_PRESETS[currentProvider].label} set as default`, 'success');
+          await loadConfig();
+          renderProviders();
+        }
+      } catch (e) {
+        showToast('Failed', 'error');
+      }
+    }
+
+    async function deleteProvider() {
+      if (!currentProvider) return;
+      try {
+        const res = await fetch('/api/config/provider/' + currentProvider, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.ok) {
+          showToast('Provider config deleted', 'success');
+          document.getElementById('configForm').classList.remove('active');
+          currentProvider = null;
+          await loadConfig();
+          renderProviders();
+        }
+      } catch (e) {
+        showToast('Delete failed', 'error');
+      }
+    }
+
+    // ═══ Templates ═══
+    async function loadTemplates() {
+      try {
+        const data = await (await fetch('/api/templates')).json();
+        const grid = document.getElementById('templateGrid');
+        grid.innerHTML = data.templates.map(t => `
+          <div class="template-item ${t.name === defaultTemplate ? 'active' : ''}"
+               onclick="selectTemplate('${t.name}', this)">
+            <div class="template-name">${t.name}</div>
+            <div class="template-desc">${t.description || t.size_kb + ' KB'}</div>
+          </div>
+        `).join('');
+      } catch (e) { }
+    }
+
+    async function selectTemplate(name, el) {
+      defaultTemplate = name;
+      document.querySelectorAll('.template-item').forEach(e => e.classList.remove('active'));
+      el.classList.add('active');
+
+      // Save template preference
+      try {
+        await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            provider: defaultProvider,
+            template: name,
+          }),
+        });
+        showToast('Default template updated', 'success');
+      } catch (e) { }
+    }
+
+    // ═══ Language ═══
+    function saveLanguage() {
+      const lang = document.getElementById('cfgLanguage').value;
+      localStorage.setItem('scholar_granny_default_language', lang);
+      showToast('Language saved', 'success');
+    }
+
+    // ═══ Helpers ═══
+    function togglePw(id) {
+      const input = document.getElementById(id);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    document.getElementById('cfgTemperature').addEventListener('input', e => {
+      document.getElementById('cfgTempValue').textContent = e.target.value;
+    });
+
+    function showToast(msg, type = '') {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = 'toast ' + type;
+      setTimeout(() => el.classList.add('show'), 10);
+      setTimeout(() => el.classList.remove('show'), 2500);
+    }
+  </script>
+</body>
+
+</html>

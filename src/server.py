@@ -48,6 +48,13 @@ async def index():
     return HTMLResponse(content=index_file.read_text(encoding="utf-8"))
 
 
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page():
+    """设置页面"""
+    settings_file = web_dir / "settings.html"
+    return HTMLResponse(content=settings_file.read_text(encoding="utf-8"))
+
+
 @app.get("/api/templates")
 async def get_templates():
     """获取可用模板列表"""
@@ -177,6 +184,31 @@ async def save_config(request: Request):
             encoding="utf-8",
         )
         return {"ok": True, "saved_to": str(local_config_path)}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.delete("/api/config/provider/{provider_name}")
+async def delete_provider_config(provider_name: str):
+    """删除某个 provider 的配置"""
+    import yaml as _yaml
+    project_root = Path(__file__).parent.parent
+    local_config_path = project_root / "config.local.yaml"
+
+    if not local_config_path.exists():
+        return JSONResponse({"ok": False, "error": "No local config"}, status_code=404)
+
+    try:
+        existing = _yaml.safe_load(local_config_path.read_text(encoding="utf-8")) or {}
+        providers = existing.get("providers", {})
+        if provider_name in providers:
+            del providers[provider_name]
+            existing["providers"] = providers
+            local_config_path.write_text(
+                _yaml.dump(existing, allow_unicode=True, default_flow_style=False),
+                encoding="utf-8",
+            )
+        return {"ok": True}
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
 

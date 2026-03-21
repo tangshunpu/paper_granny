@@ -35,7 +35,6 @@
       --ink-3: #6b7280;
       --ink-4: #9ca3af;
 
-      /* HF-inspired warm palette */
       --yellow: #ff9d00;
       --yellow-hover: #e68e00;
       --yellow-bg: #fff8ee;
@@ -69,7 +68,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ═══ Top Nav Bar (HF-style) ═══ */
+    /* ═══ Top Nav Bar ═══ */
     .topnav {
       background: var(--bg);
       border-bottom: 1px solid var(--border);
@@ -80,7 +79,7 @@
     }
 
     .topnav-inner {
-      max-width: 1100px;
+      max-width: 1280px;
       margin: 0 auto;
       height: 52px;
       display: flex;
@@ -112,6 +111,27 @@
       gap: 6px;
     }
 
+    .nav-link {
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--ink-3);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: all .15s;
+    }
+
+    .nav-link:hover {
+      background: var(--bg-hover);
+      color: var(--ink);
+    }
+
+    .nav-link.active {
+      background: var(--yellow-bg);
+      color: var(--yellow-hover);
+      border: 1px solid var(--yellow-border);
+    }
+
     .lang-btn {
       background: none;
       border: 1px solid transparent;
@@ -136,14 +156,13 @@
       border-color: var(--border);
     }
 
-    /* ═══ Page Container ═══ */
+    /* ═══ Page Container — wider ═══ */
     .container {
-      max-width: 1100px;
+      max-width: 1280px;
       margin: 0 auto;
       padding: 0 24px;
     }
 
-    /* ═══ Page Header ═══ */
     .page-header {
       padding: 28px 0 20px;
     }
@@ -158,20 +177,6 @@
     .page-subtitle {
       color: var(--ink-3);
       font-size: .92rem;
-    }
-
-    /* ═══ Two-Column Layout ═══ */
-    .main-layout {
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 20px;
-      align-items: start;
-    }
-
-    @media (max-width: 900px) {
-      .main-layout {
-        grid-template-columns: 1fr;
-      }
     }
 
     /* ═══ Cards ═══ */
@@ -192,7 +197,7 @@
       gap: 6px;
     }
 
-    /* ═══ Input Area (main column top) ═══ */
+    /* ═══ Input Section ═══ */
     .input-section {
       background: var(--bg);
       border: 1px solid var(--border);
@@ -201,13 +206,71 @@
       margin-bottom: 16px;
     }
 
-    .input-row {
+    .input-main-row {
       display: flex;
       gap: 10px;
+      margin-bottom: 10px;
     }
 
-    .input-row input {
+    .input-main-row input {
       flex: 1;
+    }
+
+    .input-options-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .compact-select-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .compact-select-group label {
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--ink-4);
+      margin-bottom: 0;
+      white-space: nowrap;
+    }
+
+    .compact-select {
+      padding: 4px 24px 4px 8px;
+      font-size: .8rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M5 7L1 3h8z' fill='%239ca3af'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 6px center;
+      color: var(--ink-2);
+      min-width: 0;
+    }
+
+    .compact-select:focus {
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 2px rgba(255, 157, 0, 0.1);
+      outline: none;
+    }
+
+    .no-config-hint {
+      font-size: .75rem;
+      color: var(--ink-4);
+    }
+
+    .no-config-hint a {
+      color: var(--yellow-hover);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .no-config-hint a:hover {
+      text-decoration: underline;
     }
 
     /* ═══ Forms ═══ */
@@ -314,70 +377,6 @@
       border-radius: 6px;
     }
 
-    /* ═══ Password ═══ */
-    .pw-wrap {
-      position: relative;
-    }
-
-    .pw-wrap input {
-      padding-right: 36px;
-    }
-
-    .pw-toggle {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: var(--ink-4);
-      cursor: pointer;
-      font-size: .88rem;
-      padding: 2px;
-    }
-
-    .pw-toggle:hover {
-      color: var(--ink-3);
-    }
-
-    /* ═══ Slider ═══ */
-    .slider-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .slider-row input[type=range] {
-      flex: 1;
-      padding: 0;
-      height: 3px;
-      -webkit-appearance: none;
-      appearance: none;
-      background: var(--border);
-      border-radius: 2px;
-      border: none;
-    }
-
-    .slider-row input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px;
-      height: 14px;
-      background: var(--yellow);
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid #fff;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-    }
-
-    .slider-val {
-      min-width: 26px;
-      text-align: center;
-      font-weight: 700;
-      color: var(--yellow-hover);
-      font-size: .82rem;
-      font-family: var(--mono);
-    }
-
     /* ═══════════════════════════════════════
        Paper Cards — HF Daily Papers Style
        ═══════════════════════════════════════ */
@@ -418,11 +417,17 @@
       border: 1px solid var(--yellow-border);
     }
 
+    .papers-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     /* Search box */
     .papers-search {
       position: relative;
       flex: 1;
-      max-width: 320px;
+      max-width: 280px;
     }
 
     .papers-search input {
@@ -486,6 +491,40 @@
       background: var(--bg);
     }
 
+    /* View toggle */
+    .view-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .view-btn {
+      background: none;
+      border: none;
+      padding: 5px 10px;
+      font-size: .78rem;
+      cursor: pointer;
+      color: var(--ink-3);
+      transition: all .15s;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .view-btn:not(:last-child) {
+      border-right: 1px solid var(--border);
+    }
+
+    .view-btn:hover {
+      background: var(--bg-hover);
+    }
+
+    .view-btn.active {
+      background: var(--yellow-bg);
+      color: var(--yellow-hover);
+    }
+
     /* Sort controls */
     .sort-controls {
       display: flex;
@@ -538,7 +577,7 @@
       opacity: 1;
     }
 
-    /* Individual paper card */
+    /* ═══ List View (default) ═══ */
     .paper-card {
       background: var(--bg);
       border: 1px solid var(--border);
@@ -556,7 +595,6 @@
       border-color: #d5d5d5;
     }
 
-    /* Thumbnail on left — paper page ratio (≈ A4 = 1:1.414) */
     .paper-thumb {
       flex: 0 0 100px;
       height: 141px;
@@ -591,7 +629,6 @@
       background: linear-gradient(135deg, #fef3e2 0%, #fde8c8 100%);
     }
 
-    /* Content on right */
     .paper-info {
       flex: 1;
       min-width: 0;
@@ -706,7 +743,6 @@
       background: var(--red-bg);
     }
 
-    /* Delete button top-right */
     .paper-delete {
       position: absolute;
       top: 10px;
@@ -734,6 +770,98 @@
       background: var(--red-bg);
       border-color: rgba(239, 68, 68, 0.3);
       color: var(--red);
+    }
+
+    /* ═══ Grid View ═══ */
+    .papers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    .papers-grid .paper-card {
+      flex-direction: column;
+      margin-bottom: 0;
+    }
+
+    .papers-grid .paper-thumb {
+      flex: none;
+      width: 100%;
+      height: 180px;
+    }
+
+    .papers-grid .paper-abstract {
+      -webkit-line-clamp: 3;
+    }
+
+    /* ═══ Table View ═══ */
+    .papers-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+
+    .papers-table th {
+      background: var(--bg-page);
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--ink-3);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .papers-table td {
+      padding: 10px 12px;
+      font-size: .82rem;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+    }
+
+    .papers-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .papers-table tr:hover td {
+      background: var(--bg-hover);
+    }
+
+    .papers-table .table-title {
+      font-weight: 600;
+      color: var(--ink);
+      text-decoration: none;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .papers-table .table-title:hover {
+      color: var(--yellow-hover);
+    }
+
+    .papers-table .table-id {
+      font-family: var(--mono);
+      font-size: .75rem;
+      color: var(--ink-3);
+      white-space: nowrap;
+    }
+
+    .papers-table .table-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .papers-table .table-actions a,
+    .papers-table .table-actions button {
+      font-size: .72rem;
+      padding: 2px 8px;
     }
 
     /* Empty state */
@@ -983,23 +1111,6 @@
       background: #0da574;
     }
 
-    /* ═══ Sidebar config toggle ═══ */
-    .sidebar-toggle {
-      display: none;
-      width: 100%;
-      margin-bottom: 12px;
-    }
-
-    @media (max-width: 900px) {
-      .sidebar-toggle {
-        display: flex;
-      }
-
-      .sidebar.collapsed {
-        display: none;
-      }
-    }
-
     /* ═══ Responsive ═══ */
     @media (max-width: 640px) {
       .container {
@@ -1023,6 +1134,16 @@
         width: 100%;
         height: 200px;
       }
+
+      .input-options-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .papers-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -1033,10 +1154,15 @@
   <nav class="topnav">
     <div class="topnav-inner">
       <div class="topnav-left">
-        <img src="/static/logo.png" alt="Logo" class="topnav-logo">
-        <span class="topnav-brand">Paper Granny</span>
+        <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+          <img src="/static/logo.png" alt="Logo" class="topnav-logo">
+          <span class="topnav-brand">Paper Granny</span>
+        </a>
       </div>
       <div class="topnav-right">
+        <a href="/" class="nav-link active" data-i18n="nav_home">Home</a>
+        <a href="/settings" class="nav-link" data-i18n="nav_settings">Settings</a>
+        <span style="width:1px;height:20px;background:var(--border);margin:0 4px"></span>
         <button class="lang-btn active" onclick="switchLang('zh')" id="langBtnZh">中文</button>
         <button class="lang-btn" onclick="switchLang('en')" id="langBtnEn">EN</button>
       </div>
@@ -1046,166 +1172,103 @@
   <div class="container">
     <!-- Page Header -->
     <div class="page-header">
-      <div class="page-title" data-i18n="page_title">📄 论文解读报告</div>
+      <div class="page-title" data-i18n="page_title">论文解读报告</div>
       <div class="page-subtitle" data-i18n="subtitle">arXiv 论文智能解读 — LangGraph ReAct Agent</div>
     </div>
 
-    <!-- Two-Column Layout -->
-    <div class="main-layout">
-      <!-- ═══ Left Column: Input + Papers ═══ -->
-      <div class="main-col">
-        <!-- Input Section -->
-        <div class="input-section">
-          <div class="form-group" style="margin-bottom:10px">
-            <label data-i18n="label_arxiv">arXiv 论文链接或 ID</label>
-            <div class="input-row">
-              <input type="text" id="arxivUrl" data-i18n-placeholder="placeholder_arxiv"
-                placeholder="https://arxiv.org/abs/2603.03251 或直接输入 ID">
-              <button class="btn btn-primary" id="runBtn" onclick="startAgent()">
-                🚀 <span data-i18n="btn_run">开始解读</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Status Bar -->
-        <div class="status-bar" id="statusBar">
-          <div class="spinner"></div>
-          <span id="statusText" data-i18n="status_preparing">准备中...</span>
-        </div>
-
-        <!-- Result Card -->
-        <div class="result-card card" id="resultCard">
-          <div class="result-icon">✅</div>
-          <div class="result-title" data-i18n="result_title">论文解读完成！</div>
-          <div class="result-sub" id="resultSub"></div>
-          <a class="btn-download" id="downloadBtn" href="#" target="_blank">
-            📄 <span data-i18n="btn_download">下载 PDF 报告</span>
-          </a>
-        </div>
-
-        <!-- Agent Panel -->
-        <div class="agent-panel card" id="agentPanel">
-          <div class="card-title">🧠 <span data-i18n="title_agent_log">Agent 推理过程</span></div>
-          <div class="agent-log" id="agentLog"></div>
-        </div>
-
-        <!-- ═══ Papers List (HF-style) ═══ -->
-        <div class="papers-section">
-          <div class="papers-header">
-            <div class="papers-header-left">
-              <div class="papers-title">📚 <span data-i18n="title_history">已生成的报告</span></div>
-              <div class="papers-count" id="papersCount" style="display:none"></div>
-            </div>
-            <div class="papers-search" id="papersSearch" style="display:none">
-              <span class="papers-search-icon">🔍</span>
-              <input type="text" id="papersSearchInput" data-i18n-placeholder="search_placeholder"
-                placeholder="搜索标题、作者、ID..." oninput="onSearchInput()">
-              <button class="papers-search-clear" id="papersSearchClear" onclick="clearSearch()">✕</button>
-            </div>
-            <div class="sort-controls" id="sortControls" style="display:none">
-              <span class="sort-label" data-i18n="sort_label">排序:</span>
-              <button class="sort-btn active" data-sort="generated" onclick="sortPapers('generated')">
-                <span data-i18n="sort_generated">生成时间</span><span class="sort-arrow">↓</span></button>
-              <button class="sort-btn" data-sort="published" onclick="sortPapers('published')">
-                <span data-i18n="sort_published">发布时间</span><span class="sort-arrow">↓</span></button>
-              <button class="sort-btn" data-sort="title" onclick="sortPapers('title')">
-                <span data-i18n="sort_title">标题</span><span class="sort-arrow">↓</span></button>
-            </div>
-          </div>
-          <div id="papersList"></div>
-        </div>
-      </div>
-
-      <!-- ═══ Right Column: Sidebar Config ═══ -->
-      <div class="sidebar" id="sidebar">
-        <button class="btn btn-outline sidebar-toggle" onclick="toggleSidebar()" data-i18n="btn_toggle_config">⚙️
-          配置面板</button>
-
-        <!-- LLM Config -->
-        <div class="card" style="margin-bottom:12px">
-          <div class="card-title">🤖 <span data-i18n="title_llm">LLM 配置</span></div>
-          <div class="form-group">
-            <label>Provider</label>
-            <select id="provider">
-              <optgroup data-i18n-label="group_commercial" label="商业 API">
-                <option value="openai">OpenAI</option>
-                <option value="claude">Claude (Anthropic)</option>
-                <option value="gemini">Gemini (Google)</option>
-                <option value="openrouter">OpenRouter</option>
-              </optgroup>
-              <optgroup data-i18n-label="group_china" label="国内服务">
-                <option value="deepseek">DeepSeek</option>
-                <option value="kimi">Kimi (Moonshot)</option>
-                <option value="dashscope" data-i18n="provider_dashscope">通义千问 (DashScope)</option>
-                <option value="dashscope-coding" data-i18n="provider_dashscope_coding">百炼 Coding Plan</option>
-                <option value="siliconflow" data-i18n="provider_siliconflow">SiliconFlow 硅基流动</option>
-              </optgroup>
-              <optgroup data-i18n-label="group_local" label="本地 / 自部署">
-                <option value="ollama" data-i18n="provider_ollama">Ollama (本地)</option>
-                <option value="vllm">vLLM</option>
-              </optgroup>
-            </select>
-          </div>
-          <div class="form-group">
-            <label data-i18n="label_model">模型</label>
-            <select id="modelPreset" style="display:none" onchange="onModelPresetChange()"></select>
-            <input type="text" id="model" placeholder="gpt-5.4-mini" autocomplete="off">
-          </div>
-          <div class="form-group">
-            <label>API Key</label>
-            <div class="pw-wrap">
-              <input type="password" id="apiKey" placeholder="sk-...">
-              <button class="pw-toggle" onclick="toggleApiKey()" data-i18n-title="toggle_show_hide"
-                title="显示/隐藏">👁</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Base URL <span style="font-weight:400" data-i18n="label_baseurl_hint">(可选)</span></label>
-            <input type="text" id="baseUrl" placeholder="https://api.openai.com/v1">
-          </div>
-          <div class="form-group">
-            <label>Temperature</label>
-            <div class="slider-row">
-              <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.3">
-              <span class="slider-val" id="tempValue">0.3</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Template & Language -->
-        <div class="card" style="margin-bottom:12px">
-          <div class="card-title">🎨 <span data-i18n="title_template">模板与语言</span></div>
-          <div class="form-group">
-            <label data-i18n="label_latex_template">LaTeX 模板</label>
-            <select id="template">
-              <option value="Modern Colorful" data-i18n="loading">加载中...</option>
-            </select>
-          </div>
-          <div id="templateInfo"
-            style="margin-top:8px; padding:8px 10px; background:var(--bg-page); border-radius:6px; color:var(--ink-3); font-size:.78rem; border:1px solid var(--border-light);"
-            data-i18n="template_info_hint">
-            选择模板后将显示详细信息
-          </div>
-          <div class="form-group" style="margin-top:12px">
-            <label data-i18n="label_report_lang">🌐 报告语言</label>
-            <select id="language">
-              <option value="中文">🇨🇳 中文</option>
-              <option value="English">🇺🇸 English</option>
-              <option value="日本語">🇯🇵 日本語</option>
-              <option value="한국어">🇰🇷 한국어</option>
-              <option value="Français">🇫🇷 Français</option>
-              <option value="Deutsch">🇩🇪 Deutsch</option>
-              <option value="Español">🇪🇸 Español</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Save Config -->
-        <button class="btn btn-outline" id="saveConfigBtn" onclick="saveConfigToServer()" style="width:100%">
-          <span id="saveConfigText" data-i18n="btn_save_config">💾 保存配置</span>
+    <!-- ═══ Input Section with compact model picker ═══ -->
+    <div class="input-section">
+      <div class="input-main-row">
+        <input type="text" id="arxivUrl" data-i18n-placeholder="placeholder_arxiv"
+          placeholder="https://arxiv.org/abs/2603.03251 或直接输入 ID">
+        <button class="btn btn-primary" id="runBtn" onclick="startAgent()">
+          🚀 <span data-i18n="btn_run">开始解读</span>
         </button>
       </div>
+      <div class="input-options-row">
+        <div class="compact-select-group">
+          <label>Provider</label>
+          <select class="compact-select" id="provider" onchange="onProviderChange()"></select>
+        </div>
+        <div class="compact-select-group">
+          <label data-i18n="label_model">Model</label>
+          <select class="compact-select" id="model" style="min-width:160px"></select>
+        </div>
+        <div class="compact-select-group">
+          <label data-i18n="label_template">Template</label>
+          <select class="compact-select" id="template"></select>
+        </div>
+        <div class="compact-select-group">
+          <label data-i18n="label_lang">Language</label>
+          <select class="compact-select" id="language">
+            <option value="中文">中文</option>
+            <option value="English">English</option>
+            <option value="日本語">日本語</option>
+            <option value="한국어">한국어</option>
+            <option value="Français">Français</option>
+            <option value="Deutsch">Deutsch</option>
+            <option value="Español">Español</option>
+          </select>
+        </div>
+        <span class="no-config-hint" id="configHint" style="display:none">
+          <a href="/settings" data-i18n="config_hint_link">Configure API keys in Settings</a>
+        </span>
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar" id="statusBar">
+      <div class="spinner"></div>
+      <span id="statusText" data-i18n="status_preparing">准备中...</span>
+    </div>
+
+    <!-- Result Card -->
+    <div class="result-card card" id="resultCard">
+      <div class="result-icon">✅</div>
+      <div class="result-title" data-i18n="result_title">论文解读完成！</div>
+      <div class="result-sub" id="resultSub"></div>
+      <a class="btn-download" id="downloadBtn" href="#" target="_blank">
+        📄 <span data-i18n="btn_download">下载 PDF 报告</span>
+      </a>
+    </div>
+
+    <!-- Agent Panel -->
+    <div class="agent-panel card" id="agentPanel">
+      <div class="card-title">🧠 <span data-i18n="title_agent_log">Agent 推理过程</span></div>
+      <div class="agent-log" id="agentLog"></div>
+    </div>
+
+    <!-- ═══ Papers List ═══ -->
+    <div class="papers-section">
+      <div class="papers-header">
+        <div class="papers-header-left">
+          <div class="papers-title">📚 <span data-i18n="title_history">已生成的报告</span></div>
+          <div class="papers-count" id="papersCount" style="display:none"></div>
+        </div>
+        <div class="papers-toolbar">
+          <div class="papers-search" id="papersSearch" style="display:none">
+            <span class="papers-search-icon">🔍</span>
+            <input type="text" id="papersSearchInput" data-i18n-placeholder="search_placeholder"
+              placeholder="搜索标题、作者、ID..." oninput="onSearchInput()">
+            <button class="papers-search-clear" id="papersSearchClear" onclick="clearSearch()">✕</button>
+          </div>
+          <div class="view-toggle" id="viewToggle" style="display:none">
+            <button class="view-btn active" data-view="list" onclick="setView('list')" title="List">☰</button>
+            <button class="view-btn" data-view="grid" onclick="setView('grid')" title="Grid">⊞</button>
+            <button class="view-btn" data-view="table" onclick="setView('table')" title="Table">▤</button>
+          </div>
+          <div class="sort-controls" id="sortControls" style="display:none">
+            <span class="sort-label" data-i18n="sort_label">排序:</span>
+            <button class="sort-btn active" data-sort="generated" onclick="sortPapers('generated')">
+              <span data-i18n="sort_generated">生成时间</span><span class="sort-arrow">↓</span></button>
+            <button class="sort-btn" data-sort="published" onclick="sortPapers('published')">
+              <span data-i18n="sort_published">发布时间</span><span class="sort-arrow">↓</span></button>
+            <button class="sort-btn" data-sort="title" onclick="sortPapers('title')">
+              <span data-i18n="sort_title">标题</span><span class="sort-arrow">↓</span></button>
+          </div>
+        </div>
+      </div>
+      <div id="papersList"></div>
     </div>
   </div>
 
@@ -1213,26 +1276,19 @@
     // ─── i18n ──────────────────────────────────
     const I18N = {
       zh: {
-        page_title: '📄 论文解读报告',
+        nav_home: 'Home',
+        nav_settings: 'Settings',
+        page_title: '论文解读报告',
         subtitle: 'arXiv 论文智能解读 — LangGraph ReAct Agent',
         label_arxiv: 'arXiv 论文链接或 ID',
         placeholder_arxiv: 'https://arxiv.org/abs/2603.03251 或直接输入 ID',
-        title_llm: 'LLM 配置',
         label_model: '模型',
-        label_baseurl_hint: '(可选)',
-        toggle_show_hide: '显示/隐藏',
-        title_template: '模板与语言',
-        label_latex_template: 'LaTeX 模板',
-        template_info_hint: '选择模板后将显示详细信息',
-        label_report_lang: '🌐 报告语言',
+        label_template: '模板',
+        label_lang: '语言',
+        config_hint_link: '去设置页面配置 API Key',
         title_history: '已生成的报告',
-        loading: '加载中...',
         btn_run: '开始解读',
         btn_running: '运行中...',
-        btn_save_config: '💾 保存配置',
-        btn_toggle_config: '⚙️ 配置面板',
-        save_config_ok: '✅ 已保存',
-        save_config_fail: '❌ 保存失败',
         status_preparing: '准备中...',
         title_agent_log: 'Agent 推理过程',
         result_title: '论文解读完成！',
@@ -1247,13 +1303,6 @@
         log_stream_error: '流读取错误',
         log_connect_error: '连接失败',
         server_error: '服务器错误',
-        group_commercial: '商业 API',
-        group_china: '国内服务',
-        group_local: '本地 / 自部署',
-        provider_dashscope: '通义千问 (DashScope)',
-        provider_dashscope_coding: '百炼 Coding Plan',
-        provider_siliconflow: 'SiliconFlow 硅基流动',
-        provider_ollama: 'Ollama (本地)',
         shelf_count: '{n} 份',
         confirm_delete: '确定删除论文 {id} 的所有文件？',
         sort_label: '排序:',
@@ -1263,28 +1312,27 @@
         untitled: '（无标题）',
         search_placeholder: '搜索标题、作者、ID...',
         search_no_match: '没有找到匹配的报告',
+        table_title: '标题',
+        table_id: 'ID',
+        table_authors: '作者',
+        table_published: '发布',
+        table_generated: '生成',
+        table_actions: '操作',
       },
       en: {
-        page_title: '📄 Paper Interpretations',
+        nav_home: 'Home',
+        nav_settings: 'Settings',
+        page_title: 'Paper Interpretations',
         subtitle: 'AI-Powered arXiv Paper Interpretation — LangGraph ReAct Agent',
         label_arxiv: 'arXiv Paper URL or ID',
         placeholder_arxiv: 'https://arxiv.org/abs/2603.03251 or enter ID',
-        title_llm: 'LLM Settings',
         label_model: 'Model',
-        label_baseurl_hint: '(optional)',
-        toggle_show_hide: 'Show/Hide',
-        title_template: 'Template & Language',
-        label_latex_template: 'LaTeX Template',
-        template_info_hint: 'Select a template to see details',
-        label_report_lang: '🌐 Report Language',
+        label_template: 'Template',
+        label_lang: 'Language',
+        config_hint_link: 'Configure API keys in Settings',
         title_history: 'Generated Reports',
-        loading: 'Loading...',
         btn_run: 'Interpret',
         btn_running: 'Running...',
-        btn_save_config: '💾 Save Config',
-        btn_toggle_config: '⚙️ Settings',
-        save_config_ok: '✅ Saved',
-        save_config_fail: '❌ Failed',
         status_preparing: 'Preparing...',
         title_agent_log: 'Agent Reasoning',
         result_title: 'Interpretation Complete!',
@@ -1299,13 +1347,6 @@
         log_stream_error: 'Stream read error',
         log_connect_error: 'Connection failed',
         server_error: 'Server error',
-        group_commercial: 'Commercial API',
-        group_china: 'China Services',
-        group_local: 'Local / Self-hosted',
-        provider_dashscope: 'Qwen (DashScope)',
-        provider_dashscope_coding: 'Bailian Coding Plan',
-        provider_siliconflow: 'SiliconFlow',
-        provider_ollama: 'Ollama (Local)',
         shelf_count: '{n}',
         confirm_delete: 'Delete all files for paper {id}?',
         sort_label: 'Sort:',
@@ -1315,6 +1356,12 @@
         untitled: '(Untitled)',
         search_placeholder: 'Search title, author, ID...',
         search_no_match: 'No matching reports found',
+        table_title: 'Title',
+        table_id: 'ID',
+        table_authors: 'Authors',
+        table_published: 'Published',
+        table_generated: 'Generated',
+        table_actions: 'Actions',
       },
     };
 
@@ -1334,111 +1381,132 @@
         const key = el.getAttribute('data-i18n-placeholder');
         if (I18N[lang][key] !== undefined) el.placeholder = I18N[lang][key];
       });
-      document.querySelectorAll('[data-i18n-title]').forEach(el => {
-        const key = el.getAttribute('data-i18n-title');
-        if (I18N[lang][key] !== undefined) el.title = I18N[lang][key];
-      });
-      document.querySelectorAll('[data-i18n-label]').forEach(el => {
-        const key = el.getAttribute('data-i18n-label');
-        if (I18N[lang][key] !== undefined) el.label = I18N[lang][key];
-      });
       document.title = lang === 'zh' ? 'Paper Granny — arXiv 论文智能解读' : 'Paper Granny — AI Paper Interpretation';
       if (window._cachedPapers) renderPapers(window._cachedPapers);
     }
 
-    // ─── Provider Presets ─────────────────────
-    const PROVIDER_DEFAULTS = {
-      openai: { model: 'gpt-5.4-mini', basePlaceholder: 'https://api.openai.com/v1', suggestions: ['gpt-5.4', 'gpt-5.4-mini', 'gpt-5.4-nano'] },
-      claude: { model: 'claude-sonnet-4-20250514', basePlaceholder: 'https://api.anthropic.com' },
-      gemini: { model: 'gemini-2.5-flash', basePlaceholder: '' },
-      openrouter: { model: 'google/gemini-2.5-flash', basePlaceholder: 'https://openrouter.ai/api/v1' },
-      deepseek: { model: 'deepseek-chat', basePlaceholder: 'https://api.deepseek.com/v1' },
-      kimi: { model: 'moonshot-v1-128k', basePlaceholder: 'https://api.moonshot.cn/v1' },
-      dashscope: { model: 'qwen-plus', basePlaceholder: 'https://dashscope.aliyuncs.com/compatible-mode/v1' },
-      'dashscope-coding': { model: 'qwen-plus', basePlaceholder: 'https://coding.dashscope.aliyuncs.com/v1' },
-      siliconflow: { model: 'Qwen/Qwen3-8B', basePlaceholder: 'https://api.siliconflow.cn/v1' },
-      ollama: { model: 'llama3', basePlaceholder: 'http://localhost:11434/v1' },
-      vllm: { model: '', basePlaceholder: 'http://localhost:8000/v1' },
-    };
-
+    // ─── State ────────────────────────────────
     let running = false;
-    const STORAGE_KEY = 'scholar_granny_settings';
-
-    function saveSettings() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        provider: document.getElementById('provider').value,
-        model: document.getElementById('model').value,
-        apiKey: document.getElementById('apiKey').value,
-        baseUrl: document.getElementById('baseUrl').value,
-        temperature: document.getElementById('temperature').value,
-        language: document.getElementById('language').value,
-      }));
-    }
-
-    async function saveConfigToServer() {
-      const btn = document.getElementById('saveConfigBtn');
-      const textEl = document.getElementById('saveConfigText');
-      btn.disabled = true; textEl.textContent = '⏳ ...';
-      try {
-        const res = await fetch('/api/config', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            provider: document.getElementById('provider').value,
-            model: document.getElementById('model').value,
-            api_key: document.getElementById('apiKey').value,
-            base_url: document.getElementById('baseUrl').value || null,
-            temperature: parseFloat(document.getElementById('temperature').value),
-            template: document.getElementById('template').value,
-          }),
-        });
-        const data = await res.json();
-        textEl.textContent = data.ok ? t('save_config_ok') : t('save_config_fail');
-        if (data.ok) setTimeout(() => { textEl.textContent = t('btn_save_config'); btn.disabled = false; }, 2000);
-        else btn.disabled = false;
-      } catch (e) { textEl.textContent = t('save_config_fail'); btn.disabled = false; }
-    }
-
-    function restoreSettings() {
-      try {
-        const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        if (!s) return;
-        if (s.provider) document.getElementById('provider').value = s.provider;
-        if (s.model) document.getElementById('model').value = s.model;
-        if (s.apiKey) document.getElementById('apiKey').value = s.apiKey;
-        if (s.baseUrl) document.getElementById('baseUrl').value = s.baseUrl;
-        if (s.temperature) {
-          document.getElementById('temperature').value = s.temperature;
-          document.getElementById('tempValue').textContent = s.temperature;
-        }
-        if (s.language) document.getElementById('language').value = s.language;
-        onProviderChange();
-      } catch (e) { }
-    }
-
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('collapsed');
-    }
+    let savedProviders = {};
+    let defaultProvider = 'openai';
+    let defaultModel = '';
+    let currentView = localStorage.getItem('scholar_granny_view') || 'list';
+    let currentSort = 'generated';
+    let sortAsc = false;
+    let searchQuery = '';
+    window._cachedPapers = [];
 
     // ─── Init ─────────────────────────────────
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       const savedLang = localStorage.getItem('scholar_granny_ui_lang');
       if (savedLang && I18N[savedLang]) switchLang(savedLang);
-      loadTemplates(); loadPapers(); loadConfig();
-      ['provider', 'model', 'apiKey', 'baseUrl', 'temperature', 'language'].forEach(id => {
-        document.getElementById(id).addEventListener('change', saveSettings);
-        document.getElementById(id).addEventListener('input', saveSettings);
-      });
-      document.getElementById('provider').addEventListener('change', onProviderChange);
-      document.getElementById('temperature').addEventListener('input', e => {
-        document.getElementById('tempValue').textContent = e.target.value;
-      });
-      document.getElementById('template').addEventListener('change', onTemplateChange);
+
+      await loadConfig();
+      loadTemplates();
+      loadPapers();
+
       document.getElementById('arxivUrl').addEventListener('keydown', e => {
         if (e.key === 'Enter' && !running) startAgent();
       });
+
+      // Restore language preference from settings
+      const savedLanguage = localStorage.getItem('scholar_granny_default_language');
+      if (savedLanguage) document.getElementById('language').value = savedLanguage;
     });
 
-    // ─── API ──────────────────────────────────
+    // ─── Load config from server ──────────────
+    async function loadConfig() {
+      try {
+        const cfg = await (await fetch('/api/config')).json();
+        savedProviders = cfg.providers || {};
+        defaultProvider = cfg.provider || 'openai';
+        defaultModel = cfg.model || '';
+
+        buildProviderSelect();
+        buildModelSelect();
+
+        // Show hint if no providers configured
+        const hasAnyKey = Object.values(savedProviders).some(p => p.api_key);
+        document.getElementById('configHint').style.display = hasAnyKey ? 'none' : '';
+      } catch (e) {
+        buildProviderSelect();
+      }
+    }
+
+    function buildProviderSelect() {
+      const sel = document.getElementById('provider');
+      const providers = [
+        { group: 'Commercial', items: [['openai', 'OpenAI'], ['claude', 'Claude'], ['gemini', 'Gemini'], ['openrouter', 'OpenRouter']] },
+        { group: 'China', items: [['deepseek', 'DeepSeek'], ['kimi', 'Kimi'], ['dashscope', 'Qwen'], ['dashscope-coding', 'Bailian Coding'], ['siliconflow', 'SiliconFlow']] },
+        { group: 'Local', items: [['ollama', 'Ollama'], ['vllm', 'vLLM']] },
+      ];
+      sel.innerHTML = '';
+      for (const g of providers) {
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = g.group;
+        for (const [val, label] of g.items) {
+          const opt = document.createElement('option');
+          opt.value = val;
+          const configured = savedProviders[val] && savedProviders[val].api_key;
+          opt.textContent = label + (configured ? ' ✓' : '');
+          optgroup.appendChild(opt);
+        }
+        sel.appendChild(optgroup);
+      }
+      sel.value = defaultProvider;
+    }
+
+    const PROVIDER_MODELS = {
+      openai: ['gpt-5.4', 'gpt-5.4-mini', 'gpt-5.4-nano', 'gpt-4o', 'gpt-4o-mini'],
+      claude: ['claude-sonnet-4-20250514', 'claude-opus-4-20250514', 'claude-haiku-4-5-20251001'],
+      gemini: ['gemini-2.5-flash', 'gemini-2.5-pro'],
+      openrouter: ['google/gemini-2.5-flash', 'anthropic/claude-sonnet-4', 'openai/gpt-4o'],
+      deepseek: ['deepseek-chat', 'deepseek-reasoner'],
+      kimi: ['moonshot-v1-128k', 'moonshot-v1-32k'],
+      dashscope: ['qwen-plus', 'qwen-max', 'qwen-turbo'],
+      'dashscope-coding': ['qwen-plus', 'qwen-max'],
+      siliconflow: ['Qwen/Qwen3-8B', 'deepseek-ai/DeepSeek-V3'],
+      ollama: ['llama3', 'qwen2.5', 'gemma2'],
+      vllm: [],
+    };
+
+    function buildModelSelect() {
+      const provider = document.getElementById('provider').value;
+      const sel = document.getElementById('model');
+      const models = PROVIDER_MODELS[provider] || [];
+      const savedModel = savedProviders[provider]?.model;
+
+      sel.innerHTML = '';
+      for (const m of models) {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        sel.appendChild(opt);
+      }
+      // Add custom option
+      const customOpt = document.createElement('option');
+      customOpt.value = '__custom__';
+      customOpt.textContent = 'Custom...';
+      sel.appendChild(customOpt);
+
+      // Select saved model or default
+      const target = savedModel || (provider === defaultProvider ? defaultModel : models[0] || '');
+      if (target && models.includes(target)) {
+        sel.value = target;
+      } else if (target) {
+        // Add as custom
+        const opt = document.createElement('option');
+        opt.value = target;
+        opt.textContent = target;
+        sel.insertBefore(opt, customOpt);
+        sel.value = target;
+      }
+    }
+
+    function onProviderChange() {
+      buildModelSelect();
+    }
+
     async function loadTemplates() {
       try {
         const data = await (await fetch('/api/templates')).json();
@@ -1446,18 +1514,24 @@
         sel.innerHTML = '';
         data.templates.forEach(t => {
           const opt = document.createElement('option');
-          opt.value = t.name; opt.textContent = `${t.name} (${t.size_kb} KB)`;
+          opt.value = t.name;
+          opt.textContent = t.name;
           sel.appendChild(opt);
         });
-        onTemplateChange();
       } catch (e) { }
     }
 
-    // ─── Papers List (HF-style) ──────────────
-    window._cachedPapers = [];
-    let currentSort = 'generated';
-    let sortAsc = false; // false = descending (newest first), true = ascending
+    // ─── View Toggle ─────────────────────────
+    function setView(view) {
+      currentView = view;
+      localStorage.setItem('scholar_granny_view', view);
+      document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === view);
+      });
+      renderPapers(window._cachedPapers);
+    }
 
+    // ─── Papers ──────────────────────────────
     async function loadPapers() {
       try {
         const data = await (await fetch('/api/papers')).json();
@@ -1471,12 +1545,11 @@
 
     function sortPapers(mode) {
       if (currentSort === mode) {
-        sortAsc = !sortAsc; // toggle direction
+        sortAsc = !sortAsc;
       } else {
         currentSort = mode;
-        sortAsc = mode === 'title'; // title defaults ascending, dates default descending
+        sortAsc = mode === 'title';
       }
-      // Update button active states and arrow direction
       document.querySelectorAll('.sort-btn').forEach(btn => {
         const isActive = btn.dataset.sort === mode;
         btn.classList.toggle('active', isActive);
@@ -1506,8 +1579,6 @@
     }
 
     // ─── Fuzzy Search ──────────────────────────
-    let searchQuery = '';
-
     function onSearchInput() {
       const input = document.getElementById('papersSearchInput');
       const clearBtn = document.getElementById('papersSearchClear');
@@ -1523,11 +1594,6 @@
       renderPapers(window._cachedPapers);
     }
 
-    /**
-     * Fuzzy match: checks if all characters in the query appear in order within the text.
-     * Returns { match: bool, score: number, indices: number[] }.
-     * Lower score = better match (consecutive chars and early positions are rewarded).
-     */
     function fuzzyMatch(text, query) {
       const textLower = text.toLowerCase();
       const queryLower = query.toLowerCase();
@@ -1539,17 +1605,13 @@
         indices.push(found);
         ti = found + 1;
       }
-      // Score: penalize gaps between matched chars, reward early matches
-      let score = indices[0] || 0; // earlier start = better
+      let score = indices[0] || 0;
       for (let i = 1; i < indices.length; i++) {
-        score += (indices[i] - indices[i - 1] - 1); // gap penalty
+        score += (indices[i] - indices[i - 1] - 1);
       }
       return { match: true, score, indices };
     }
 
-    /**
-     * Try fuzzy match across multiple fields, return best result.
-     */
     function fuzzyMatchPaper(paper, query) {
       const fields = [
         { text: paper.title || '', weight: 0 },
@@ -1574,15 +1636,11 @@
       return { match: bestField !== null, score: bestScore, field: bestField, indices: bestIndices };
     }
 
-    /**
-     * Highlight matched characters in text (using pre-computed indices from fuzzyMatch).
-     */
     function highlightFuzzy(text, query) {
       const r = fuzzyMatch(text, query);
       if (!r.match) return escHtml(text);
       const chars = [...text];
       const escaped = chars.map(c => escHtml(c));
-      // Mark matched indices (in reverse to not shift positions)
       for (let i = r.indices.length - 1; i >= 0; i--) {
         const idx = r.indices[i];
         escaped[idx] = `<span class="search-highlight">${escaped[idx]}</span>`;
@@ -1590,17 +1648,28 @@
       return escaped.join('');
     }
 
+    function getFiltered(papers) {
+      if (!searchQuery) return getSorted(papers);
+      return papers
+        .map(p => ({ paper: p, ...fuzzyMatchPaper(p, searchQuery) }))
+        .filter(r => r.match)
+        .sort((a, b) => a.score - b.score)
+        .map(r => r.paper);
+    }
+
     function renderPapers(papers) {
       const listEl = document.getElementById('papersList');
       const countEl = document.getElementById('papersCount');
       const sortEl = document.getElementById('sortControls');
       const searchEl = document.getElementById('papersSearch');
+      const viewEl = document.getElementById('viewToggle');
 
       if (!papers.length) {
         listEl.innerHTML = `<div class="papers-empty"><div class="papers-empty-icon">📚</div>${t('no_reports')}</div>`;
         countEl.style.display = 'none';
         sortEl.style.display = 'none';
         searchEl.style.display = 'none';
+        viewEl.style.display = 'none';
         return;
       }
 
@@ -1608,37 +1677,50 @@
       countEl.style.display = '';
       sortEl.style.display = 'flex';
       searchEl.style.display = papers.length >= 2 ? '' : 'none';
+      viewEl.style.display = 'flex';
 
-      // Filter by search query
-      let filtered;
-      if (searchQuery) {
-        filtered = papers
-          .map(p => ({ paper: p, ...fuzzyMatchPaper(p, searchQuery) }))
-          .filter(r => r.match)
-          .sort((a, b) => a.score - b.score)
-          .map(r => r.paper);
-      } else {
-        filtered = getSorted(papers);
-      }
+      // Restore view toggle state
+      document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === currentView);
+      });
+
+      const filtered = getFiltered(papers);
 
       if (searchQuery && !filtered.length) {
         listEl.innerHTML = `<div class="papers-no-match">🔍 ${t('search_no_match')}</div>`;
         return;
       }
 
-      const q = searchQuery; // capture for highlight
+      const q = searchQuery;
 
-      listEl.innerHTML = filtered.map(p => {
-        const title = p.title || t('untitled');
-        const hasAbstract = p.abstract && p.abstract.length > 0;
-        const displayTitle = q ? highlightFuzzy(title, q) : escHtml(title);
-        const displayAuthors = (q && p.authors) ? highlightFuzzy(p.authors, q) : escHtml(p.authors || '');
-        const displayAbstract = (q && hasAbstract) ? highlightFuzzy(p.abstract, q) : escHtml(p.abstract || '');
-        const displayId = q ? highlightFuzzy(p.arxiv_id, q) : p.arxiv_id;
-        const arxivUrl = `https://arxiv.org/abs/${p.arxiv_id}`;
-        const thumbUrl = `/api/papers/${p.arxiv_id}/thumbnail`;
+      if (currentView === 'table') {
+        renderTable(listEl, filtered, q);
+      } else if (currentView === 'grid') {
+        renderGrid(listEl, filtered, q);
+      } else {
+        renderList(listEl, filtered, q);
+      }
+    }
 
-        return `
+    function renderList(el, papers, q) {
+      el.innerHTML = papers.map(p => renderCardHtml(p, q)).join('');
+    }
+
+    function renderGrid(el, papers, q) {
+      el.innerHTML = `<div class="papers-grid">${papers.map(p => renderCardHtml(p, q)).join('')}</div>`;
+    }
+
+    function renderCardHtml(p, q) {
+      const title = p.title || t('untitled');
+      const hasAbstract = p.abstract && p.abstract.length > 0;
+      const displayTitle = q ? highlightFuzzy(title, q) : escHtml(title);
+      const displayAuthors = (q && p.authors) ? highlightFuzzy(p.authors, q) : escHtml(p.authors || '');
+      const displayAbstract = (q && hasAbstract) ? highlightFuzzy(p.abstract, q) : escHtml(p.abstract || '');
+      const displayId = q ? highlightFuzzy(p.arxiv_id, q) : p.arxiv_id;
+      const arxivUrl = `https://arxiv.org/abs/${p.arxiv_id}`;
+      const thumbUrl = `/api/papers/${p.arxiv_id}/thumbnail`;
+
+      return `
         <div class="paper-card">
           <button class="paper-delete" onclick="deletePaper('${p.arxiv_id}')" title="${t('delete_paper')}">✕</button>
           <div class="paper-thumb" onclick="window.open('${arxivUrl}','_blank')">
@@ -1659,14 +1741,50 @@
             <div class="paper-actions">
               <a class="paper-action-btn" href="${arxivUrl}" target="_blank">📄 ${t('read_original')}</a>
               ${p.has_pdf
-            ? `<a class="paper-action-btn primary" href="/api/papers/${p.arxiv_id}/pdf" target="_blank">📖 ${t('read_report')}</a>`
-            : ''
-          }
+          ? `<a class="paper-action-btn primary" href="/api/papers/${p.arxiv_id}/pdf" target="_blank">📖 ${t('read_report')}</a>`
+          : ''}
               <button class="paper-action-btn danger" onclick="deletePaper('${p.arxiv_id}')">🗑 ${t('delete_paper')}</button>
             </div>
           </div>
         </div>`;
-      }).join('');
+    }
+
+    function renderTable(el, papers, q) {
+      let html = `<table class="papers-table">
+        <thead><tr>
+          <th>${t('table_title')}</th>
+          <th>${t('table_id')}</th>
+          <th>${t('table_authors')}</th>
+          <th>${t('table_published')}</th>
+          <th>${t('table_generated')}</th>
+          <th>${t('table_actions')}</th>
+        </tr></thead><tbody>`;
+
+      for (const p of papers) {
+        const title = p.title || t('untitled');
+        const displayTitle = q ? highlightFuzzy(title, q) : escHtml(title);
+        const displayId = q ? highlightFuzzy(p.arxiv_id, q) : p.arxiv_id;
+        const displayAuthors = q ? highlightFuzzy(p.authors || '', q) : escHtml(p.authors || '');
+        const arxivUrl = `https://arxiv.org/abs/${p.arxiv_id}`;
+
+        html += `<tr>
+          <td><a class="table-title" href="${arxivUrl}" target="_blank">${displayTitle}</a></td>
+          <td class="table-id">${displayId}</td>
+          <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${displayAuthors}</td>
+          <td style="white-space:nowrap">${p.published || '-'}</td>
+          <td style="white-space:nowrap">${p.generated || '-'}</td>
+          <td>
+            <div class="table-actions">
+              <a class="paper-action-btn" href="${arxivUrl}" target="_blank">📄</a>
+              ${p.has_pdf ? `<a class="paper-action-btn primary" href="/api/papers/${p.arxiv_id}/pdf" target="_blank">📖</a>` : ''}
+              <button class="paper-action-btn danger" onclick="deletePaper('${p.arxiv_id}')">🗑</button>
+            </div>
+          </td>
+        </tr>`;
+      }
+
+      html += '</tbody></table>';
+      el.innerHTML = html;
     }
 
     async function deletePaper(arxivId) {
@@ -1676,70 +1794,6 @@
         const data = await res.json();
         if (data.ok) loadPapers();
       } catch (e) { console.error('Delete failed:', e); }
-    }
-
-    let savedProviders = {};
-
-    async function loadConfig() {
-      try {
-        const cfg = await (await fetch('/api/config')).json();
-        if (cfg.providers) savedProviders = cfg.providers;
-        document.getElementById('provider').value = cfg.provider;
-        document.getElementById('model').value = cfg.model;
-        document.getElementById('temperature').value = cfg.temperature;
-        document.getElementById('tempValue').textContent = cfg.temperature;
-        const p = savedProviders[cfg.provider];
-        if (p) {
-          if (p.api_key) document.getElementById('apiKey').value = p.api_key;
-          if (p.base_url) document.getElementById('baseUrl').value = p.base_url;
-        }
-        onProviderChange();
-      } catch (e) { }
-      restoreSettings();
-    }
-
-    // ─── Event Handlers ───────────────────────
-    function onModelPresetChange() {
-      const sel = document.getElementById('modelPreset');
-      const input = document.getElementById('model');
-      if (sel.value === '__custom__') { input.style.display = ''; input.value = ''; input.focus(); }
-      else { input.style.display = 'none'; input.value = sel.value; }
-      saveSettings();
-    }
-
-    function onProviderChange() {
-      const provider = document.getElementById('provider').value;
-      const modelInput = document.getElementById('model');
-      const modelSelect = document.getElementById('modelPreset');
-      const cfg = PROVIDER_DEFAULTS[provider] || PROVIDER_DEFAULTS.openai;
-      document.getElementById('baseUrl').placeholder = cfg.basePlaceholder;
-      const suggestions = cfg.suggestions || [];
-      if (suggestions.length > 0) {
-        modelSelect.innerHTML = '';
-        suggestions.forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = m; modelSelect.appendChild(o); });
-        const co = document.createElement('option'); co.value = '__custom__'; co.textContent = 'Custom…'; modelSelect.appendChild(co);
-        modelSelect.style.display = ''; modelInput.style.display = 'none';
-      } else { modelSelect.style.display = 'none'; modelInput.style.display = ''; }
-      const saved = savedProviders[provider];
-      let targetModel = (saved && saved.model) ? saved.model : cfg.model;
-      if (suggestions.length > 0) {
-        const match = suggestions.find(m => m === targetModel);
-        if (match) { modelSelect.value = match; modelInput.style.display = 'none'; modelInput.value = match; }
-        else { modelSelect.value = '__custom__'; modelInput.style.display = ''; modelInput.value = targetModel; }
-      } else { modelInput.value = targetModel; }
-      if (saved) { document.getElementById('apiKey').value = saved.api_key || ''; document.getElementById('baseUrl').value = saved.base_url || ''; }
-      else { document.getElementById('apiKey').value = ''; document.getElementById('baseUrl').value = ''; }
-    }
-
-    function onTemplateChange() {
-      const name = document.getElementById('template').value;
-      document.getElementById('templateInfo').innerHTML =
-        `<strong>📄 ${name}</strong><br><span style="color:var(--ink-4)">${currentLang === 'zh' ? '使用此模板的配色方案和盒子样式' : 'Uses this template\'s color scheme'}</span>`;
-    }
-
-    function toggleApiKey() {
-      const input = document.getElementById('apiKey');
-      input.type = input.type === 'password' ? 'text' : 'password';
     }
 
     // ─── Run Agent ────────────────────────────
@@ -1755,13 +1809,23 @@
       document.getElementById('resultCard').classList.remove('active');
       document.getElementById('agentLog').innerHTML = '';
 
+      const provider = document.getElementById('provider').value;
+      let model = document.getElementById('model').value;
+      if (model === '__custom__') {
+        model = prompt('Enter model name:') || '';
+        if (!model) { onFinish(); return; }
+      }
+
+      // Get API key from saved providers
+      const providerCfg = savedProviders[provider] || {};
+
       const body = {
         arxiv_url: url,
-        provider: document.getElementById('provider').value,
-        model: document.getElementById('model').value,
-        api_key: document.getElementById('apiKey').value,
-        base_url: document.getElementById('baseUrl').value || null,
-        temperature: parseFloat(document.getElementById('temperature').value),
+        provider: provider,
+        model: model,
+        api_key: providerCfg.api_key || '',
+        base_url: providerCfg.base_url || null,
+        temperature: providerCfg.temperature || 0.3,
         template: document.getElementById('template').value,
         language: document.getElementById('language').value,
       };
