@@ -48,6 +48,13 @@ async def index():
     return HTMLResponse(content=index_file.read_text(encoding="utf-8"))
 
 
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page():
+    """设置页面"""
+    settings_file = web_dir / "settings.html"
+    return HTMLResponse(content=settings_file.read_text(encoding="utf-8"))
+
+
 @app.get("/api/templates")
 async def get_templates():
     """获取可用模板列表"""
@@ -64,8 +71,13 @@ async def get_templates():
                     continue
                 cls_file = cls_files[0]
             try:
-                first_line = cls_file.read_text(encoding="utf-8").split("\n")[0]
-                desc = first_line.lstrip("% ").strip() if first_line.startswith("%") else ""
+                lines = cls_file.read_text(encoding="utf-8").split("\n")
+                desc = ""
+                for line in lines[:10]:
+                    stripped = line.lstrip("% ").strip()
+                    if line.startswith("%") and stripped and not all(c in "=-_#*" for c in stripped):
+                        desc = stripped
+                        break
             except Exception:
                 desc = ""
             templates.append({
@@ -74,6 +86,16 @@ async def get_templates():
                 "size_kb": round(cls_file.stat().st_size / 1024, 1),
             })
     return {"templates": templates}
+
+
+@app.get("/api/templates/{name}/preview")
+async def get_template_preview(name: str):
+    """返回模板预览图"""
+    template_dir = _project_root() / "latex_template" / name
+    preview = template_dir / "preview.png"
+    if preview.exists():
+        return FileResponse(str(preview), media_type="image/png")
+    return JSONResponse({"error": "no preview"}, status_code=404)
 
 
 def _mask_api_key(key: str) -> str:
@@ -140,19 +162,28 @@ async def save_config(request: Request):
             existing = {}
 
     provider = body.get("provider", "")
+    active_provider = body.get("active_provider")
+    should_set_active = body.get("set_active")
+
+    provider_fields_present = any(
+        field in body for field in ("api_key", "model", "base_url", "temperature")
+    )
 
     # ── 更新 llm（全局活跃 provider/model/temperature）──
     llm = existing.get("llm", {})
-    if provider:
-        llm["provider"] = provider
-    if body.get("model"):
-        llm["model"] = body["model"]
-    if body.get("temperature") is not None:
-        llm["temperature"] = float(body["temperature"])
+    llm_provider = active_provider if active_provider is not None else provider
+    if should_set_active is None:
+        should_set_active = bool(llm_provider)
+    if should_set_active and llm_provider:
+        llm["provider"] = llm_provider
+        if body.get("model"):
+            llm["model"] = body["model"]
+        if body.get("temperature") is not None:
+            llm["temperature"] = float(body["temperature"])
     existing["llm"] = llm
 
     # ── 按 provider 分别存储 api_key / model / base_url ──
-    if provider:
+    if provider and provider_fields_present:
         providers = existing.get("providers", {})
         p_cfg = providers.get(provider, {})
         if body.get("api_key") and not _is_masked(body["api_key"]):
@@ -177,6 +208,31 @@ async def save_config(request: Request):
             encoding="utf-8",
         )
         return {"ok": True, "saved_to": str(local_config_path)}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.delete("/api/config/provider/{provider_name}")
+async def delete_provider_config(provider_name: str):
+    """删除某个 provider 的配置"""
+    import yaml as _yaml
+    project_root = Path(__file__).parent.parent
+    local_config_path = project_root / "config.local.yaml"
+
+    if not local_config_path.exists():
+        return JSONResponse({"ok": False, "error": "No local config"}, status_code=404)
+
+    try:
+        existing = _yaml.safe_load(local_config_path.read_text(encoding="utf-8")) or {}
+        providers = existing.get("providers", {})
+        if provider_name in providers:
+            del providers[provider_name]
+            existing["providers"] = providers
+            local_config_path.write_text(
+                _yaml.dump(existing, allow_unicode=True, default_flow_style=False),
+                encoding="utf-8",
+            )
+        return {"ok": True}
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
 

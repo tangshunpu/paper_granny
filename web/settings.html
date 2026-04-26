@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper Granny — Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root,
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --bg-page: #0a0b0f;
+      --bg-hover: #1a1c25;
+      --bg-input: #13151c;
+      --bg-surface: #161822;
+      --bg-card: #12141c;
+      --border: #232530;
+      --border-light: #1e2030;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      --nav-bg: rgba(10, 11, 15, 0.8);
+      --ink: #e8eaf0;
+      --ink-2: #c0c4d0;
+      --ink-3: #8b90a0;
+      --ink-4: #555a6e;
+      --accent: #22d3a7;
+      --accent-hover: #1ab892;
+      --accent-bg: rgba(34, 211, 167, 0.08);
+      --accent-border: rgba(34, 211, 167, 0.2);
+      --accent-text: var(--bg-page);
+      --green: #34d399;
+      --green-bg: rgba(52, 211, 153, 0.1);
+      --green-border: rgba(52, 211, 153, 0.2);
+      --red: #f87171;
+      --red-bg: rgba(248, 113, 113, 0.1);
+    }
+
+    [data-theme="light"] {
+      --bg: #ffffff;
+      --bg-page: #f7f8fa;
+      --bg-hover: #eef0f4;
+      --bg-input: #ffffff;
+      --bg-surface: #f0f2f5;
+      --bg-card: #ffffff;
+      --border: #dfe2e8;
+      --border-light: #ebedf2;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      --nav-bg: rgba(247, 248, 250, 0.85);
+      --ink: #1a1d26;
+      --ink-2: #3a3f4f;
+      --ink-3: #6b7185;
+      --ink-4: #9ca1b0;
+      --accent: #0d9373;
+      --accent-hover: #0b7d63;
+      --accent-bg: rgba(13, 147, 115, 0.07);
+      --accent-border: rgba(13, 147, 115, 0.2);
+      --accent-text: #ffffff;
+      --green: #0da574;
+      --green-bg: rgba(13, 165, 116, 0.07);
+      --green-border: rgba(13, 165, 116, 0.2);
+      --red: #dc3545;
+      --red-bg: rgba(220, 53, 69, 0.06);
+    }
+
+    :root {
+      --r: 12px;
+      --r-sm: 8px;
+      --r-lg: 16px;
+      --font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'IBM Plex Mono', monospace;
+      --ease: cubic-bezier(.4, 0, .2, 1);
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg-page);
+      color: var(--ink);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      transition: background .3s, color .3s;
+    }
+
+    .topnav {
+      background: var(--nav-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      transition: background .3s;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topnav-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topnav-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topnav-logo {
+      height: 28px;
+      border-radius: 6px;
+    }
+
+    .topnav-brand {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .topnav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link {
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--ink-3);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: all .15s;
+    }
+
+    .nav-link:hover {
+      background: var(--bg-hover);
+      color: var(--ink);
+    }
+
+    .nav-link.active {
+      background: var(--accent-bg);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .page-header {
+      padding: 28px 0 20px;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .page-header p {
+      color: var(--ink-3);
+      font-size: .88rem;
+      margin-top: 2px;
+    }
+
+    /* ═══ Card ═══ */
+    .card {
+      background: var(--bg-card, var(--bg));
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      transition: background .3s, border-color .3s;
+    }
+
+    .card-title {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-subtitle {
+      font-size: .78rem;
+      color: var(--ink-4);
+      font-weight: 400;
+    }
+
+    /* ═══ Add Form ═══ */
+    .add-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 16px;
+    }
+
+    .add-form .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--ink-3);
+      margin-bottom: 4px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: .88rem;
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(13, 147, 115, 0.1);
+    }
+
+    input::placeholder {
+      color: var(--ink-4);
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M5 7L1 3h8z' fill='%239ca3af'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+
+    .pw-wrap {
+      position: relative;
+    }
+
+    .pw-wrap input {
+      padding-right: 36px;
+    }
+
+    .pw-toggle {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--ink-4);
+      cursor: pointer;
+      font-size: .88rem;
+      padding: 2px;
+    }
+
+    .pw-toggle:hover {
+      color: var(--ink-3);
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slider-row input[type=range] {
+      flex: 1;
+      padding: 0;
+      height: 3px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--border);
+      border-radius: 2px;
+      border: none;
+    }
+
+    .slider-row input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    .slider-val {
+      min-width: 26px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--accent);
+      font-size: .82rem;
+      font-family: var(--mono);
+    }
+
+    /* ═══ Buttons ═══ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      border-radius: var(--r-sm);
+      font-family: var(--font);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s var(--ease);
+      font-size: .88rem;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-text, #fff);
+      padding: 9px 20px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    .btn-primary:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    /* ═══ Saved Provider List ═══ */
+    .saved-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .saved-empty {
+      text-align: center;
+      padding: 24px 16px;
+      color: var(--ink-4);
+      font-size: .85rem;
+      border: 1px dashed var(--border);
+      border-radius: var(--r-sm);
+    }
+
+    .saved-item {
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all .15s;
+      position: relative;
+    }
+
+    .saved-item:hover {
+      border-color: var(--accent-border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .saved-item-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .saved-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .saved-item-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .saved-item-name {
+      font-weight: 700;
+      font-size: .88rem;
+    }
+
+    .saved-item-badge {
+      font-size: .6rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .badge-default {
+      background: var(--accent-bg);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+    }
+
+    .saved-item-details {
+      font-size: .75rem;
+      color: var(--ink-4);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .saved-item-details span {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .saved-item-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .btn-icon {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--ink-3);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: .8rem;
+      transition: all .15s;
+    }
+
+    .btn-icon:hover {
+      border-color: var(--accent-border);
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+
+    .btn-icon.danger:hover {
+      border-color: rgba(239, 68, 68, 0.3);
+      color: var(--red);
+      background: var(--red-bg);
+    }
+
+    .btn-icon.default-active {
+      background: var(--accent-bg);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ═══ Template section ═══ */
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .template-item {
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: all .15s;
+      overflow: hidden;
+    }
+
+    .template-item:hover {
+      border-color: var(--accent-border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .template-item.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(13, 147, 115, 0.18);
+    }
+
+    .template-preview {
+      width: 100%;
+      height: 180px;
+      background: #fafafa;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .template-preview img {
+      width: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .template-preview-placeholder {
+      color: var(--ink-4);
+      font-size: 1.5rem;
+      margin-top: 60px;
+    }
+
+    .template-info {
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .template-name {
+      font-weight: 700;
+      font-size: .8rem;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .template-desc {
+      font-size: .68rem;
+      color: var(--ink-4);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .template-check {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .65rem;
+      flex-shrink: 0;
+      transition: all .15s;
+    }
+
+    .template-item.active .template-check {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ═══ Toast ═══ */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--ink);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: var(--r-sm);
+      font-size: .85rem;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .3s var(--ease);
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      background: var(--green);
+    }
+
+    .toast.error {
+      background: var(--red);
+    }
+
+    /* ═══ Theme Toggle ═══ */
+    .theme-toggle {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface, var(--bg-hover));
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all .2s;
+      position: relative;
+      overflow: hidden;
+      color: var(--ink-3);
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent-border);
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+
+    .theme-icon-sun,
+    .theme-icon-moon {
+      position: absolute;
+      transition: transform .3s var(--ease), opacity .3s;
+    }
+
+    [data-theme="dark"] .theme-icon-sun { opacity: 1; transform: rotate(0deg); }
+    [data-theme="dark"] .theme-icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+    [data-theme="light"] .theme-icon-sun { opacity: 0; transform: rotate(90deg) scale(0.5); }
+    [data-theme="light"] .theme-icon-moon { opacity: 1; transform: rotate(0deg); }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 0 12px;
+      }
+
+      .add-form {
+        grid-template-columns: 1fr;
+      }
+
+      .saved-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .saved-item-actions {
+        align-self: flex-end;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="topnav">
+    <div class="topnav-inner">
+      <div class="topnav-left">
+        <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+          <img src="/static/logo.png" alt="Logo" class="topnav-logo">
+          <span class="topnav-brand">Paper Granny</span>
+        </a>
+      </div>
+      <div class="topnav-right">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/settings" class="nav-link active">Settings</a>
+        <span style="width:1px;height:20px;background:var(--border);margin:0 4px"></span>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+          <span class="theme-icon-sun">&#9788;</span>
+          <span class="theme-icon-moon">&#9790;</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>Settings</h1>
+      <p>Manage LLM provider configurations</p>
+    </div>
+
+    <!-- ═══ Add New Provider ═══ -->
+    <div class="card">
+      <div class="card-title">
+        Add Provider Configuration
+      </div>
+      <div class="add-form">
+        <div class="form-group">
+          <label>Provider</label>
+          <select id="addProvider" onchange="onAddProviderChange()">
+            <optgroup label="Commercial API">
+              <option value="openai">OpenAI</option>
+              <option value="claude">Claude (Anthropic)</option>
+              <option value="gemini">Gemini (Google)</option>
+              <option value="openrouter">OpenRouter</option>
+            </optgroup>
+            <optgroup label="China Services">
+              <option value="deepseek">DeepSeek</option>
+              <option value="kimi">Kimi (Moonshot)</option>
+              <option value="dashscope">Qwen (DashScope)</option>
+              <option value="dashscope-coding">Bailian Coding</option>
+              <option value="siliconflow">SiliconFlow</option>
+            </optgroup>
+            <optgroup label="Local / Self-hosted">
+              <option value="ollama">Ollama</option>
+              <option value="vllm">vLLM</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Model</label>
+          <input type="text" id="addModel" placeholder="gpt-4o">
+        </div>
+        <div class="form-group">
+          <label>API Key</label>
+          <div class="pw-wrap">
+            <input type="password" id="addApiKey" placeholder="sk-...">
+            <button class="pw-toggle" onclick="togglePw('addApiKey')">&#128065;</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Base URL <span style="font-weight:400;color:var(--ink-4)">(optional)</span></label>
+          <input type="text" id="addBaseUrl" placeholder="https://api.openai.com/v1">
+        </div>
+        <div class="form-group">
+          <label>Temperature</label>
+          <div class="slider-row">
+            <input type="range" id="addTemperature" min="0" max="1" step="0.1" value="0.3">
+            <span class="slider-val" id="addTempValue">0.3</span>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="addProvider()">Add Configuration</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Saved Configurations ═══ -->
+    <div class="card">
+      <div class="card-title">
+        Saved Configurations
+        <span class="card-subtitle" id="savedCount"></span>
+      </div>
+      <div class="saved-list" id="savedList"></div>
+    </div>
+
+    <!-- ═══ Default Template ═══ -->
+    <div class="card">
+      <div class="card-title">Default Template</div>
+      <div class="template-grid" id="templateGrid"></div>
+    </div>
+
+    <!-- ═══ Default Language ═══ -->
+    <div class="card">
+      <div class="card-title">Default Language</div>
+      <div class="form-group" style="max-width:300px">
+        <select id="cfgLanguage" onchange="saveLanguage()">
+          <option value="中文">中文</option>
+          <option value="English">English</option>
+          <option value="日本語">日本語</option>
+          <option value="한국어">한국어</option>
+          <option value="Français">Français</option>
+          <option value="Deutsch">Deutsch</option>
+          <option value="Español">Español</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ─── Theme ──────────────────────────────────
+    function initTheme() {
+      const saved = localStorage.getItem('scholar_granny_theme');
+      const theme = saved || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+    initTheme();
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('scholar_granny_theme', next);
+    }
+
+    const PROVIDER_PRESETS = {
+      openai: { label: 'OpenAI', icon: 'O', defaultModel: 'gpt-5.4-mini', basePlaceholder: 'https://api.openai.com/v1' },
+      claude: { label: 'Claude', icon: 'C', defaultModel: 'claude-sonnet-4-20250514', basePlaceholder: 'https://api.anthropic.com' },
+      gemini: { label: 'Gemini', icon: 'G', defaultModel: 'gemini-2.5-flash', basePlaceholder: '' },
+      openrouter: { label: 'OpenRouter', icon: 'R', defaultModel: 'google/gemini-2.5-flash', basePlaceholder: 'https://openrouter.ai/api/v1' },
+      deepseek: { label: 'DeepSeek', icon: 'D', defaultModel: 'deepseek-chat', basePlaceholder: 'https://api.deepseek.com/v1' },
+      kimi: { label: 'Kimi', icon: 'K', defaultModel: 'moonshot-v1-128k', basePlaceholder: 'https://api.moonshot.cn/v1' },
+      dashscope: { label: 'Qwen', icon: 'Q', defaultModel: 'qwen-plus', basePlaceholder: 'https://dashscope.aliyuncs.com/compatible-mode/v1' },
+      'dashscope-coding': { label: 'Bailian Coding', icon: 'B', defaultModel: 'qwen-plus', basePlaceholder: 'https://coding.dashscope.aliyuncs.com/v1' },
+      siliconflow: { label: 'SiliconFlow', icon: 'S', defaultModel: 'Qwen/Qwen3-8B', basePlaceholder: 'https://api.siliconflow.cn/v1' },
+      ollama: { label: 'Ollama', icon: '🦙', defaultModel: 'llama3', basePlaceholder: 'http://localhost:11434/v1' },
+      vllm: { label: 'vLLM', icon: 'V', defaultModel: '', basePlaceholder: 'http://localhost:8000/v1' },
+    };
+
+    let savedProviders = {};
+    let defaultProvider = 'openai';
+    let defaultTemplate = 'ModernColorful';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById('addTemperature').addEventListener('input', e => {
+        document.getElementById('addTempValue').textContent = e.target.value;
+      });
+      await loadConfig();
+      renderSavedList();
+      onAddProviderChange();
+      await loadTemplates();
+      const lang = localStorage.getItem('scholar_granny_default_language');
+      if (lang) document.getElementById('cfgLanguage').value = lang;
+    });
+
+    async function loadConfig() {
+      try {
+        const cfg = await (await fetch('/api/config')).json();
+        savedProviders = cfg.providers || {};
+        defaultProvider = cfg.provider || 'openai';
+        defaultTemplate = cfg.template || 'ModernColorful';
+      } catch (e) {
+        console.error('Failed to load config:', e);
+      }
+    }
+
+    function onAddProviderChange() {
+      const provider = document.getElementById('addProvider').value;
+      const preset = PROVIDER_PRESETS[provider];
+      if (!preset) return;
+      document.getElementById('addModel').value = preset.defaultModel;
+      document.getElementById('addModel').placeholder = preset.defaultModel;
+      document.getElementById('addBaseUrl').placeholder = preset.basePlaceholder;
+      // If already configured, fill in saved values
+      const saved = savedProviders[provider];
+      if (saved) {
+        document.getElementById('addModel').value = saved.model || preset.defaultModel;
+        document.getElementById('addApiKey').value = saved.api_key || '';
+        document.getElementById('addBaseUrl').value = saved.base_url || '';
+        if (saved.temperature !== undefined) {
+          document.getElementById('addTemperature').value = saved.temperature;
+          document.getElementById('addTempValue').textContent = saved.temperature;
+        }
+      } else {
+        document.getElementById('addApiKey').value = '';
+        document.getElementById('addBaseUrl').value = '';
+        document.getElementById('addTemperature').value = 0.3;
+        document.getElementById('addTempValue').textContent = '0.3';
+      }
+    }
+
+    async function addProvider() {
+      const provider = document.getElementById('addProvider').value;
+      const model = document.getElementById('addModel').value;
+      const apiKey = document.getElementById('addApiKey').value;
+      const baseUrl = document.getElementById('addBaseUrl').value;
+      const temperature = parseFloat(document.getElementById('addTemperature').value);
+
+      if (!model) {
+        showToast('Please enter a model name', 'error');
+        return;
+      }
+
+      try {
+        const isFirst = Object.keys(savedProviders).length === 0;
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            provider: provider,
+            active_provider: isFirst ? provider : undefined,
+            set_active: isFirst,
+            model: model,
+            api_key: apiKey,
+            base_url: baseUrl || null,
+            temperature: temperature,
+            template: defaultTemplate,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          throw new Error(data.error || 'Save failed');
+        }
+
+        showToast(`${PROVIDER_PRESETS[provider]?.label || provider} added`, 'success');
+        // Clear form
+        document.getElementById('addApiKey').value = '';
+        document.getElementById('addBaseUrl').value = '';
+        await loadConfig();
+        renderSavedList();
+      } catch (e) {
+        showToast('Failed: ' + e.message, 'error');
+      }
+    }
+
+    function renderSavedList() {
+      const list = document.getElementById('savedList');
+      const countEl = document.getElementById('savedCount');
+      const keys = Object.keys(savedProviders);
+
+      if (!keys.length) {
+        list.innerHTML = '<div class="saved-empty">No provider configurations yet. Add one above.</div>';
+        countEl.textContent = '';
+        return;
+      }
+
+      countEl.textContent = `${keys.length} configured`;
+
+      list.innerHTML = keys.map(key => {
+        const cfg = savedProviders[key];
+        const preset = PROVIDER_PRESETS[key] || { label: key, icon: key[0].toUpperCase() };
+        const isDefault = key === defaultProvider;
+        const maskedKey = cfg.api_key || '';
+        const model = cfg.model || preset.defaultModel || '-';
+
+        return `
+          <div class="saved-item">
+            <div class="saved-item-icon">${preset.icon}</div>
+            <div class="saved-item-info">
+              <div class="saved-item-header">
+                <span class="saved-item-name">${preset.label}</span>
+                ${isDefault ? '<span class="saved-item-badge badge-default">DEFAULT</span>' : ''}
+              </div>
+              <div class="saved-item-details">
+                <span>Model: <strong>${escHtml(model)}</strong></span>
+                ${maskedKey ? `<span>Key: ${escHtml(maskedKey)}</span>` : ''}
+                ${cfg.base_url ? `<span>URL: ${escHtml(cfg.base_url)}</span>` : ''}
+                ${cfg.temperature !== undefined ? `<span>Temp: ${cfg.temperature}</span>` : ''}
+              </div>
+            </div>
+            <div class="saved-item-actions">
+              <button class="btn-icon ${isDefault ? 'default-active' : ''}" onclick="setDefault('${key}')" title="Set as default">
+                ${isDefault ? '★' : '☆'}
+              </button>
+              <button class="btn-icon" onclick="editProvider('${key}')" title="Edit">✎</button>
+              <button class="btn-icon danger" onclick="deleteProvider('${key}')" title="Delete">✕</button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    async function setDefault(key) {
+      const cfg = savedProviders[key] || {};
+      const preset = PROVIDER_PRESETS[key] || {};
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            provider: key,
+            active_provider: key,
+            set_active: true,
+            model: cfg.model || preset.defaultModel,
+            api_key: cfg.api_key || '',
+            base_url: cfg.base_url || null,
+            temperature: cfg.temperature || 0.3,
+            template: defaultTemplate,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          throw new Error(data.error || 'Save failed');
+        }
+        defaultProvider = key;
+        showToast(`${preset.label || key} set as default`, 'success');
+        await loadConfig();
+        renderSavedList();
+      } catch (e) {
+        showToast('Failed', 'error');
+      }
+    }
+
+    function editProvider(key) {
+      // Fill the add form with this provider's values for editing
+      document.getElementById('addProvider').value = key;
+      onAddProviderChange();
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Focus the model field
+      setTimeout(() => document.getElementById('addModel').focus(), 300);
+    }
+
+    async function deleteProvider(key) {
+      const preset = PROVIDER_PRESETS[key] || { label: key };
+      if (!confirm(`Delete ${preset.label} configuration?`)) return;
+      try {
+        await fetch('/api/config/provider/' + key, { method: 'DELETE' });
+        showToast(`${preset.label} deleted`, 'success');
+        await loadConfig();
+        renderSavedList();
+      } catch (e) {
+        showToast('Delete failed', 'error');
+      }
+    }
+
+    // ═══ Templates ═══
+    async function loadTemplates() {
+      try {
+        const data = await (await fetch('/api/templates')).json();
+        const grid = document.getElementById('templateGrid');
+        grid.innerHTML = data.templates.map(t => `
+          <div class="template-item ${t.name === defaultTemplate ? 'active' : ''}"
+               onclick="selectTemplate('${t.name}', this)">
+            <div class="template-preview">
+              <img src="/api/templates/${t.name}/preview"
+                   alt="${t.name}"
+                   onerror="this.parentElement.innerHTML='<span class=template-preview-placeholder>📄</span>'">
+            </div>
+            <div class="template-info">
+              <div>
+                <div class="template-name">${t.name}</div>
+                <div class="template-desc">${t.description || ''}</div>
+              </div>
+              <div class="template-check">${t.name === defaultTemplate ? '✓' : ''}</div>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) { }
+    }
+
+    async function selectTemplate(name, el) {
+      defaultTemplate = name;
+      document.querySelectorAll('.template-item').forEach(e => {
+        e.classList.remove('active');
+        e.querySelector('.template-check').textContent = '';
+      });
+      el.classList.add('active');
+      el.querySelector('.template-check').textContent = '✓';
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            provider: defaultProvider || '',
+            active_provider: defaultProvider || '',
+            set_active: false,
+            template: name,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          throw new Error(data.error || 'Save failed');
+        }
+        showToast('Default template updated', 'success');
+      } catch (e) {
+        showToast('Failed to update template', 'error');
+      }
+    }
+
+    function saveLanguage() {
+      const lang = document.getElementById('cfgLanguage').value;
+      localStorage.setItem('scholar_granny_default_language', lang);
+      showToast('Language saved', 'success');
+    }
+
+    // ═══ Helpers ═══
+    function togglePw(id) {
+      const input = document.getElementById(id);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function showToast(msg, type = '') {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = 'toast ' + type;
+      setTimeout(() => el.classList.add('show'), 10);
+      setTimeout(() => el.classList.remove('show'), 2500);
+    }
+  </script>
+</body>
+
+</html>

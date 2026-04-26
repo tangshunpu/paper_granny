@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 
 <head>
   <meta charset="UTF-8">
@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Space+Mono:wght@400;700&display=swap"
     rel="stylesheet">
   <style>
     *,
@@ -20,44 +20,118 @@
       padding: 0;
     }
 
-    :root {
+    :root,
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --bg-page: #0a0b0f;
+      --bg-hover: #1a1c25;
+      --bg-input: #13151c;
+      --bg-surface: #161822;
+      --bg-card: #12141c;
+      --border: #232530;
+      --border-light: #1e2030;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --nav-bg: rgba(10, 11, 15, 0.8);
+      --glow-1: rgba(34, 211, 167, 0.07);
+      --glow-2: rgba(91, 141, 239, 0.06);
+
+      --ink: #e8eaf0;
+      --ink-2: #c0c4d0;
+      --ink-3: #8b90a0;
+      --ink-4: #555a6e;
+
+      --accent: #22d3a7;
+      --accent-hover: #1ab892;
+      --accent-bg: rgba(34, 211, 167, 0.08);
+      --accent-border: rgba(34, 211, 167, 0.2);
+      --accent-glow: rgba(34, 211, 167, 0.15);
+      --accent-text: var(--bg-page);
+
+      --blue: #5b8def;
+      --blue-bg: rgba(91, 141, 239, 0.1);
+      --purple: #a78bfa;
+      --purple-bg: rgba(167, 139, 250, 0.08);
+      --cyan: #22d3ee;
+      --cyan-bg: rgba(34, 211, 238, 0.08);
+      --orange: #fb923c;
+      --orange-bg: rgba(251, 146, 60, 0.08);
+      --pink: #f472b6;
+      --pink-bg: rgba(244, 114, 182, 0.08);
+      --green: #34d399;
+      --green-bg: rgba(52, 211, 153, 0.1);
+      --green-border: rgba(52, 211, 153, 0.2);
+      --red: #f87171;
+      --red-bg: rgba(248, 113, 113, 0.1);
+
+      --grad-1: linear-gradient(135deg, #22d3a7, #5b8def);
+      --grad-2: linear-gradient(135deg, #a78bfa, #f472b6);
+      --grad-3: linear-gradient(135deg, #fb923c, #f87171);
+      --grad-4: linear-gradient(135deg, #22d3ee, #5b8def);
+      --grad-5: linear-gradient(135deg, #34d399, #22d3ee);
+      --title-grad: linear-gradient(135deg, #e8eaf0 0%, #22d3a7 100%);
+    }
+
+    [data-theme="light"] {
       --bg: #ffffff;
-      --bg-page: #f5f5f5;
-      --bg-hover: #f7f7f7;
+      --bg-page: #f7f8fa;
+      --bg-hover: #eef0f4;
       --bg-input: #ffffff;
-      --border: #e5e7eb;
-      --border-light: #eee;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-      --shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+      --bg-surface: #f0f2f5;
+      --bg-card: #ffffff;
+      --border: #dfe2e8;
+      --border-light: #ebedf2;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      --shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.1);
+      --nav-bg: rgba(247, 248, 250, 0.85);
+      --glow-1: rgba(13, 147, 115, 0.06);
+      --glow-2: rgba(59, 110, 210, 0.05);
 
-      --ink: #1a1a2e;
-      --ink-2: #374151;
-      --ink-3: #6b7280;
-      --ink-4: #9ca3af;
+      --ink: #1a1d26;
+      --ink-2: #3a3f4f;
+      --ink-3: #6b7185;
+      --ink-4: #9ca1b0;
 
-      /* HF-inspired warm palette */
-      --yellow: #ff9d00;
-      --yellow-hover: #e68e00;
-      --yellow-bg: #fff8ee;
-      --yellow-border: #ffe4b5;
-      --orange: #ff6b35;
-      --coral: #ff4b4b;
+      --accent: #0d9373;
+      --accent-hover: #0b7d63;
+      --accent-bg: rgba(13, 147, 115, 0.07);
+      --accent-border: rgba(13, 147, 115, 0.2);
+      --accent-glow: rgba(13, 147, 115, 0.12);
+      --accent-text: #ffffff;
 
-      --blue: #2563eb;
-      --blue-bg: rgba(37, 99, 235, 0.06);
-      --purple: #7c3aed;
-      --purple-bg: rgba(124, 58, 237, 0.05);
-      --green: #10b981;
-      --green-bg: rgba(16, 185, 129, 0.07);
-      --green-border: rgba(16, 185, 129, 0.2);
-      --red: #ef4444;
-      --red-bg: rgba(239, 68, 68, 0.06);
+      --blue: #3b6ed2;
+      --blue-bg: rgba(59, 110, 210, 0.08);
+      --purple: #7e5bc7;
+      --purple-bg: rgba(126, 91, 199, 0.06);
+      --cyan: #0e9aab;
+      --cyan-bg: rgba(14, 154, 171, 0.06);
+      --orange: #d97520;
+      --orange-bg: rgba(217, 117, 32, 0.06);
+      --pink: #c44e8a;
+      --pink-bg: rgba(196, 78, 138, 0.06);
+      --green: #0da574;
+      --green-bg: rgba(13, 165, 116, 0.07);
+      --green-border: rgba(13, 165, 116, 0.2);
+      --red: #dc3545;
+      --red-bg: rgba(220, 53, 69, 0.06);
 
+      --grad-1: linear-gradient(135deg, #0d9373, #3b6ed2);
+      --grad-2: linear-gradient(135deg, #7e5bc7, #c44e8a);
+      --grad-3: linear-gradient(135deg, #d97520, #dc3545);
+      --grad-4: linear-gradient(135deg, #0e9aab, #3b6ed2);
+      --grad-5: linear-gradient(135deg, #0da574, #0e9aab);
+      --title-grad: linear-gradient(135deg, #1a1d26 0%, #0d9373 100%);
+    }
+
+    :root {
       --r: 12px;
       --r-sm: 8px;
       --r-lg: 16px;
-      --font: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
-      --mono: 'JetBrains Mono', monospace;
+      --r-xl: 24px;
+      --font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'IBM Plex Mono', monospace;
       --ease: cubic-bezier(.4, 0, .2, 1);
     }
 
@@ -67,22 +141,39 @@
       color: var(--ink);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      transition: background .3s, color .3s;
     }
 
-    /* ═══ Top Nav Bar (HF-style) ═══ */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 500px;
+      background: radial-gradient(ellipse at 20% 0%, var(--glow-1) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 0%, var(--glow-2) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+      transition: background .3s;
+    }
+
+    /* ═══ Top Nav Bar ═══ */
     .topnav {
-      background: var(--bg);
       border-bottom: 1px solid var(--border);
-      padding: 0 24px;
+      padding: 0 32px;
       position: sticky;
       top: 0;
       z-index: 100;
+      backdrop-filter: blur(16px);
+      background: var(--nav-bg);
+      transition: background .3s;
     }
 
     .topnav-inner {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 0 auto;
-      height: 52px;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -104,12 +195,35 @@
       font-weight: 700;
       color: var(--ink);
       text-decoration: none;
+      font-family: var(--mono);
+      letter-spacing: -0.02em;
     }
 
     .topnav-right {
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .nav-link {
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--ink-3);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: all .15s;
+    }
+
+    .nav-link:hover {
+      background: var(--bg-hover);
+      color: var(--ink);
+    }
+
+    .nav-link.active {
+      background: var(--accent-bg);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
     }
 
     .lang-btn {
@@ -126,9 +240,9 @@
     }
 
     .lang-btn.active {
-      background: var(--yellow);
-      color: #fff;
-      border-color: var(--yellow);
+      background: var(--accent);
+      color: var(--accent-text);
+      border-color: var(--accent);
     }
 
     .lang-btn:hover:not(.active) {
@@ -138,48 +252,39 @@
 
     /* ═══ Page Container ═══ */
     .container {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 0 24px;
+      padding: 0 32px;
     }
 
-    /* ═══ Page Header ═══ */
     .page-header {
-      padding: 28px 0 20px;
+      padding: 36px 0 24px;
     }
 
     .page-title {
-      font-size: 1.65rem;
+      font-size: 1.6rem;
       font-weight: 700;
-      color: var(--ink);
       margin-bottom: 4px;
+      letter-spacing: -0.02em;
+      background: var(--title-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .page-subtitle {
-      color: var(--ink-3);
-      font-size: .92rem;
-    }
-
-    /* ═══ Two-Column Layout ═══ */
-    .main-layout {
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 20px;
-      align-items: start;
-    }
-
-    @media (max-width: 900px) {
-      .main-layout {
-        grid-template-columns: 1fr;
-      }
+      color: var(--ink-4);
+      font-size: .88rem;
+      font-weight: 400;
     }
 
     /* ═══ Cards ═══ */
     .card {
-      background: var(--bg);
+      background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--r);
       padding: 20px;
+      transition: background .3s, border-color .3s;
     }
 
     .card-title {
@@ -192,22 +297,114 @@
       gap: 6px;
     }
 
-    /* ═══ Input Area (main column top) ═══ */
+    /* ═══ Input Section ═══ */
     .input-section {
-      background: var(--bg);
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 20px;
-      margin-bottom: 16px;
+      border-radius: var(--r-xl);
+      padding: 6px 6px 6px 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      transition: box-shadow .3s, border-color .3s;
+      position: relative;
+      z-index: 1;
     }
 
-    .input-row {
+    .input-section:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent), 0 0 20px var(--accent-glow), var(--shadow-lg);
+    }
+
+    .input-main-row {
       display: flex;
-      gap: 10px;
+      align-items: center;
+      gap: 8px;
     }
 
-    .input-row input {
+    .input-main-row input {
       flex: 1;
+      border: none;
+      padding: 12px 4px;
+      font-size: .95rem;
+      background: transparent;
+      outline: none;
+    }
+
+    .input-main-row input:focus {
+      border: none;
+      box-shadow: none;
+    }
+
+    .input-options-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 8px 0 6px;
+      border-top: 1px solid var(--border-light);
+      margin-top: 2px;
+    }
+
+    .compact-select-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .compact-select-group label {
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--ink-4);
+      margin-bottom: 0;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+    }
+
+    .compact-select {
+      padding: 4px 22px 4px 8px;
+      font-size: .8rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--ink);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M5 7L1 3h8z' fill='%239ca3af'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 6px center;
+      color: var(--ink-2);
+      min-width: 0;
+      transition: all .15s;
+    }
+
+    .compact-select:hover {
+      border-color: var(--border);
+    }
+
+    .compact-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(13, 147, 115, 0.08);
+      outline: none;
+    }
+
+    .options-spacer {
+      flex: 1;
+    }
+
+    .no-config-hint {
+      font-size: .72rem;
+      color: var(--ink-4);
+    }
+
+    .no-config-hint a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .no-config-hint a:hover {
+      text-decoration: underline;
     }
 
     /* ═══ Forms ═══ */
@@ -231,7 +428,7 @@
     select {
       width: 100%;
       padding: 8px 12px;
-      background: var(--bg-input);
+      background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: var(--r-sm);
       color: var(--ink);
@@ -243,8 +440,8 @@
 
     input:focus,
     select:focus {
-      border-color: var(--yellow);
-      box-shadow: 0 0 0 3px rgba(255, 157, 0, 0.12);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(13, 147, 115, 0.1);
     }
 
     input::placeholder {
@@ -260,7 +457,7 @@
     }
 
     select option {
-      background: var(--bg);
+      background: var(--bg-card);
     }
 
     /* ═══ Buttons ═══ */
@@ -279,14 +476,18 @@
     }
 
     .btn-primary {
-      background: var(--yellow);
-      color: #fff;
-      padding: 9px 20px;
+      background: var(--accent);
+      color: var(--accent-text);
+      padding: 10px 22px;
       white-space: nowrap;
+      border-radius: 20px;
+      font-weight: 700;
+      transition: all .2s var(--ease);
     }
 
     .btn-primary:hover:not(:disabled) {
-      background: var(--yellow-hover);
+      background: var(--accent-hover);
+      box-shadow: 0 0 16px var(--accent-glow);
     }
 
     .btn-primary:disabled {
@@ -295,7 +496,7 @@
     }
 
     .btn-outline {
-      background: var(--bg);
+      background: var(--bg-card);
       border: 1px solid var(--border);
       color: var(--ink-2);
       padding: 8px 14px;
@@ -303,79 +504,15 @@
     }
 
     .btn-outline:hover:not(:disabled) {
-      border-color: var(--yellow-border);
-      background: var(--yellow-bg);
-      color: var(--yellow-hover);
+      border-color: var(--accent-border);
+      background: var(--accent-bg);
+      color: var(--accent);
     }
 
     .btn-sm {
       padding: 5px 10px;
       font-size: .78rem;
       border-radius: 6px;
-    }
-
-    /* ═══ Password ═══ */
-    .pw-wrap {
-      position: relative;
-    }
-
-    .pw-wrap input {
-      padding-right: 36px;
-    }
-
-    .pw-toggle {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: var(--ink-4);
-      cursor: pointer;
-      font-size: .88rem;
-      padding: 2px;
-    }
-
-    .pw-toggle:hover {
-      color: var(--ink-3);
-    }
-
-    /* ═══ Slider ═══ */
-    .slider-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .slider-row input[type=range] {
-      flex: 1;
-      padding: 0;
-      height: 3px;
-      -webkit-appearance: none;
-      appearance: none;
-      background: var(--border);
-      border-radius: 2px;
-      border: none;
-    }
-
-    .slider-row input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px;
-      height: 14px;
-      background: var(--yellow);
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid #fff;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-    }
-
-    .slider-val {
-      min-width: 26px;
-      text-align: center;
-      font-weight: 700;
-      color: var(--yellow-hover);
-      font-size: .82rem;
-      font-family: var(--mono);
     }
 
     /* ═══════════════════════════════════════
@@ -409,20 +546,26 @@
     }
 
     .papers-count {
-      background: var(--yellow-bg);
-      color: var(--yellow-hover);
+      background: var(--bg-surface);
+      color: var(--ink-3);
       font-size: .72rem;
-      font-weight: 700;
+      font-weight: 600;
       padding: 2px 8px;
       border-radius: 10px;
-      border: 1px solid var(--yellow-border);
+      border: 1px solid var(--border);
+    }
+
+    .papers-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     /* Search box */
     .papers-search {
       position: relative;
       flex: 1;
-      max-width: 320px;
+      max-width: 280px;
     }
 
     .papers-search input {
@@ -431,13 +574,14 @@
       font-size: .8rem;
       border-radius: 8px;
       border: 1px solid var(--border);
-      background: var(--bg);
+      background: var(--bg-card);
+      color: var(--ink);
       transition: border-color .15s, box-shadow .15s;
     }
 
     .papers-search input:focus {
-      border-color: var(--yellow);
-      box-shadow: 0 0 0 3px rgba(255, 157, 0, 0.12);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(13, 147, 115, 0.1);
     }
 
     .papers-search-icon {
@@ -471,7 +615,8 @@
     }
 
     .search-highlight {
-      background: rgba(255, 157, 0, 0.2);
+      background: rgba(34, 211, 167, 0.2);
+      color: var(--accent);
       border-radius: 2px;
       padding: 0 1px;
     }
@@ -483,7 +628,41 @@
       font-size: .85rem;
       border: 1px dashed var(--border);
       border-radius: var(--r);
-      background: var(--bg);
+      background: var(--bg-card);
+    }
+
+    /* View toggle */
+    .view-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .view-btn {
+      background: none;
+      border: none;
+      padding: 5px 10px;
+      font-size: .78rem;
+      cursor: pointer;
+      color: var(--ink-3);
+      transition: all .15s;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .view-btn:not(:last-child) {
+      border-right: 1px solid var(--border);
+    }
+
+    .view-btn:hover {
+      background: var(--bg-hover);
+    }
+
+    .view-btn.active {
+      background: var(--accent-bg);
+      color: var(--accent);
     }
 
     /* Sort controls */
@@ -518,14 +697,14 @@
     }
 
     .sort-btn:hover {
-      border-color: #ccc;
+      border-color: #333650;
       color: var(--ink-2);
     }
 
     .sort-btn.active {
-      background: var(--yellow-bg);
-      border-color: var(--yellow-border);
-      color: var(--yellow-hover);
+      background: var(--accent-bg);
+      border-color: var(--accent-border);
+      color: var(--accent);
     }
 
     .sort-btn .sort-arrow {
@@ -538,35 +717,57 @@
       opacity: 1;
     }
 
-    /* Individual paper card */
+    /* ═══ List View (default) ═══ */
     .paper-card {
-      background: var(--bg);
+      background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--r);
       padding: 14px;
       display: flex;
       gap: 14px;
-      transition: box-shadow .2s, border-color .2s;
+      transition: all .25s var(--ease);
       margin-bottom: 8px;
       position: relative;
+      overflow: hidden;
     }
+
+    .paper-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      border-radius: 3px 0 0 3px;
+      opacity: 0;
+      transition: opacity .25s;
+    }
+
+    .paper-card:nth-child(5n+1)::before { background: var(--grad-1); }
+    .paper-card:nth-child(5n+2)::before { background: var(--grad-2); }
+    .paper-card:nth-child(5n+3)::before { background: var(--grad-3); }
+    .paper-card:nth-child(5n+4)::before { background: var(--grad-4); }
+    .paper-card:nth-child(5n+5)::before { background: var(--grad-5); }
 
     .paper-card:hover {
-      box-shadow: var(--shadow);
-      border-color: #d5d5d5;
+      border-color: var(--accent-border);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-1px);
     }
 
-    /* Thumbnail on left — paper page ratio (≈ A4 = 1:1.414) */
+    .paper-card:hover::before {
+      opacity: 1;
+    }
+
     .paper-thumb {
       flex: 0 0 100px;
       height: 141px;
-      border-radius: 4px;
+      border-radius: 6px;
       overflow: hidden;
-      background: var(--bg-page);
-      border: 1px solid var(--border-light);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
       cursor: pointer;
       transition: transform .2s;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
     }
 
     .paper-thumb:hover {
@@ -577,6 +778,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: top;
       display: block;
     }
 
@@ -588,13 +790,19 @@
       justify-content: center;
       font-size: 1.8rem;
       opacity: .3;
-      background: linear-gradient(135deg, #fef3e2 0%, #fde8c8 100%);
+      background: var(--bg-surface);
     }
 
-    /* Content on right */
     .paper-info {
       flex: 1;
       min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .paper-info-top {
+      flex: 1;
       display: flex;
       flex-direction: column;
       gap: 3px;
@@ -614,7 +822,7 @@
     }
 
     .paper-title-link:hover {
-      color: var(--yellow-hover);
+      color: var(--accent);
     }
 
     .paper-meta-row {
@@ -632,7 +840,9 @@
 
     .paper-arxiv-id {
       font-weight: 600;
-      color: var(--ink-3);
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: .7rem;
     }
 
     .paper-abstract {
@@ -666,7 +876,7 @@
     }
 
     .paper-action-btn {
-      background: none;
+      background: var(--bg-surface);
       border: 1px solid var(--border);
       color: var(--ink-3);
       font-family: var(--font);
@@ -683,21 +893,21 @@
     }
 
     .paper-action-btn:hover {
-      border-color: var(--yellow-border);
-      color: var(--yellow-hover);
-      background: var(--yellow-bg);
+      border-color: var(--accent-border);
+      color: var(--accent);
+      background: var(--accent-bg);
     }
 
     .paper-action-btn.primary {
-      background: var(--green-bg);
-      border-color: var(--green-border);
-      color: var(--green);
+      background: var(--accent-bg);
+      border-color: var(--accent-border);
+      color: var(--accent);
     }
 
     .paper-action-btn.primary:hover {
-      background: var(--green);
-      border-color: var(--green);
-      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--accent-text);
     }
 
     .paper-action-btn.danger:hover {
@@ -706,7 +916,6 @@
       background: var(--red-bg);
     }
 
-    /* Delete button top-right */
     .paper-delete {
       position: absolute;
       top: 10px;
@@ -732,8 +941,139 @@
 
     .paper-delete:hover {
       background: var(--red-bg);
-      border-color: rgba(239, 68, 68, 0.3);
+      border-color: rgba(248, 113, 113, 0.3);
       color: var(--red);
+    }
+
+    /* ═══ Grid View ═══ */
+    .papers-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .papers-grid .paper-card {
+      flex-direction: column;
+      margin-bottom: 0;
+      height: 100%;
+      padding: 0;
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+
+    .papers-grid .paper-card::before {
+      width: 100%;
+      height: 3px;
+      border-radius: 0;
+    }
+
+    .papers-grid .paper-card:hover::before {
+      opacity: 1;
+    }
+
+    .papers-grid .paper-thumb {
+      flex: none;
+      width: 100%;
+      height: 160px;
+      border-radius: 0;
+      border: none;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .papers-grid .paper-info {
+      padding: 12px 14px;
+    }
+
+    .papers-grid .paper-title-link {
+      font-size: .82rem;
+    }
+
+    .papers-grid .paper-abstract {
+      -webkit-line-clamp: 2;
+      font-size: .72rem;
+    }
+
+    .papers-grid .paper-meta-row {
+      font-size: .68rem;
+    }
+
+    .papers-grid .paper-actions {
+      flex-wrap: wrap;
+    }
+
+    .papers-grid .paper-action-btn {
+      font-size: .68rem;
+      padding: 2px 8px;
+    }
+
+    /* ═══ Table View ═══ */
+    .papers-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+
+    .papers-table th {
+      background: var(--bg-surface);
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--ink-3);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .papers-table td {
+      padding: 10px 12px;
+      font-size: .82rem;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+    }
+
+    .papers-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .papers-table tr:hover td {
+      background: var(--bg-hover);
+    }
+
+    .papers-table .table-title {
+      font-weight: 600;
+      color: var(--ink);
+      text-decoration: none;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .papers-table .table-title:hover {
+      color: var(--accent);
+    }
+
+    .papers-table .table-id {
+      font-family: var(--mono);
+      font-size: .75rem;
+      color: var(--ink-3);
+      white-space: nowrap;
+    }
+
+    .papers-table .table-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .papers-table .table-actions a,
+    .papers-table .table-actions button {
+      font-size: .72rem;
+      padding: 2px 8px;
     }
 
     /* Empty state */
@@ -744,6 +1084,7 @@
       font-size: .88rem;
       border: 1px dashed var(--border);
       border-radius: var(--r);
+      background: var(--bg-card);
       background: var(--bg);
     }
 
@@ -811,7 +1152,7 @@
     }
 
     .log-tool-end {
-      background: var(--bg-page);
+      background: var(--bg-surface);
       color: var(--ink-3);
       font-size: .72rem;
       max-height: 90px;
@@ -829,10 +1170,10 @@
     }
 
     .log-status {
-      color: var(--yellow-hover);
+      color: var(--accent);
       font-weight: 600;
-      border-left: 2px solid var(--yellow);
-      background: var(--yellow-bg);
+      border-left: 2px solid var(--accent);
+      background: var(--accent-bg);
     }
 
     .log-error {
@@ -852,7 +1193,7 @@
     }
 
     .log-tool-streaming {
-      background: var(--bg-page);
+      background: var(--bg-surface);
       border-left: 2px solid var(--green);
       color: var(--ink-3);
       font-size: .72rem;
@@ -903,15 +1244,15 @@
     .status-bar {
       display: none;
       padding: 10px 14px;
-      border-radius: var(--r-sm);
-      margin-bottom: 12px;
-      background: var(--yellow-bg);
-      border: 1px solid var(--yellow-border);
+      border-radius: var(--r);
+      margin-bottom: 14px;
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-border);
       font-weight: 500;
       font-size: .84rem;
       align-items: center;
       gap: 8px;
-      color: var(--yellow-hover);
+      color: var(--accent);
     }
 
     .status-bar.active {
@@ -921,8 +1262,8 @@
     .spinner {
       width: 14px;
       height: 14px;
-      border: 2px solid var(--yellow-border);
-      border-top-color: var(--yellow);
+      border: 2px solid var(--accent-border);
+      border-top-color: var(--accent);
       border-radius: 50%;
       animation: spin .6s linear infinite;
     }
@@ -966,48 +1307,75 @@
     }
 
     .btn-download {
-      background: var(--green);
-      color: #fff;
-      padding: 8px 18px;
+      background: var(--accent);
+      color: var(--accent-text);
+      padding: 9px 20px;
       text-decoration: none;
       font-size: .85rem;
-      font-weight: 600;
-      border-radius: var(--r-sm);
+      font-weight: 700;
+      border-radius: 20px;
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      transition: background .15s;
+      transition: all .2s;
     }
 
     .btn-download:hover {
-      background: #0da574;
+      background: var(--accent-hover);
+      box-shadow: 0 0 16px var(--accent-glow);
     }
 
-    /* ═══ Sidebar config toggle ═══ */
-    .sidebar-toggle {
-      display: none;
-      width: 100%;
-      margin-bottom: 12px;
+    /* ═══ Theme Toggle ═══ */
+    .theme-toggle {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all .2s;
+      position: relative;
+      overflow: hidden;
+      color: var(--ink-3);
     }
 
-    @media (max-width: 900px) {
-      .sidebar-toggle {
-        display: flex;
-      }
-
-      .sidebar.collapsed {
-        display: none;
-      }
+    .theme-toggle:hover {
+      border-color: var(--accent-border);
+      background: var(--accent-bg);
+      color: var(--accent);
     }
+
+    .theme-icon-sun,
+    .theme-icon-moon {
+      position: absolute;
+      transition: transform .3s var(--ease), opacity .3s;
+    }
+
+    /* Dark mode: show sun (to switch to light) */
+    [data-theme="dark"] .theme-icon-sun { opacity: 1; transform: rotate(0deg); }
+    [data-theme="dark"] .theme-icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+
+    /* Light mode: show moon (to switch to dark) */
+    [data-theme="light"] .theme-icon-sun { opacity: 0; transform: rotate(90deg) scale(0.5); }
+    [data-theme="light"] .theme-icon-moon { opacity: 1; transform: rotate(0deg); }
 
     /* ═══ Responsive ═══ */
     @media (max-width: 640px) {
       .container {
-        padding: 0 12px;
+        padding: 0 16px;
       }
 
       .topnav {
-        padding: 0 12px;
+        padding: 0 16px;
+      }
+
+      .input-section {
+        border-radius: var(--r);
+        padding: 12px 14px;
       }
 
       .page-title {
@@ -1023,6 +1391,22 @@
         width: 100%;
         height: 200px;
       }
+
+      .input-options-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .papers-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .papers-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
   </style>
 </head>
@@ -1033,10 +1417,20 @@
   <nav class="topnav">
     <div class="topnav-inner">
       <div class="topnav-left">
-        <img src="/static/logo.png" alt="Logo" class="topnav-logo">
-        <span class="topnav-brand">Paper Granny</span>
+        <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+          <img src="/static/logo.png" alt="Logo" class="topnav-logo">
+          <span class="topnav-brand">Paper Granny</span>
+        </a>
       </div>
       <div class="topnav-right">
+        <a href="/" class="nav-link active" data-i18n="nav_home">Home</a>
+        <a href="/settings" class="nav-link" data-i18n="nav_settings">Settings</a>
+        <span style="width:1px;height:20px;background:var(--border);margin:0 4px"></span>
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
+          <span class="theme-icon-sun">&#9788;</span>
+          <span class="theme-icon-moon">&#9790;</span>
+        </button>
+        <span style="width:1px;height:20px;background:var(--border);margin:0 4px"></span>
         <button class="lang-btn active" onclick="switchLang('zh')" id="langBtnZh">中文</button>
         <button class="lang-btn" onclick="switchLang('en')" id="langBtnEn">EN</button>
       </div>
@@ -1046,193 +1440,139 @@
   <div class="container">
     <!-- Page Header -->
     <div class="page-header">
-      <div class="page-title" data-i18n="page_title">📄 论文解读报告</div>
+      <div class="page-title" data-i18n="page_title">论文解读报告</div>
       <div class="page-subtitle" data-i18n="subtitle">arXiv 论文智能解读 — LangGraph ReAct Agent</div>
     </div>
 
-    <!-- Two-Column Layout -->
-    <div class="main-layout">
-      <!-- ═══ Left Column: Input + Papers ═══ -->
-      <div class="main-col">
-        <!-- Input Section -->
-        <div class="input-section">
-          <div class="form-group" style="margin-bottom:10px">
-            <label data-i18n="label_arxiv">arXiv 论文链接或 ID</label>
-            <div class="input-row">
-              <input type="text" id="arxivUrl" data-i18n-placeholder="placeholder_arxiv"
-                placeholder="https://arxiv.org/abs/2603.03251 或直接输入 ID">
-              <button class="btn btn-primary" id="runBtn" onclick="startAgent()">
-                🚀 <span data-i18n="btn_run">开始解读</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Status Bar -->
-        <div class="status-bar" id="statusBar">
-          <div class="spinner"></div>
-          <span id="statusText" data-i18n="status_preparing">准备中...</span>
-        </div>
-
-        <!-- Result Card -->
-        <div class="result-card card" id="resultCard">
-          <div class="result-icon">✅</div>
-          <div class="result-title" data-i18n="result_title">论文解读完成！</div>
-          <div class="result-sub" id="resultSub"></div>
-          <a class="btn-download" id="downloadBtn" href="#" target="_blank">
-            📄 <span data-i18n="btn_download">下载 PDF 报告</span>
-          </a>
-        </div>
-
-        <!-- Agent Panel -->
-        <div class="agent-panel card" id="agentPanel">
-          <div class="card-title">🧠 <span data-i18n="title_agent_log">Agent 推理过程</span></div>
-          <div class="agent-log" id="agentLog"></div>
-        </div>
-
-        <!-- ═══ Papers List (HF-style) ═══ -->
-        <div class="papers-section">
-          <div class="papers-header">
-            <div class="papers-header-left">
-              <div class="papers-title">📚 <span data-i18n="title_history">已生成的报告</span></div>
-              <div class="papers-count" id="papersCount" style="display:none"></div>
-            </div>
-            <div class="papers-search" id="papersSearch" style="display:none">
-              <span class="papers-search-icon">🔍</span>
-              <input type="text" id="papersSearchInput" data-i18n-placeholder="search_placeholder"
-                placeholder="搜索标题、作者、ID..." oninput="onSearchInput()">
-              <button class="papers-search-clear" id="papersSearchClear" onclick="clearSearch()">✕</button>
-            </div>
-            <div class="sort-controls" id="sortControls" style="display:none">
-              <span class="sort-label" data-i18n="sort_label">排序:</span>
-              <button class="sort-btn active" data-sort="generated" onclick="sortPapers('generated')">
-                <span data-i18n="sort_generated">生成时间</span><span class="sort-arrow">↓</span></button>
-              <button class="sort-btn" data-sort="published" onclick="sortPapers('published')">
-                <span data-i18n="sort_published">发布时间</span><span class="sort-arrow">↓</span></button>
-              <button class="sort-btn" data-sort="title" onclick="sortPapers('title')">
-                <span data-i18n="sort_title">标题</span><span class="sort-arrow">↓</span></button>
-            </div>
-          </div>
-          <div id="papersList"></div>
-        </div>
-      </div>
-
-      <!-- ═══ Right Column: Sidebar Config ═══ -->
-      <div class="sidebar" id="sidebar">
-        <button class="btn btn-outline sidebar-toggle" onclick="toggleSidebar()" data-i18n="btn_toggle_config">⚙️
-          配置面板</button>
-
-        <!-- LLM Config -->
-        <div class="card" style="margin-bottom:12px">
-          <div class="card-title">🤖 <span data-i18n="title_llm">LLM 配置</span></div>
-          <div class="form-group">
-            <label>Provider</label>
-            <select id="provider">
-              <optgroup data-i18n-label="group_commercial" label="商业 API">
-                <option value="openai">OpenAI</option>
-                <option value="claude">Claude (Anthropic)</option>
-                <option value="gemini">Gemini (Google)</option>
-                <option value="openrouter">OpenRouter</option>
-              </optgroup>
-              <optgroup data-i18n-label="group_china" label="国内服务">
-                <option value="deepseek">DeepSeek</option>
-                <option value="kimi">Kimi (Moonshot)</option>
-                <option value="dashscope" data-i18n="provider_dashscope">通义千问 (DashScope)</option>
-                <option value="dashscope-coding" data-i18n="provider_dashscope_coding">百炼 Coding Plan</option>
-                <option value="siliconflow" data-i18n="provider_siliconflow">SiliconFlow 硅基流动</option>
-              </optgroup>
-              <optgroup data-i18n-label="group_local" label="本地 / 自部署">
-                <option value="ollama" data-i18n="provider_ollama">Ollama (本地)</option>
-                <option value="vllm">vLLM</option>
-              </optgroup>
-            </select>
-          </div>
-          <div class="form-group">
-            <label data-i18n="label_model">模型</label>
-            <select id="modelPreset" style="display:none" onchange="onModelPresetChange()"></select>
-            <input type="text" id="model" placeholder="gpt-5.4-mini" autocomplete="off">
-          </div>
-          <div class="form-group">
-            <label>API Key</label>
-            <div class="pw-wrap">
-              <input type="password" id="apiKey" placeholder="sk-...">
-              <button class="pw-toggle" onclick="toggleApiKey()" data-i18n-title="toggle_show_hide"
-                title="显示/隐藏">👁</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Base URL <span style="font-weight:400" data-i18n="label_baseurl_hint">(可选)</span></label>
-            <input type="text" id="baseUrl" placeholder="https://api.openai.com/v1">
-          </div>
-          <div class="form-group">
-            <label>Temperature</label>
-            <div class="slider-row">
-              <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.3">
-              <span class="slider-val" id="tempValue">0.3</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Template & Language -->
-        <div class="card" style="margin-bottom:12px">
-          <div class="card-title">🎨 <span data-i18n="title_template">模板与语言</span></div>
-          <div class="form-group">
-            <label data-i18n="label_latex_template">LaTeX 模板</label>
-            <select id="template">
-              <option value="Modern Colorful" data-i18n="loading">加载中...</option>
-            </select>
-          </div>
-          <div id="templateInfo"
-            style="margin-top:8px; padding:8px 10px; background:var(--bg-page); border-radius:6px; color:var(--ink-3); font-size:.78rem; border:1px solid var(--border-light);"
-            data-i18n="template_info_hint">
-            选择模板后将显示详细信息
-          </div>
-          <div class="form-group" style="margin-top:12px">
-            <label data-i18n="label_report_lang">🌐 报告语言</label>
-            <select id="language">
-              <option value="中文">🇨🇳 中文</option>
-              <option value="English">🇺🇸 English</option>
-              <option value="日本語">🇯🇵 日本語</option>
-              <option value="한국어">🇰🇷 한국어</option>
-              <option value="Français">🇫🇷 Français</option>
-              <option value="Deutsch">🇩🇪 Deutsch</option>
-              <option value="Español">🇪🇸 Español</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Save Config -->
-        <button class="btn btn-outline" id="saveConfigBtn" onclick="saveConfigToServer()" style="width:100%">
-          <span id="saveConfigText" data-i18n="btn_save_config">💾 保存配置</span>
+    <!-- ═══ Input Section ═══ -->
+    <div class="input-section">
+      <div class="input-main-row">
+        <input type="text" id="arxivUrl" data-i18n-placeholder="placeholder_arxiv"
+          placeholder="https://arxiv.org/abs/2603.03251 or enter paper ID...">
+        <button class="btn btn-primary" id="runBtn" onclick="startAgent()">
+          <span data-i18n="btn_run">Interpret</span> →
         </button>
       </div>
+      <div class="input-options-row">
+        <div class="compact-select-group">
+          <label>Provider</label>
+          <select class="compact-select" id="provider" onchange="onProviderChange()"></select>
+        </div>
+        <div class="compact-select-group">
+          <label data-i18n="label_model">Model</label>
+          <select class="compact-select" id="model" style="min-width:160px"></select>
+        </div>
+        <div class="compact-select-group">
+          <label data-i18n="label_template">Template</label>
+          <select class="compact-select" id="template"></select>
+        </div>
+        <div class="compact-select-group">
+          <label data-i18n="label_lang">Language</label>
+          <select class="compact-select" id="language">
+            <option value="中文">中文</option>
+            <option value="English">English</option>
+            <option value="日本語">日本語</option>
+            <option value="한국어">한국어</option>
+            <option value="Français">Français</option>
+            <option value="Deutsch">Deutsch</option>
+            <option value="Español">Español</option>
+          </select>
+        </div>
+        <div class="options-spacer"></div>
+        <span class="no-config-hint" id="configHint" style="display:none">
+          <a href="/settings" data-i18n="config_hint_link">Configure API keys in Settings →</a>
+        </span>
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar" id="statusBar">
+      <div class="spinner"></div>
+      <span id="statusText" data-i18n="status_preparing">准备中...</span>
+    </div>
+
+    <!-- Result Card -->
+    <div class="result-card card" id="resultCard">
+      <div class="result-icon">✅</div>
+      <div class="result-title" data-i18n="result_title">论文解读完成！</div>
+      <div class="result-sub" id="resultSub"></div>
+      <a class="btn-download" id="downloadBtn" href="#" target="_blank">
+        📄 <span data-i18n="btn_download">下载 PDF 报告</span>
+      </a>
+    </div>
+
+    <!-- Agent Panel -->
+    <div class="agent-panel card" id="agentPanel">
+      <div class="card-title">🧠 <span data-i18n="title_agent_log">Agent 推理过程</span></div>
+      <div class="agent-log" id="agentLog"></div>
+    </div>
+
+    <!-- ═══ Papers List ═══ -->
+    <div class="papers-section">
+      <div class="papers-header">
+        <div class="papers-header-left">
+          <div class="papers-title">📚 <span data-i18n="title_history">已生成的报告</span></div>
+          <div class="papers-count" id="papersCount" style="display:none"></div>
+        </div>
+        <div class="papers-toolbar">
+          <div class="papers-search" id="papersSearch" style="display:none">
+            <span class="papers-search-icon">🔍</span>
+            <input type="text" id="papersSearchInput" data-i18n-placeholder="search_placeholder"
+              placeholder="搜索标题、作者、ID..." oninput="onSearchInput()">
+            <button class="papers-search-clear" id="papersSearchClear" onclick="clearSearch()">✕</button>
+          </div>
+          <div class="view-toggle" id="viewToggle" style="display:none">
+            <button class="view-btn active" data-view="list" onclick="setView('list')" title="List">☰</button>
+            <button class="view-btn" data-view="grid" onclick="setView('grid')" title="Grid">⊞</button>
+            <button class="view-btn" data-view="table" onclick="setView('table')" title="Table">▤</button>
+          </div>
+          <div class="sort-controls" id="sortControls" style="display:none">
+            <span class="sort-label" data-i18n="sort_label">排序:</span>
+            <button class="sort-btn active" data-sort="generated" onclick="sortPapers('generated')">
+              <span data-i18n="sort_generated">生成时间</span><span class="sort-arrow">↓</span></button>
+            <button class="sort-btn" data-sort="published" onclick="sortPapers('published')">
+              <span data-i18n="sort_published">发布时间</span><span class="sort-arrow">↓</span></button>
+            <button class="sort-btn" data-sort="title" onclick="sortPapers('title')">
+              <span data-i18n="sort_title">标题</span><span class="sort-arrow">↓</span></button>
+          </div>
+        </div>
+      </div>
+      <div id="papersList"></div>
     </div>
   </div>
 
   <script>
+    // ─── Theme ──────────────────────────────────
+    function initTheme() {
+      const saved = localStorage.getItem('scholar_granny_theme');
+      const theme = saved || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+    initTheme();
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('scholar_granny_theme', next);
+    }
+
     // ─── i18n ──────────────────────────────────
     const I18N = {
       zh: {
-        page_title: '📄 论文解读报告',
+        nav_home: 'Home',
+        nav_settings: 'Settings',
+        page_title: '论文解读报告',
         subtitle: 'arXiv 论文智能解读 — LangGraph ReAct Agent',
         label_arxiv: 'arXiv 论文链接或 ID',
         placeholder_arxiv: 'https://arxiv.org/abs/2603.03251 或直接输入 ID',
-        title_llm: 'LLM 配置',
         label_model: '模型',
-        label_baseurl_hint: '(可选)',
-        toggle_show_hide: '显示/隐藏',
-        title_template: '模板与语言',
-        label_latex_template: 'LaTeX 模板',
-        template_info_hint: '选择模板后将显示详细信息',
-        label_report_lang: '🌐 报告语言',
+        label_template: '模板',
+        label_lang: '语言',
+        config_hint_link: '去设置页面配置 API Key',
         title_history: '已生成的报告',
-        loading: '加载中...',
         btn_run: '开始解读',
         btn_running: '运行中...',
-        btn_save_config: '💾 保存配置',
-        btn_toggle_config: '⚙️ 配置面板',
-        save_config_ok: '✅ 已保存',
-        save_config_fail: '❌ 保存失败',
         status_preparing: '准备中...',
         title_agent_log: 'Agent 推理过程',
         result_title: '论文解读完成！',
@@ -1247,13 +1587,6 @@
         log_stream_error: '流读取错误',
         log_connect_error: '连接失败',
         server_error: '服务器错误',
-        group_commercial: '商业 API',
-        group_china: '国内服务',
-        group_local: '本地 / 自部署',
-        provider_dashscope: '通义千问 (DashScope)',
-        provider_dashscope_coding: '百炼 Coding Plan',
-        provider_siliconflow: 'SiliconFlow 硅基流动',
-        provider_ollama: 'Ollama (本地)',
         shelf_count: '{n} 份',
         confirm_delete: '确定删除论文 {id} 的所有文件？',
         sort_label: '排序:',
@@ -1263,28 +1596,27 @@
         untitled: '（无标题）',
         search_placeholder: '搜索标题、作者、ID...',
         search_no_match: '没有找到匹配的报告',
+        table_title: '标题',
+        table_id: 'ID',
+        table_authors: '作者',
+        table_published: '发布',
+        table_generated: '生成',
+        table_actions: '操作',
       },
       en: {
-        page_title: '📄 Paper Interpretations',
+        nav_home: 'Home',
+        nav_settings: 'Settings',
+        page_title: 'Paper Interpretations',
         subtitle: 'AI-Powered arXiv Paper Interpretation — LangGraph ReAct Agent',
         label_arxiv: 'arXiv Paper URL or ID',
         placeholder_arxiv: 'https://arxiv.org/abs/2603.03251 or enter ID',
-        title_llm: 'LLM Settings',
         label_model: 'Model',
-        label_baseurl_hint: '(optional)',
-        toggle_show_hide: 'Show/Hide',
-        title_template: 'Template & Language',
-        label_latex_template: 'LaTeX Template',
-        template_info_hint: 'Select a template to see details',
-        label_report_lang: '🌐 Report Language',
+        label_template: 'Template',
+        label_lang: 'Language',
+        config_hint_link: 'Configure API keys in Settings',
         title_history: 'Generated Reports',
-        loading: 'Loading...',
         btn_run: 'Interpret',
         btn_running: 'Running...',
-        btn_save_config: '💾 Save Config',
-        btn_toggle_config: '⚙️ Settings',
-        save_config_ok: '✅ Saved',
-        save_config_fail: '❌ Failed',
         status_preparing: 'Preparing...',
         title_agent_log: 'Agent Reasoning',
         result_title: 'Interpretation Complete!',
@@ -1299,13 +1631,6 @@
         log_stream_error: 'Stream read error',
         log_connect_error: 'Connection failed',
         server_error: 'Server error',
-        group_commercial: 'Commercial API',
-        group_china: 'China Services',
-        group_local: 'Local / Self-hosted',
-        provider_dashscope: 'Qwen (DashScope)',
-        provider_dashscope_coding: 'Bailian Coding Plan',
-        provider_siliconflow: 'SiliconFlow',
-        provider_ollama: 'Ollama (Local)',
         shelf_count: '{n}',
         confirm_delete: 'Delete all files for paper {id}?',
         sort_label: 'Sort:',
@@ -1315,6 +1640,12 @@
         untitled: '(Untitled)',
         search_placeholder: 'Search title, author, ID...',
         search_no_match: 'No matching reports found',
+        table_title: 'Title',
+        table_id: 'ID',
+        table_authors: 'Authors',
+        table_published: 'Published',
+        table_generated: 'Generated',
+        table_actions: 'Actions',
       },
     };
 
@@ -1334,111 +1665,123 @@
         const key = el.getAttribute('data-i18n-placeholder');
         if (I18N[lang][key] !== undefined) el.placeholder = I18N[lang][key];
       });
-      document.querySelectorAll('[data-i18n-title]').forEach(el => {
-        const key = el.getAttribute('data-i18n-title');
-        if (I18N[lang][key] !== undefined) el.title = I18N[lang][key];
-      });
-      document.querySelectorAll('[data-i18n-label]').forEach(el => {
-        const key = el.getAttribute('data-i18n-label');
-        if (I18N[lang][key] !== undefined) el.label = I18N[lang][key];
-      });
       document.title = lang === 'zh' ? 'Paper Granny — arXiv 论文智能解读' : 'Paper Granny — AI Paper Interpretation';
       if (window._cachedPapers) renderPapers(window._cachedPapers);
     }
 
-    // ─── Provider Presets ─────────────────────
-    const PROVIDER_DEFAULTS = {
-      openai: { model: 'gpt-5.4-mini', basePlaceholder: 'https://api.openai.com/v1', suggestions: ['gpt-5.4', 'gpt-5.4-mini', 'gpt-5.4-nano'] },
-      claude: { model: 'claude-sonnet-4-20250514', basePlaceholder: 'https://api.anthropic.com' },
-      gemini: { model: 'gemini-2.5-flash', basePlaceholder: '' },
-      openrouter: { model: 'google/gemini-2.5-flash', basePlaceholder: 'https://openrouter.ai/api/v1' },
-      deepseek: { model: 'deepseek-chat', basePlaceholder: 'https://api.deepseek.com/v1' },
-      kimi: { model: 'moonshot-v1-128k', basePlaceholder: 'https://api.moonshot.cn/v1' },
-      dashscope: { model: 'qwen-plus', basePlaceholder: 'https://dashscope.aliyuncs.com/compatible-mode/v1' },
-      'dashscope-coding': { model: 'qwen-plus', basePlaceholder: 'https://coding.dashscope.aliyuncs.com/v1' },
-      siliconflow: { model: 'Qwen/Qwen3-8B', basePlaceholder: 'https://api.siliconflow.cn/v1' },
-      ollama: { model: 'llama3', basePlaceholder: 'http://localhost:11434/v1' },
-      vllm: { model: '', basePlaceholder: 'http://localhost:8000/v1' },
-    };
-
+    // ─── State ────────────────────────────────
     let running = false;
-    const STORAGE_KEY = 'scholar_granny_settings';
-
-    function saveSettings() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        provider: document.getElementById('provider').value,
-        model: document.getElementById('model').value,
-        apiKey: document.getElementById('apiKey').value,
-        baseUrl: document.getElementById('baseUrl').value,
-        temperature: document.getElementById('temperature').value,
-        language: document.getElementById('language').value,
-      }));
-    }
-
-    async function saveConfigToServer() {
-      const btn = document.getElementById('saveConfigBtn');
-      const textEl = document.getElementById('saveConfigText');
-      btn.disabled = true; textEl.textContent = '⏳ ...';
-      try {
-        const res = await fetch('/api/config', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            provider: document.getElementById('provider').value,
-            model: document.getElementById('model').value,
-            api_key: document.getElementById('apiKey').value,
-            base_url: document.getElementById('baseUrl').value || null,
-            temperature: parseFloat(document.getElementById('temperature').value),
-            template: document.getElementById('template').value,
-          }),
-        });
-        const data = await res.json();
-        textEl.textContent = data.ok ? t('save_config_ok') : t('save_config_fail');
-        if (data.ok) setTimeout(() => { textEl.textContent = t('btn_save_config'); btn.disabled = false; }, 2000);
-        else btn.disabled = false;
-      } catch (e) { textEl.textContent = t('save_config_fail'); btn.disabled = false; }
-    }
-
-    function restoreSettings() {
-      try {
-        const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        if (!s) return;
-        if (s.provider) document.getElementById('provider').value = s.provider;
-        if (s.model) document.getElementById('model').value = s.model;
-        if (s.apiKey) document.getElementById('apiKey').value = s.apiKey;
-        if (s.baseUrl) document.getElementById('baseUrl').value = s.baseUrl;
-        if (s.temperature) {
-          document.getElementById('temperature').value = s.temperature;
-          document.getElementById('tempValue').textContent = s.temperature;
-        }
-        if (s.language) document.getElementById('language').value = s.language;
-        onProviderChange();
-      } catch (e) { }
-    }
-
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('collapsed');
-    }
+    let savedProviders = {};
+    let defaultProvider = 'openai';
+    let defaultModel = '';
+    let defaultTemplate = 'ModernColorful';
+    let currentView = localStorage.getItem('scholar_granny_view') || 'list';
+    let currentSort = 'generated';
+    let sortAsc = false;
+    let searchQuery = '';
+    window._cachedPapers = [];
 
     // ─── Init ─────────────────────────────────
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       const savedLang = localStorage.getItem('scholar_granny_ui_lang');
       if (savedLang && I18N[savedLang]) switchLang(savedLang);
-      loadTemplates(); loadPapers(); loadConfig();
-      ['provider', 'model', 'apiKey', 'baseUrl', 'temperature', 'language'].forEach(id => {
-        document.getElementById(id).addEventListener('change', saveSettings);
-        document.getElementById(id).addEventListener('input', saveSettings);
-      });
-      document.getElementById('provider').addEventListener('change', onProviderChange);
-      document.getElementById('temperature').addEventListener('input', e => {
-        document.getElementById('tempValue').textContent = e.target.value;
-      });
-      document.getElementById('template').addEventListener('change', onTemplateChange);
+
+      await loadConfig();
+      loadTemplates();
+      loadPapers();
+
       document.getElementById('arxivUrl').addEventListener('keydown', e => {
         if (e.key === 'Enter' && !running) startAgent();
       });
+
+      // Restore language preference from settings
+      const savedLanguage = localStorage.getItem('scholar_granny_default_language');
+      if (savedLanguage) document.getElementById('language').value = savedLanguage;
     });
 
-    // ─── API ──────────────────────────────────
+    // ─── Load config from server ──────────────
+    async function loadConfig() {
+      try {
+        const cfg = await (await fetch('/api/config')).json();
+        savedProviders = cfg.providers || {};
+        defaultProvider = cfg.provider || 'openai';
+        defaultModel = cfg.model || '';
+        defaultTemplate = cfg.template || 'ModernColorful';
+
+        // Backward compatibility: older configs may only store the active model globally.
+        if (defaultProvider && !savedProviders[defaultProvider] && defaultModel) {
+          savedProviders[defaultProvider] = { model: defaultModel };
+        } else if (defaultProvider && savedProviders[defaultProvider] && !savedProviders[defaultProvider].model && defaultModel) {
+          savedProviders[defaultProvider].model = defaultModel;
+        }
+
+        buildProviderSelect();
+        buildModelSelect();
+
+        // Show hint if no providers configured
+        const hasProviders = Object.keys(savedProviders).length > 0;
+        document.getElementById('configHint').style.display = hasProviders ? 'none' : '';
+      } catch (e) {
+        buildProviderSelect();
+      }
+    }
+
+    const PROVIDER_LABELS = {
+      openai: 'OpenAI', claude: 'Claude', gemini: 'Gemini', openrouter: 'OpenRouter',
+      deepseek: 'DeepSeek', kimi: 'Kimi', dashscope: 'Qwen', 'dashscope-coding': 'Bailian Coding',
+      siliconflow: 'SiliconFlow', ollama: 'Ollama', vllm: 'vLLM',
+    };
+
+    function buildProviderSelect() {
+      const sel = document.getElementById('provider');
+      const keys = Object.keys(savedProviders);
+      sel.innerHTML = '';
+
+      if (!keys.length) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = currentLang === 'zh' ? '— 请先在设置中配置 —' : '— Configure in Settings —';
+        opt.disabled = true;
+        sel.appendChild(opt);
+        sel.value = '';
+        return;
+      }
+
+      for (const key of keys) {
+        const opt = document.createElement('option');
+        opt.value = key;
+        const label = PROVIDER_LABELS[key] || key;
+        const model = savedProviders[key]?.model;
+        opt.textContent = label;
+        sel.appendChild(opt);
+      }
+      sel.value = keys.includes(defaultProvider) ? defaultProvider : keys[0];
+    }
+
+    function buildModelSelect() {
+      const provider = document.getElementById('provider').value;
+      const sel = document.getElementById('model');
+      sel.innerHTML = '';
+
+      if (!provider || !savedProviders[provider]) return;
+
+      const savedModel = savedProviders[provider]?.model;
+      if (savedModel) {
+        const opt = document.createElement('option');
+        opt.value = savedModel;
+        opt.textContent = savedModel;
+        sel.appendChild(opt);
+      }
+      // Select saved model or default
+      if (savedModel) {
+        sel.value = savedModel;
+      }
+    }
+
+    function onProviderChange() {
+      buildModelSelect();
+    }
+
     async function loadTemplates() {
       try {
         const data = await (await fetch('/api/templates')).json();
@@ -1446,18 +1789,27 @@
         sel.innerHTML = '';
         data.templates.forEach(t => {
           const opt = document.createElement('option');
-          opt.value = t.name; opt.textContent = `${t.name} (${t.size_kb} KB)`;
+          opt.value = t.name;
+          opt.textContent = t.name;
           sel.appendChild(opt);
         });
-        onTemplateChange();
+        if (defaultTemplate) {
+          sel.value = defaultTemplate;
+        }
       } catch (e) { }
     }
 
-    // ─── Papers List (HF-style) ──────────────
-    window._cachedPapers = [];
-    let currentSort = 'generated';
-    let sortAsc = false; // false = descending (newest first), true = ascending
+    // ─── View Toggle ─────────────────────────
+    function setView(view) {
+      currentView = view;
+      localStorage.setItem('scholar_granny_view', view);
+      document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === view);
+      });
+      renderPapers(window._cachedPapers);
+    }
 
+    // ─── Papers ──────────────────────────────
     async function loadPapers() {
       try {
         const data = await (await fetch('/api/papers')).json();
@@ -1471,12 +1823,11 @@
 
     function sortPapers(mode) {
       if (currentSort === mode) {
-        sortAsc = !sortAsc; // toggle direction
+        sortAsc = !sortAsc;
       } else {
         currentSort = mode;
-        sortAsc = mode === 'title'; // title defaults ascending, dates default descending
+        sortAsc = mode === 'title';
       }
-      // Update button active states and arrow direction
       document.querySelectorAll('.sort-btn').forEach(btn => {
         const isActive = btn.dataset.sort === mode;
         btn.classList.toggle('active', isActive);
@@ -1506,8 +1857,6 @@
     }
 
     // ─── Fuzzy Search ──────────────────────────
-    let searchQuery = '';
-
     function onSearchInput() {
       const input = document.getElementById('papersSearchInput');
       const clearBtn = document.getElementById('papersSearchClear');
@@ -1523,11 +1872,6 @@
       renderPapers(window._cachedPapers);
     }
 
-    /**
-     * Fuzzy match: checks if all characters in the query appear in order within the text.
-     * Returns { match: bool, score: number, indices: number[] }.
-     * Lower score = better match (consecutive chars and early positions are rewarded).
-     */
     function fuzzyMatch(text, query) {
       const textLower = text.toLowerCase();
       const queryLower = query.toLowerCase();
@@ -1539,17 +1883,13 @@
         indices.push(found);
         ti = found + 1;
       }
-      // Score: penalize gaps between matched chars, reward early matches
-      let score = indices[0] || 0; // earlier start = better
+      let score = indices[0] || 0;
       for (let i = 1; i < indices.length; i++) {
-        score += (indices[i] - indices[i - 1] - 1); // gap penalty
+        score += (indices[i] - indices[i - 1] - 1);
       }
       return { match: true, score, indices };
     }
 
-    /**
-     * Try fuzzy match across multiple fields, return best result.
-     */
     function fuzzyMatchPaper(paper, query) {
       const fields = [
         { text: paper.title || '', weight: 0 },
@@ -1574,15 +1914,11 @@
       return { match: bestField !== null, score: bestScore, field: bestField, indices: bestIndices };
     }
 
-    /**
-     * Highlight matched characters in text (using pre-computed indices from fuzzyMatch).
-     */
     function highlightFuzzy(text, query) {
       const r = fuzzyMatch(text, query);
       if (!r.match) return escHtml(text);
       const chars = [...text];
       const escaped = chars.map(c => escHtml(c));
-      // Mark matched indices (in reverse to not shift positions)
       for (let i = r.indices.length - 1; i >= 0; i--) {
         const idx = r.indices[i];
         escaped[idx] = `<span class="search-highlight">${escaped[idx]}</span>`;
@@ -1590,17 +1926,28 @@
       return escaped.join('');
     }
 
+    function getFiltered(papers) {
+      if (!searchQuery) return getSorted(papers);
+      return papers
+        .map(p => ({ paper: p, ...fuzzyMatchPaper(p, searchQuery) }))
+        .filter(r => r.match)
+        .sort((a, b) => a.score - b.score)
+        .map(r => r.paper);
+    }
+
     function renderPapers(papers) {
       const listEl = document.getElementById('papersList');
       const countEl = document.getElementById('papersCount');
       const sortEl = document.getElementById('sortControls');
       const searchEl = document.getElementById('papersSearch');
+      const viewEl = document.getElementById('viewToggle');
 
       if (!papers.length) {
         listEl.innerHTML = `<div class="papers-empty"><div class="papers-empty-icon">📚</div>${t('no_reports')}</div>`;
         countEl.style.display = 'none';
         sortEl.style.display = 'none';
         searchEl.style.display = 'none';
+        viewEl.style.display = 'none';
         return;
       }
 
@@ -1608,37 +1955,50 @@
       countEl.style.display = '';
       sortEl.style.display = 'flex';
       searchEl.style.display = papers.length >= 2 ? '' : 'none';
+      viewEl.style.display = 'flex';
 
-      // Filter by search query
-      let filtered;
-      if (searchQuery) {
-        filtered = papers
-          .map(p => ({ paper: p, ...fuzzyMatchPaper(p, searchQuery) }))
-          .filter(r => r.match)
-          .sort((a, b) => a.score - b.score)
-          .map(r => r.paper);
-      } else {
-        filtered = getSorted(papers);
-      }
+      // Restore view toggle state
+      document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === currentView);
+      });
+
+      const filtered = getFiltered(papers);
 
       if (searchQuery && !filtered.length) {
         listEl.innerHTML = `<div class="papers-no-match">🔍 ${t('search_no_match')}</div>`;
         return;
       }
 
-      const q = searchQuery; // capture for highlight
+      const q = searchQuery;
 
-      listEl.innerHTML = filtered.map(p => {
-        const title = p.title || t('untitled');
-        const hasAbstract = p.abstract && p.abstract.length > 0;
-        const displayTitle = q ? highlightFuzzy(title, q) : escHtml(title);
-        const displayAuthors = (q && p.authors) ? highlightFuzzy(p.authors, q) : escHtml(p.authors || '');
-        const displayAbstract = (q && hasAbstract) ? highlightFuzzy(p.abstract, q) : escHtml(p.abstract || '');
-        const displayId = q ? highlightFuzzy(p.arxiv_id, q) : p.arxiv_id;
-        const arxivUrl = `https://arxiv.org/abs/${p.arxiv_id}`;
-        const thumbUrl = `/api/papers/${p.arxiv_id}/thumbnail`;
+      if (currentView === 'table') {
+        renderTable(listEl, filtered, q);
+      } else if (currentView === 'grid') {
+        renderGrid(listEl, filtered, q);
+      } else {
+        renderList(listEl, filtered, q);
+      }
+    }
 
-        return `
+    function renderList(el, papers, q) {
+      el.innerHTML = papers.map(p => renderCardHtml(p, q)).join('');
+    }
+
+    function renderGrid(el, papers, q) {
+      el.innerHTML = `<div class="papers-grid">${papers.map(p => renderCardHtml(p, q)).join('')}</div>`;
+    }
+
+    function renderCardHtml(p, q) {
+      const title = p.title || t('untitled');
+      const hasAbstract = p.abstract && p.abstract.length > 0;
+      const displayTitle = q ? highlightFuzzy(title, q) : escHtml(title);
+      const displayAuthors = (q && p.authors) ? highlightFuzzy(p.authors, q) : escHtml(p.authors || '');
+      const displayAbstract = (q && hasAbstract) ? highlightFuzzy(p.abstract, q) : escHtml(p.abstract || '');
+      const displayId = q ? highlightFuzzy(p.arxiv_id, q) : p.arxiv_id;
+      const arxivUrl = `https://arxiv.org/abs/${p.arxiv_id}`;
+      const thumbUrl = `/api/papers/${p.arxiv_id}/thumbnail`;
+
+      return `
         <div class="paper-card">
           <button class="paper-delete" onclick="deletePaper('${p.arxiv_id}')" title="${t('delete_paper')}">✕</button>
           <div class="paper-thumb" onclick="window.open('${arxivUrl}','_blank')">
@@ -1647,26 +2007,64 @@
             <div class="paper-thumb-placeholder" style="display:none">📄</div>
           </div>
           <div class="paper-info">
-            <a class="paper-title-link" href="${arxivUrl}" target="_blank">${displayTitle}</a>
-            <div class="paper-meta-row">
-              <span class="paper-arxiv-id">${displayId}</span>
-              ${p.has_pdf ? `<span class="sep">·</span><span class="paper-pdf-badge">PDF</span>` : ''}
-              ${p.authors ? `<span class="sep">·</span><span>${displayAuthors}</span>` : ''}
-              ${p.published ? `<span class="sep">·</span><span>${p.published}</span>` : ''}
-              ${p.generated ? `<span class="sep">·</span><span>⏱ ${p.generated}</span>` : ''}
+            <div class="paper-info-top">
+              <a class="paper-title-link" href="${arxivUrl}" target="_blank">${displayTitle}</a>
+              <div class="paper-meta-row">
+                <span class="paper-arxiv-id">${displayId}</span>
+                ${p.has_pdf ? `<span class="sep">·</span><span class="paper-pdf-badge">PDF</span>` : ''}
+                ${p.authors ? `<span class="sep">·</span><span>${displayAuthors}</span>` : ''}
+                ${p.published ? `<span class="sep">·</span><span>${p.published}</span>` : ''}
+                ${p.generated ? `<span class="sep">·</span><span>⏱ ${p.generated}</span>` : ''}
+              </div>
+              ${hasAbstract ? `<div class="paper-abstract">${displayAbstract}</div>` : ''}
             </div>
-            ${hasAbstract ? `<div class="paper-abstract">${displayAbstract}</div>` : ''}
             <div class="paper-actions">
               <a class="paper-action-btn" href="${arxivUrl}" target="_blank">📄 ${t('read_original')}</a>
               ${p.has_pdf
-            ? `<a class="paper-action-btn primary" href="/api/papers/${p.arxiv_id}/pdf" target="_blank">📖 ${t('read_report')}</a>`
-            : ''
-          }
+          ? `<a class="paper-action-btn primary" href="/api/papers/${p.arxiv_id}/pdf" target="_blank">📖 ${t('read_report')}</a>`
+          : ''}
               <button class="paper-action-btn danger" onclick="deletePaper('${p.arxiv_id}')">🗑 ${t('delete_paper')}</button>
             </div>
           </div>
         </div>`;
-      }).join('');
+    }
+
+    function renderTable(el, papers, q) {
+      let html = `<table class="papers-table">
+        <thead><tr>
+          <th>${t('table_title')}</th>
+          <th>${t('table_id')}</th>
+          <th>${t('table_authors')}</th>
+          <th>${t('table_published')}</th>
+          <th>${t('table_generated')}</th>
+          <th>${t('table_actions')}</th>
+        </tr></thead><tbody>`;
+
+      for (const p of papers) {
+        const title = p.title || t('untitled');
+        const displayTitle = q ? highlightFuzzy(title, q) : escHtml(title);
+        const displayId = q ? highlightFuzzy(p.arxiv_id, q) : p.arxiv_id;
+        const displayAuthors = q ? highlightFuzzy(p.authors || '', q) : escHtml(p.authors || '');
+        const arxivUrl = `https://arxiv.org/abs/${p.arxiv_id}`;
+
+        html += `<tr>
+          <td><a class="table-title" href="${arxivUrl}" target="_blank">${displayTitle}</a></td>
+          <td class="table-id">${displayId}</td>
+          <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${displayAuthors}</td>
+          <td style="white-space:nowrap">${p.published || '-'}</td>
+          <td style="white-space:nowrap">${p.generated || '-'}</td>
+          <td>
+            <div class="table-actions">
+              <a class="paper-action-btn" href="${arxivUrl}" target="_blank">📄</a>
+              ${p.has_pdf ? `<a class="paper-action-btn primary" href="/api/papers/${p.arxiv_id}/pdf" target="_blank">📖</a>` : ''}
+              <button class="paper-action-btn danger" onclick="deletePaper('${p.arxiv_id}')">🗑</button>
+            </div>
+          </td>
+        </tr>`;
+      }
+
+      html += '</tbody></table>';
+      el.innerHTML = html;
     }
 
     async function deletePaper(arxivId) {
@@ -1676,70 +2074,6 @@
         const data = await res.json();
         if (data.ok) loadPapers();
       } catch (e) { console.error('Delete failed:', e); }
-    }
-
-    let savedProviders = {};
-
-    async function loadConfig() {
-      try {
-        const cfg = await (await fetch('/api/config')).json();
-        if (cfg.providers) savedProviders = cfg.providers;
-        document.getElementById('provider').value = cfg.provider;
-        document.getElementById('model').value = cfg.model;
-        document.getElementById('temperature').value = cfg.temperature;
-        document.getElementById('tempValue').textContent = cfg.temperature;
-        const p = savedProviders[cfg.provider];
-        if (p) {
-          if (p.api_key) document.getElementById('apiKey').value = p.api_key;
-          if (p.base_url) document.getElementById('baseUrl').value = p.base_url;
-        }
-        onProviderChange();
-      } catch (e) { }
-      restoreSettings();
-    }
-
-    // ─── Event Handlers ───────────────────────
-    function onModelPresetChange() {
-      const sel = document.getElementById('modelPreset');
-      const input = document.getElementById('model');
-      if (sel.value === '__custom__') { input.style.display = ''; input.value = ''; input.focus(); }
-      else { input.style.display = 'none'; input.value = sel.value; }
-      saveSettings();
-    }
-
-    function onProviderChange() {
-      const provider = document.getElementById('provider').value;
-      const modelInput = document.getElementById('model');
-      const modelSelect = document.getElementById('modelPreset');
-      const cfg = PROVIDER_DEFAULTS[provider] || PROVIDER_DEFAULTS.openai;
-      document.getElementById('baseUrl').placeholder = cfg.basePlaceholder;
-      const suggestions = cfg.suggestions || [];
-      if (suggestions.length > 0) {
-        modelSelect.innerHTML = '';
-        suggestions.forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = m; modelSelect.appendChild(o); });
-        const co = document.createElement('option'); co.value = '__custom__'; co.textContent = 'Custom…'; modelSelect.appendChild(co);
-        modelSelect.style.display = ''; modelInput.style.display = 'none';
-      } else { modelSelect.style.display = 'none'; modelInput.style.display = ''; }
-      const saved = savedProviders[provider];
-      let targetModel = (saved && saved.model) ? saved.model : cfg.model;
-      if (suggestions.length > 0) {
-        const match = suggestions.find(m => m === targetModel);
-        if (match) { modelSelect.value = match; modelInput.style.display = 'none'; modelInput.value = match; }
-        else { modelSelect.value = '__custom__'; modelInput.style.display = ''; modelInput.value = targetModel; }
-      } else { modelInput.value = targetModel; }
-      if (saved) { document.getElementById('apiKey').value = saved.api_key || ''; document.getElementById('baseUrl').value = saved.base_url || ''; }
-      else { document.getElementById('apiKey').value = ''; document.getElementById('baseUrl').value = ''; }
-    }
-
-    function onTemplateChange() {
-      const name = document.getElementById('template').value;
-      document.getElementById('templateInfo').innerHTML =
-        `<strong>📄 ${name}</strong><br><span style="color:var(--ink-4)">${currentLang === 'zh' ? '使用此模板的配色方案和盒子样式' : 'Uses this template\'s color scheme'}</span>`;
-    }
-
-    function toggleApiKey() {
-      const input = document.getElementById('apiKey');
-      input.type = input.type === 'password' ? 'text' : 'password';
     }
 
     // ─── Run Agent ────────────────────────────
@@ -1755,13 +2089,24 @@
       document.getElementById('resultCard').classList.remove('active');
       document.getElementById('agentLog').innerHTML = '';
 
+      const provider = document.getElementById('provider').value;
+      if (!provider) {
+        window.location.href = '/settings';
+        onFinish();
+        return;
+      }
+      let model = document.getElementById('model').value;
+
+      // Get API key from saved providers
+      const providerCfg = savedProviders[provider] || {};
+
       const body = {
         arxiv_url: url,
-        provider: document.getElementById('provider').value,
-        model: document.getElementById('model').value,
-        api_key: document.getElementById('apiKey').value,
-        base_url: document.getElementById('baseUrl').value || null,
-        temperature: parseFloat(document.getElementById('temperature').value),
+        provider: provider,
+        model: model,
+        api_key: providerCfg.api_key || '',
+        base_url: providerCfg.base_url || null,
+        temperature: providerCfg.temperature || 0.3,
         template: document.getElementById('template').value,
         language: document.getElementById('language').value,
       };
