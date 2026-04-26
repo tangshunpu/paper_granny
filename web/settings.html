@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 
 <head>
   <meta charset="UTF-8">
@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
     rel="stylesheet">
   <style>
     *,
@@ -19,35 +19,69 @@
       padding: 0;
     }
 
-    :root {
+    :root,
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --bg-page: #0a0b0f;
+      --bg-hover: #1a1c25;
+      --bg-input: #13151c;
+      --bg-surface: #161822;
+      --bg-card: #12141c;
+      --border: #232530;
+      --border-light: #1e2030;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      --nav-bg: rgba(10, 11, 15, 0.8);
+      --ink: #e8eaf0;
+      --ink-2: #c0c4d0;
+      --ink-3: #8b90a0;
+      --ink-4: #555a6e;
+      --accent: #22d3a7;
+      --accent-hover: #1ab892;
+      --accent-bg: rgba(34, 211, 167, 0.08);
+      --accent-border: rgba(34, 211, 167, 0.2);
+      --accent-text: var(--bg-page);
+      --green: #34d399;
+      --green-bg: rgba(52, 211, 153, 0.1);
+      --green-border: rgba(52, 211, 153, 0.2);
+      --red: #f87171;
+      --red-bg: rgba(248, 113, 113, 0.1);
+    }
+
+    [data-theme="light"] {
       --bg: #ffffff;
-      --bg-page: #f5f5f5;
-      --bg-hover: #f7f7f7;
+      --bg-page: #f7f8fa;
+      --bg-hover: #eef0f4;
       --bg-input: #ffffff;
-      --border: #e5e7eb;
-      --border-light: #eee;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-      --shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
-      --ink: #1a1a2e;
-      --ink-2: #374151;
-      --ink-3: #6b7280;
-      --ink-4: #9ca3af;
-      --yellow: #ff9d00;
-      --yellow-hover: #e68e00;
-      --yellow-bg: #fff8ee;
-      --yellow-border: #ffe4b5;
-      --blue: #2563eb;
-      --blue-bg: rgba(37, 99, 235, 0.06);
-      --green: #10b981;
-      --green-bg: rgba(16, 185, 129, 0.07);
-      --green-border: rgba(16, 185, 129, 0.2);
-      --red: #ef4444;
-      --red-bg: rgba(239, 68, 68, 0.06);
+      --bg-surface: #f0f2f5;
+      --bg-card: #ffffff;
+      --border: #dfe2e8;
+      --border-light: #ebedf2;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      --nav-bg: rgba(247, 248, 250, 0.85);
+      --ink: #1a1d26;
+      --ink-2: #3a3f4f;
+      --ink-3: #6b7185;
+      --ink-4: #9ca1b0;
+      --accent: #0d9373;
+      --accent-hover: #0b7d63;
+      --accent-bg: rgba(13, 147, 115, 0.07);
+      --accent-border: rgba(13, 147, 115, 0.2);
+      --accent-text: #ffffff;
+      --green: #0da574;
+      --green-bg: rgba(13, 165, 116, 0.07);
+      --green-border: rgba(13, 165, 116, 0.2);
+      --red: #dc3545;
+      --red-bg: rgba(220, 53, 69, 0.06);
+    }
+
+    :root {
       --r: 12px;
       --r-sm: 8px;
       --r-lg: 16px;
-      --font: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
-      --mono: 'JetBrains Mono', monospace;
+      --font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'IBM Plex Mono', monospace;
       --ease: cubic-bezier(.4, 0, .2, 1);
     }
 
@@ -57,13 +91,15 @@
       color: var(--ink);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      transition: background .3s, color .3s;
     }
 
-    /* ═══ Top Nav ═══ */
     .topnav {
-      background: var(--bg);
+      background: var(--nav-bg);
+      backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
-      padding: 0 24px;
+      padding: 0 32px;
+      transition: background .3s;
       position: sticky;
       top: 0;
       z-index: 100;
@@ -72,7 +108,7 @@
     .topnav-inner {
       max-width: 900px;
       margin: 0 auto;
-      height: 52px;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -118,12 +154,11 @@
     }
 
     .nav-link.active {
-      background: var(--yellow-bg);
-      color: var(--yellow-hover);
-      border: 1px solid var(--yellow-border);
+      background: var(--accent-bg);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
     }
 
-    /* ═══ Container ═══ */
     .container {
       max-width: 900px;
       margin: 0 auto;
@@ -132,29 +167,27 @@
 
     .page-header {
       padding: 28px 0 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
     }
 
-    .page-header-left h1 {
+    .page-header h1 {
       font-size: 1.5rem;
       font-weight: 700;
     }
 
-    .page-header-left p {
+    .page-header p {
       color: var(--ink-3);
       font-size: .88rem;
       margin-top: 2px;
     }
 
-    /* ═══ Cards ═══ */
+    /* ═══ Card ═══ */
     .card {
-      background: var(--bg);
+      background: var(--bg-card, var(--bg));
       border: 1px solid var(--border);
       border-radius: var(--r);
       padding: 20px 24px;
       margin-bottom: 16px;
+      transition: background .3s, border-color .3s;
     }
 
     .card-title {
@@ -172,74 +205,14 @@
       font-weight: 400;
     }
 
-    /* ═══ Provider List ═══ */
-    .provider-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 12px;
-    }
-
-    .provider-item {
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-      padding: 14px 16px;
-      cursor: pointer;
-      transition: all .15s;
-      position: relative;
-    }
-
-    .provider-item:hover {
-      border-color: var(--yellow-border);
-      background: var(--yellow-bg);
-    }
-
-    .provider-item.active {
-      border-color: var(--yellow);
-      background: var(--yellow-bg);
-      box-shadow: 0 0 0 2px rgba(255, 157, 0, 0.15);
-    }
-
-    .provider-item.configured::after {
-      content: '';
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-    }
-
-    .provider-name {
-      font-weight: 700;
-      font-size: .88rem;
-      margin-bottom: 2px;
-    }
-
-    .provider-desc {
-      font-size: .75rem;
-      color: var(--ink-4);
-    }
-
-    /* ═══ Config Form ═══ */
-    .config-form {
-      display: none;
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border-light);
-    }
-
-    .config-form.active {
-      display: block;
-    }
-
-    .form-grid {
+    /* ═══ Add Form ═══ */
+    .add-form {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px 16px;
     }
 
-    .form-grid .form-group.full {
+    .add-form .form-group.full {
       grid-column: 1 / -1;
     }
 
@@ -271,12 +244,20 @@
 
     input:focus,
     select:focus {
-      border-color: var(--yellow);
-      box-shadow: 0 0 0 3px rgba(255, 157, 0, 0.12);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(13, 147, 115, 0.1);
     }
 
     input::placeholder {
       color: var(--ink-4);
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M5 7L1 3h8z' fill='%239ca3af'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
     }
 
     .pw-wrap {
@@ -304,6 +285,43 @@
       color: var(--ink-3);
     }
 
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slider-row input[type=range] {
+      flex: 1;
+      padding: 0;
+      height: 3px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--border);
+      border-radius: 2px;
+      border: none;
+    }
+
+    .slider-row input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    .slider-val {
+      min-width: 26px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--accent);
+      font-size: .82rem;
+      font-family: var(--mono);
+    }
+
     /* ═══ Buttons ═══ */
     .btn {
       display: inline-flex;
@@ -320,13 +338,13 @@
     }
 
     .btn-primary {
-      background: var(--yellow);
-      color: #fff;
+      background: var(--accent);
+      color: var(--accent-text, #fff);
       padding: 9px 20px;
     }
 
     .btn-primary:hover:not(:disabled) {
-      background: var(--yellow-hover);
+      background: var(--accent-hover);
     }
 
     .btn-primary:disabled {
@@ -334,87 +352,230 @@
       cursor: not-allowed;
     }
 
-    .btn-outline {
-      background: var(--bg);
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    /* ═══ Saved Provider List ═══ */
+    .saved-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .saved-empty {
+      text-align: center;
+      padding: 24px 16px;
+      color: var(--ink-4);
+      font-size: .85rem;
+      border: 1px dashed var(--border);
+      border-radius: var(--r-sm);
+    }
+
+    .saved-item {
       border: 1px solid var(--border);
-      color: var(--ink-2);
-      padding: 8px 14px;
-      font-size: .82rem;
+      border-radius: var(--r-sm);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all .15s;
+      position: relative;
     }
 
-    .btn-outline:hover:not(:disabled) {
-      border-color: var(--yellow-border);
-      background: var(--yellow-bg);
-      color: var(--yellow-hover);
+    .saved-item:hover {
+      border-color: var(--accent-border);
+      box-shadow: var(--shadow-sm);
     }
 
-    .btn-danger {
+    .saved-item-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .saved-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .saved-item-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .saved-item-name {
+      font-weight: 700;
+      font-size: .88rem;
+    }
+
+    .saved-item-badge {
+      font-size: .6rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .badge-default {
+      background: var(--accent-bg);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+    }
+
+    .saved-item-details {
+      font-size: .75rem;
+      color: var(--ink-4);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .saved-item-details span {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .saved-item-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .btn-icon {
       background: none;
       border: 1px solid var(--border);
       color: var(--ink-3);
-      padding: 8px 14px;
-      font-size: .82rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: .8rem;
+      transition: all .15s;
     }
 
-    .btn-danger:hover {
+    .btn-icon:hover {
+      border-color: var(--accent-border);
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+
+    .btn-icon.danger:hover {
       border-color: rgba(239, 68, 68, 0.3);
       color: var(--red);
       background: var(--red-bg);
     }
 
-    .form-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 16px;
-    }
-
-    /* ═══ Default badge ═══ */
-    .default-badge {
-      display: inline-block;
-      font-size: .65rem;
-      font-weight: 700;
-      color: var(--yellow-hover);
-      background: var(--yellow-bg);
-      border: 1px solid var(--yellow-border);
-      padding: 1px 6px;
-      border-radius: 4px;
-      margin-left: 6px;
+    .btn-icon.default-active {
+      background: var(--accent-bg);
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     /* ═══ Template section ═══ */
     .template-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
     }
 
     .template-item {
       border: 1px solid var(--border);
       border-radius: var(--r-sm);
-      padding: 12px 14px;
       cursor: pointer;
       transition: all .15s;
+      overflow: hidden;
     }
 
     .template-item:hover {
-      border-color: var(--yellow-border);
-      background: var(--yellow-bg);
+      border-color: var(--accent-border);
+      box-shadow: var(--shadow-sm);
     }
 
     .template-item.active {
-      border-color: var(--yellow);
-      background: var(--yellow-bg);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(13, 147, 115, 0.18);
+    }
+
+    .template-preview {
+      width: 100%;
+      height: 180px;
+      background: #fafafa;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .template-preview img {
+      width: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .template-preview-placeholder {
+      color: var(--ink-4);
+      font-size: 1.5rem;
+      margin-top: 60px;
+    }
+
+    .template-info {
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .template-name {
       font-weight: 700;
-      font-size: .85rem;
+      font-size: .8rem;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .template-desc {
-      font-size: .72rem;
+      font-size: .68rem;
       color: var(--ink-4);
-      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .template-check {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .65rem;
+      flex-shrink: 0;
+      transition: all .15s;
+    }
+
+    .template-item.active .template-check {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
     }
 
     /* ═══ Toast ═══ */
@@ -448,70 +609,63 @@
       background: var(--red);
     }
 
-    /* Slider */
-    .slider-row {
+    /* ═══ Theme Toggle ═══ */
+    .theme-toggle {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface, var(--bg-hover));
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all .2s;
+      position: relative;
+      overflow: hidden;
+      color: var(--ink-3);
     }
 
-    .slider-row input[type=range] {
-      flex: 1;
-      padding: 0;
-      height: 3px;
-      -webkit-appearance: none;
-      appearance: none;
-      background: var(--border);
-      border-radius: 2px;
-      border: none;
+    .theme-toggle:hover {
+      border-color: var(--accent-border);
+      background: var(--accent-bg);
+      color: var(--accent);
     }
 
-    .slider-row input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px;
-      height: 14px;
-      background: var(--yellow);
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid #fff;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    .theme-icon-sun,
+    .theme-icon-moon {
+      position: absolute;
+      transition: transform .3s var(--ease), opacity .3s;
     }
 
-    .slider-val {
-      min-width: 26px;
-      text-align: center;
-      font-weight: 700;
-      color: var(--yellow-hover);
-      font-size: .82rem;
-      font-family: var(--mono);
-    }
-
-    select {
-      cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M5 7L1 3h8z' fill='%239ca3af'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-    }
+    [data-theme="dark"] .theme-icon-sun { opacity: 1; transform: rotate(0deg); }
+    [data-theme="dark"] .theme-icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+    [data-theme="light"] .theme-icon-sun { opacity: 0; transform: rotate(90deg) scale(0.5); }
+    [data-theme="light"] .theme-icon-moon { opacity: 1; transform: rotate(0deg); }
 
     @media (max-width: 640px) {
       .container {
         padding: 0 12px;
       }
 
-      .form-grid {
+      .add-form {
         grid-template-columns: 1fr;
       }
 
-      .provider-grid {
-        grid-template-columns: 1fr;
+      .saved-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .saved-item-actions {
+        align-self: flex-end;
       }
     }
   </style>
 </head>
 
 <body>
-  <!-- ═══ Top Navigation ═══ -->
   <nav class="topnav">
     <div class="topnav-inner">
       <div class="topnav-left">
@@ -521,76 +675,97 @@
         </a>
       </div>
       <div class="topnav-right">
-        <a href="/" class="nav-link" data-i18n="nav_home">Home</a>
-        <a href="/settings" class="nav-link active" data-i18n="nav_settings">Settings</a>
+        <a href="/" class="nav-link">Home</a>
+        <a href="/settings" class="nav-link active">Settings</a>
+        <span style="width:1px;height:20px;background:var(--border);margin:0 4px"></span>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+          <span class="theme-icon-sun">&#9788;</span>
+          <span class="theme-icon-moon">&#9790;</span>
+        </button>
       </div>
     </div>
   </nav>
 
   <div class="container">
     <div class="page-header">
-      <div class="page-header-left">
-        <h1 data-i18n="settings_title">Settings</h1>
-        <p data-i18n="settings_subtitle">Manage your LLM providers, API keys, and default preferences</p>
-      </div>
+      <h1>Settings</h1>
+      <p>Manage LLM provider configurations</p>
     </div>
 
-    <!-- ═══ Provider Configuration ═══ -->
+    <!-- ═══ Add New Provider ═══ -->
     <div class="card">
       <div class="card-title">
-        LLM Providers
-        <span class="card-subtitle" data-i18n="providers_hint">Click a provider to configure it</span>
+        Add Provider Configuration
       </div>
-
-      <div class="provider-grid" id="providerGrid"></div>
-
-      <!-- Config form (shown when a provider is selected) -->
-      <div class="config-form" id="configForm">
-        <div class="form-grid">
-          <div class="form-group">
-            <label data-i18n="label_model">Model</label>
-            <input type="text" id="cfgModel" placeholder="gpt-4o">
+      <div class="add-form">
+        <div class="form-group">
+          <label>Provider</label>
+          <select id="addProvider" onchange="onAddProviderChange()">
+            <optgroup label="Commercial API">
+              <option value="openai">OpenAI</option>
+              <option value="claude">Claude (Anthropic)</option>
+              <option value="gemini">Gemini (Google)</option>
+              <option value="openrouter">OpenRouter</option>
+            </optgroup>
+            <optgroup label="China Services">
+              <option value="deepseek">DeepSeek</option>
+              <option value="kimi">Kimi (Moonshot)</option>
+              <option value="dashscope">Qwen (DashScope)</option>
+              <option value="dashscope-coding">Bailian Coding</option>
+              <option value="siliconflow">SiliconFlow</option>
+            </optgroup>
+            <optgroup label="Local / Self-hosted">
+              <option value="ollama">Ollama</option>
+              <option value="vllm">vLLM</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Model</label>
+          <input type="text" id="addModel" placeholder="gpt-4o">
+        </div>
+        <div class="form-group">
+          <label>API Key</label>
+          <div class="pw-wrap">
+            <input type="password" id="addApiKey" placeholder="sk-...">
+            <button class="pw-toggle" onclick="togglePw('addApiKey')">&#128065;</button>
           </div>
-          <div class="form-group">
-            <label>API Key</label>
-            <div class="pw-wrap">
-              <input type="password" id="cfgApiKey" placeholder="sk-...">
-              <button class="pw-toggle" onclick="togglePw('cfgApiKey')">&#128065;</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Base URL <span style="font-weight:400" data-i18n="label_optional">(optional)</span></label>
-            <input type="text" id="cfgBaseUrl" placeholder="https://api.openai.com/v1">
-          </div>
-          <div class="form-group">
-            <label>Temperature</label>
-            <div class="slider-row">
-              <input type="range" id="cfgTemperature" min="0" max="1" step="0.1" value="0.3">
-              <span class="slider-val" id="cfgTempValue">0.3</span>
-            </div>
+        </div>
+        <div class="form-group">
+          <label>Base URL <span style="font-weight:400;color:var(--ink-4)">(optional)</span></label>
+          <input type="text" id="addBaseUrl" placeholder="https://api.openai.com/v1">
+        </div>
+        <div class="form-group">
+          <label>Temperature</label>
+          <div class="slider-row">
+            <input type="range" id="addTemperature" min="0" max="1" step="0.1" value="0.3">
+            <span class="slider-val" id="addTempValue">0.3</span>
           </div>
         </div>
         <div class="form-actions">
-          <button class="btn btn-primary" onclick="saveProvider()" data-i18n="btn_save">Save</button>
-          <button class="btn btn-outline" onclick="setAsDefault()" data-i18n="btn_set_default">Set as Default</button>
-          <button class="btn btn-danger" onclick="deleteProvider()" data-i18n="btn_delete">Delete Config</button>
+          <button class="btn btn-primary" onclick="addProvider()">Add Configuration</button>
         </div>
       </div>
+    </div>
+
+    <!-- ═══ Saved Configurations ═══ -->
+    <div class="card">
+      <div class="card-title">
+        Saved Configurations
+        <span class="card-subtitle" id="savedCount"></span>
+      </div>
+      <div class="saved-list" id="savedList"></div>
     </div>
 
     <!-- ═══ Default Template ═══ -->
     <div class="card">
-      <div class="card-title">
-        <span data-i18n="title_template">Default Template</span>
-      </div>
+      <div class="card-title">Default Template</div>
       <div class="template-grid" id="templateGrid"></div>
     </div>
 
     <!-- ═══ Default Language ═══ -->
     <div class="card">
-      <div class="card-title">
-        <span data-i18n="title_language">Default Language</span>
-      </div>
+      <div class="card-title">Default Language</div>
       <div class="form-group" style="max-width:300px">
         <select id="cfgLanguage" onchange="saveLanguage()">
           <option value="中文">中文</option>
@@ -605,36 +780,52 @@
     </div>
   </div>
 
-  <!-- Toast -->
   <div class="toast" id="toast"></div>
 
   <script>
-    // ═══ Provider presets ═══
+    // ─── Theme ──────────────────────────────────
+    function initTheme() {
+      const saved = localStorage.getItem('scholar_granny_theme');
+      const theme = saved || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+    initTheme();
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('scholar_granny_theme', next);
+    }
+
     const PROVIDER_PRESETS = {
-      openai: { label: 'OpenAI', desc: 'GPT-4o, GPT-4o-mini', defaultModel: 'gpt-5.4-mini', basePlaceholder: 'https://api.openai.com/v1', group: 'commercial' },
-      claude: { label: 'Claude (Anthropic)', desc: 'Claude Sonnet, Opus', defaultModel: 'claude-sonnet-4-20250514', basePlaceholder: 'https://api.anthropic.com', group: 'commercial' },
-      gemini: { label: 'Gemini (Google)', desc: 'Gemini 2.5 Flash/Pro', defaultModel: 'gemini-2.5-flash', basePlaceholder: '', group: 'commercial' },
-      openrouter: { label: 'OpenRouter', desc: 'Multi-provider gateway', defaultModel: 'google/gemini-2.5-flash', basePlaceholder: 'https://openrouter.ai/api/v1', group: 'commercial' },
-      deepseek: { label: 'DeepSeek', desc: 'DeepSeek-V3, Chat', defaultModel: 'deepseek-chat', basePlaceholder: 'https://api.deepseek.com/v1', group: 'china' },
-      kimi: { label: 'Kimi (Moonshot)', desc: 'Moonshot 128K', defaultModel: 'moonshot-v1-128k', basePlaceholder: 'https://api.moonshot.cn/v1', group: 'china' },
-      dashscope: { label: 'Qwen (DashScope)', desc: 'Qwen-Plus', defaultModel: 'qwen-plus', basePlaceholder: 'https://dashscope.aliyuncs.com/compatible-mode/v1', group: 'china' },
-      'dashscope-coding': { label: 'Bailian Coding', desc: 'Coding plan', defaultModel: 'qwen-plus', basePlaceholder: 'https://coding.dashscope.aliyuncs.com/v1', group: 'china' },
-      siliconflow: { label: 'SiliconFlow', desc: 'Qwen, Llama etc.', defaultModel: 'Qwen/Qwen3-8B', basePlaceholder: 'https://api.siliconflow.cn/v1', group: 'china' },
-      ollama: { label: 'Ollama', desc: 'Local inference', defaultModel: 'llama3', basePlaceholder: 'http://localhost:11434/v1', group: 'local' },
-      vllm: { label: 'vLLM', desc: 'Self-hosted', defaultModel: '', basePlaceholder: 'http://localhost:8000/v1', group: 'local' },
+      openai: { label: 'OpenAI', icon: 'O', defaultModel: 'gpt-5.4-mini', basePlaceholder: 'https://api.openai.com/v1' },
+      claude: { label: 'Claude', icon: 'C', defaultModel: 'claude-sonnet-4-20250514', basePlaceholder: 'https://api.anthropic.com' },
+      gemini: { label: 'Gemini', icon: 'G', defaultModel: 'gemini-2.5-flash', basePlaceholder: '' },
+      openrouter: { label: 'OpenRouter', icon: 'R', defaultModel: 'google/gemini-2.5-flash', basePlaceholder: 'https://openrouter.ai/api/v1' },
+      deepseek: { label: 'DeepSeek', icon: 'D', defaultModel: 'deepseek-chat', basePlaceholder: 'https://api.deepseek.com/v1' },
+      kimi: { label: 'Kimi', icon: 'K', defaultModel: 'moonshot-v1-128k', basePlaceholder: 'https://api.moonshot.cn/v1' },
+      dashscope: { label: 'Qwen', icon: 'Q', defaultModel: 'qwen-plus', basePlaceholder: 'https://dashscope.aliyuncs.com/compatible-mode/v1' },
+      'dashscope-coding': { label: 'Bailian Coding', icon: 'B', defaultModel: 'qwen-plus', basePlaceholder: 'https://coding.dashscope.aliyuncs.com/v1' },
+      siliconflow: { label: 'SiliconFlow', icon: 'S', defaultModel: 'Qwen/Qwen3-8B', basePlaceholder: 'https://api.siliconflow.cn/v1' },
+      ollama: { label: 'Ollama', icon: '🦙', defaultModel: 'llama3', basePlaceholder: 'http://localhost:11434/v1' },
+      vllm: { label: 'vLLM', icon: 'V', defaultModel: '', basePlaceholder: 'http://localhost:8000/v1' },
     };
 
     let savedProviders = {};
-    let currentProvider = null;
     let defaultProvider = 'openai';
-    let defaultModel = '';
     let defaultTemplate = 'ModernColorful';
 
-    // ═══ Init ═══
     document.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById('addTemperature').addEventListener('input', e => {
+        document.getElementById('addTempValue').textContent = e.target.value;
+      });
       await loadConfig();
-      renderProviders();
+      renderSavedList();
+      onAddProviderChange();
       await loadTemplates();
+      const lang = localStorage.getItem('scholar_granny_default_language');
+      if (lang) document.getElementById('cfgLanguage').value = lang;
     });
 
     async function loadConfig() {
@@ -642,129 +833,176 @@
         const cfg = await (await fetch('/api/config')).json();
         savedProviders = cfg.providers || {};
         defaultProvider = cfg.provider || 'openai';
-        defaultModel = cfg.model || '';
         defaultTemplate = cfg.template || 'ModernColorful';
-
-        // Restore language
-        const lang = localStorage.getItem('scholar_granny_default_language');
-        if (lang) document.getElementById('cfgLanguage').value = lang;
       } catch (e) {
         console.error('Failed to load config:', e);
       }
     }
 
-    // ═══ Provider grid ═══
-    function renderProviders() {
-      const grid = document.getElementById('providerGrid');
-      const groups = { commercial: 'Commercial API', china: 'China Services', local: 'Local / Self-hosted' };
-      let html = '';
-
-      for (const [groupKey, groupLabel] of Object.entries(groups)) {
-        const providers = Object.entries(PROVIDER_PRESETS).filter(([, p]) => p.group === groupKey);
-        if (!providers.length) continue;
-        html += `<div style="grid-column:1/-1;font-size:.72rem;font-weight:700;color:var(--ink-4);text-transform:uppercase;letter-spacing:.05em;margin-top:4px">${groupLabel}</div>`;
-        for (const [key, preset] of providers) {
-          const isConfigured = !!savedProviders[key];
-          const isDefault = key === defaultProvider;
-          const isActive = key === currentProvider;
-          html += `
-            <div class="provider-item ${isActive ? 'active' : ''} ${isConfigured ? 'configured' : ''}"
-                 onclick="selectProvider('${key}')">
-              <div class="provider-name">${preset.label}${isDefault ? '<span class="default-badge">DEFAULT</span>' : ''}</div>
-              <div class="provider-desc">${preset.desc}${isConfigured ? ' &middot; configured' : ''}</div>
-            </div>`;
+    function onAddProviderChange() {
+      const provider = document.getElementById('addProvider').value;
+      const preset = PROVIDER_PRESETS[provider];
+      if (!preset) return;
+      document.getElementById('addModel').value = preset.defaultModel;
+      document.getElementById('addModel').placeholder = preset.defaultModel;
+      document.getElementById('addBaseUrl').placeholder = preset.basePlaceholder;
+      // If already configured, fill in saved values
+      const saved = savedProviders[provider];
+      if (saved) {
+        document.getElementById('addModel').value = saved.model || preset.defaultModel;
+        document.getElementById('addApiKey').value = saved.api_key || '';
+        document.getElementById('addBaseUrl').value = saved.base_url || '';
+        if (saved.temperature !== undefined) {
+          document.getElementById('addTemperature').value = saved.temperature;
+          document.getElementById('addTempValue').textContent = saved.temperature;
         }
+      } else {
+        document.getElementById('addApiKey').value = '';
+        document.getElementById('addBaseUrl').value = '';
+        document.getElementById('addTemperature').value = 0.3;
+        document.getElementById('addTempValue').textContent = '0.3';
       }
-      grid.innerHTML = html;
     }
 
-    function selectProvider(key) {
-      currentProvider = key;
-      renderProviders();
+    async function addProvider() {
+      const provider = document.getElementById('addProvider').value;
+      const model = document.getElementById('addModel').value;
+      const apiKey = document.getElementById('addApiKey').value;
+      const baseUrl = document.getElementById('addBaseUrl').value;
+      const temperature = parseFloat(document.getElementById('addTemperature').value);
 
-      const form = document.getElementById('configForm');
-      form.classList.add('active');
+      if (!model) {
+        showToast('Please enter a model name', 'error');
+        return;
+      }
 
-      const preset = PROVIDER_PRESETS[key];
-      const saved = savedProviders[key] || {};
-
-      document.getElementById('cfgModel').value = saved.model || preset.defaultModel;
-      document.getElementById('cfgModel').placeholder = preset.defaultModel;
-      document.getElementById('cfgApiKey').value = saved.api_key || '';
-      document.getElementById('cfgBaseUrl').value = saved.base_url || '';
-      document.getElementById('cfgBaseUrl').placeholder = preset.basePlaceholder;
-      document.getElementById('cfgTemperature').value = saved.temperature || 0.3;
-      document.getElementById('cfgTempValue').textContent = saved.temperature || 0.3;
-    }
-
-    // ═══ Save provider ═══
-    async function saveProvider() {
-      if (!currentProvider) return;
       try {
+        const isFirst = Object.keys(savedProviders).length === 0;
         const res = await fetch('/api/config', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            provider: currentProvider,
-            model: document.getElementById('cfgModel').value,
-            api_key: document.getElementById('cfgApiKey').value,
-            base_url: document.getElementById('cfgBaseUrl').value || null,
-            temperature: parseFloat(document.getElementById('cfgTemperature').value),
+            provider: provider,
+            active_provider: isFirst ? provider : undefined,
+            set_active: isFirst,
+            model: model,
+            api_key: apiKey,
+            base_url: baseUrl || null,
+            temperature: temperature,
             template: defaultTemplate,
           }),
         });
         const data = await res.json();
-        if (data.ok) {
-          showToast('Provider saved', 'success');
-          await loadConfig();
-          renderProviders();
-        } else {
-          showToast('Save failed', 'error');
+        if (!res.ok || !data.ok) {
+          throw new Error(data.error || 'Save failed');
         }
+
+        showToast(`${PROVIDER_PRESETS[provider]?.label || provider} added`, 'success');
+        // Clear form
+        document.getElementById('addApiKey').value = '';
+        document.getElementById('addBaseUrl').value = '';
+        await loadConfig();
+        renderSavedList();
       } catch (e) {
-        showToast('Save failed: ' + e.message, 'error');
+        showToast('Failed: ' + e.message, 'error');
       }
     }
 
-    async function setAsDefault() {
-      if (!currentProvider) return;
+    function renderSavedList() {
+      const list = document.getElementById('savedList');
+      const countEl = document.getElementById('savedCount');
+      const keys = Object.keys(savedProviders);
+
+      if (!keys.length) {
+        list.innerHTML = '<div class="saved-empty">No provider configurations yet. Add one above.</div>';
+        countEl.textContent = '';
+        return;
+      }
+
+      countEl.textContent = `${keys.length} configured`;
+
+      list.innerHTML = keys.map(key => {
+        const cfg = savedProviders[key];
+        const preset = PROVIDER_PRESETS[key] || { label: key, icon: key[0].toUpperCase() };
+        const isDefault = key === defaultProvider;
+        const maskedKey = cfg.api_key || '';
+        const model = cfg.model || preset.defaultModel || '-';
+
+        return `
+          <div class="saved-item">
+            <div class="saved-item-icon">${preset.icon}</div>
+            <div class="saved-item-info">
+              <div class="saved-item-header">
+                <span class="saved-item-name">${preset.label}</span>
+                ${isDefault ? '<span class="saved-item-badge badge-default">DEFAULT</span>' : ''}
+              </div>
+              <div class="saved-item-details">
+                <span>Model: <strong>${escHtml(model)}</strong></span>
+                ${maskedKey ? `<span>Key: ${escHtml(maskedKey)}</span>` : ''}
+                ${cfg.base_url ? `<span>URL: ${escHtml(cfg.base_url)}</span>` : ''}
+                ${cfg.temperature !== undefined ? `<span>Temp: ${cfg.temperature}</span>` : ''}
+              </div>
+            </div>
+            <div class="saved-item-actions">
+              <button class="btn-icon ${isDefault ? 'default-active' : ''}" onclick="setDefault('${key}')" title="Set as default">
+                ${isDefault ? '★' : '☆'}
+              </button>
+              <button class="btn-icon" onclick="editProvider('${key}')" title="Edit">✎</button>
+              <button class="btn-icon danger" onclick="deleteProvider('${key}')" title="Delete">✕</button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    async function setDefault(key) {
+      const cfg = savedProviders[key] || {};
+      const preset = PROVIDER_PRESETS[key] || {};
       try {
         const res = await fetch('/api/config', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            provider: currentProvider,
-            model: document.getElementById('cfgModel').value,
-            api_key: document.getElementById('cfgApiKey').value,
-            base_url: document.getElementById('cfgBaseUrl').value || null,
-            temperature: parseFloat(document.getElementById('cfgTemperature').value),
+            provider: key,
+            active_provider: key,
+            set_active: true,
+            model: cfg.model || preset.defaultModel,
+            api_key: cfg.api_key || '',
+            base_url: cfg.base_url || null,
+            temperature: cfg.temperature || 0.3,
             template: defaultTemplate,
           }),
         });
         const data = await res.json();
-        if (data.ok) {
-          defaultProvider = currentProvider;
-          showToast(`${PROVIDER_PRESETS[currentProvider].label} set as default`, 'success');
-          await loadConfig();
-          renderProviders();
+        if (!res.ok || !data.ok) {
+          throw new Error(data.error || 'Save failed');
         }
+        defaultProvider = key;
+        showToast(`${preset.label || key} set as default`, 'success');
+        await loadConfig();
+        renderSavedList();
       } catch (e) {
         showToast('Failed', 'error');
       }
     }
 
-    async function deleteProvider() {
-      if (!currentProvider) return;
+    function editProvider(key) {
+      // Fill the add form with this provider's values for editing
+      document.getElementById('addProvider').value = key;
+      onAddProviderChange();
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Focus the model field
+      setTimeout(() => document.getElementById('addModel').focus(), 300);
+    }
+
+    async function deleteProvider(key) {
+      const preset = PROVIDER_PRESETS[key] || { label: key };
+      if (!confirm(`Delete ${preset.label} configuration?`)) return;
       try {
-        const res = await fetch('/api/config/provider/' + currentProvider, { method: 'DELETE' });
-        const data = await res.json();
-        if (data.ok) {
-          showToast('Provider config deleted', 'success');
-          document.getElementById('configForm').classList.remove('active');
-          currentProvider = null;
-          await loadConfig();
-          renderProviders();
-        }
+        await fetch('/api/config/provider/' + key, { method: 'DELETE' });
+        showToast(`${preset.label} deleted`, 'success');
+        await loadConfig();
+        renderSavedList();
       } catch (e) {
         showToast('Delete failed', 'error');
       }
@@ -778,8 +1016,18 @@
         grid.innerHTML = data.templates.map(t => `
           <div class="template-item ${t.name === defaultTemplate ? 'active' : ''}"
                onclick="selectTemplate('${t.name}', this)">
-            <div class="template-name">${t.name}</div>
-            <div class="template-desc">${t.description || t.size_kb + ' KB'}</div>
+            <div class="template-preview">
+              <img src="/api/templates/${t.name}/preview"
+                   alt="${t.name}"
+                   onerror="this.parentElement.innerHTML='<span class=template-preview-placeholder>📄</span>'">
+            </div>
+            <div class="template-info">
+              <div>
+                <div class="template-name">${t.name}</div>
+                <div class="template-desc">${t.description || ''}</div>
+              </div>
+              <div class="template-check">${t.name === defaultTemplate ? '✓' : ''}</div>
+            </div>
           </div>
         `).join('');
       } catch (e) { }
@@ -787,24 +1035,33 @@
 
     async function selectTemplate(name, el) {
       defaultTemplate = name;
-      document.querySelectorAll('.template-item').forEach(e => e.classList.remove('active'));
+      document.querySelectorAll('.template-item').forEach(e => {
+        e.classList.remove('active');
+        e.querySelector('.template-check').textContent = '';
+      });
       el.classList.add('active');
-
-      // Save template preference
+      el.querySelector('.template-check').textContent = '✓';
       try {
-        await fetch('/api/config', {
+        const res = await fetch('/api/config', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            provider: defaultProvider,
+            provider: defaultProvider || '',
+            active_provider: defaultProvider || '',
+            set_active: false,
             template: name,
           }),
         });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          throw new Error(data.error || 'Save failed');
+        }
         showToast('Default template updated', 'success');
-      } catch (e) { }
+      } catch (e) {
+        showToast('Failed to update template', 'error');
+      }
     }
 
-    // ═══ Language ═══
     function saveLanguage() {
       const lang = document.getElementById('cfgLanguage').value;
       localStorage.setItem('scholar_granny_default_language', lang);
@@ -817,9 +1074,9 @@
       input.type = input.type === 'password' ? 'text' : 'password';
     }
 
-    document.getElementById('cfgTemperature').addEventListener('input', e => {
-      document.getElementById('cfgTempValue').textContent = e.target.value;
-    });
+    function escHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
 
     function showToast(msg, type = '') {
       const el = document.getElementById('toast');

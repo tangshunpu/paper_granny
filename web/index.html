@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 
 <head>
   <meta charset="UTF-8">
@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Space+Mono:wght@400;700&display=swap"
     rel="stylesheet">
   <style>
     *,
@@ -20,43 +20,118 @@
       padding: 0;
     }
 
-    :root {
+    :root,
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --bg-page: #0a0b0f;
+      --bg-hover: #1a1c25;
+      --bg-input: #13151c;
+      --bg-surface: #161822;
+      --bg-card: #12141c;
+      --border: #232530;
+      --border-light: #1e2030;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --nav-bg: rgba(10, 11, 15, 0.8);
+      --glow-1: rgba(34, 211, 167, 0.07);
+      --glow-2: rgba(91, 141, 239, 0.06);
+
+      --ink: #e8eaf0;
+      --ink-2: #c0c4d0;
+      --ink-3: #8b90a0;
+      --ink-4: #555a6e;
+
+      --accent: #22d3a7;
+      --accent-hover: #1ab892;
+      --accent-bg: rgba(34, 211, 167, 0.08);
+      --accent-border: rgba(34, 211, 167, 0.2);
+      --accent-glow: rgba(34, 211, 167, 0.15);
+      --accent-text: var(--bg-page);
+
+      --blue: #5b8def;
+      --blue-bg: rgba(91, 141, 239, 0.1);
+      --purple: #a78bfa;
+      --purple-bg: rgba(167, 139, 250, 0.08);
+      --cyan: #22d3ee;
+      --cyan-bg: rgba(34, 211, 238, 0.08);
+      --orange: #fb923c;
+      --orange-bg: rgba(251, 146, 60, 0.08);
+      --pink: #f472b6;
+      --pink-bg: rgba(244, 114, 182, 0.08);
+      --green: #34d399;
+      --green-bg: rgba(52, 211, 153, 0.1);
+      --green-border: rgba(52, 211, 153, 0.2);
+      --red: #f87171;
+      --red-bg: rgba(248, 113, 113, 0.1);
+
+      --grad-1: linear-gradient(135deg, #22d3a7, #5b8def);
+      --grad-2: linear-gradient(135deg, #a78bfa, #f472b6);
+      --grad-3: linear-gradient(135deg, #fb923c, #f87171);
+      --grad-4: linear-gradient(135deg, #22d3ee, #5b8def);
+      --grad-5: linear-gradient(135deg, #34d399, #22d3ee);
+      --title-grad: linear-gradient(135deg, #e8eaf0 0%, #22d3a7 100%);
+    }
+
+    [data-theme="light"] {
       --bg: #ffffff;
-      --bg-page: #f5f5f5;
-      --bg-hover: #f7f7f7;
+      --bg-page: #f7f8fa;
+      --bg-hover: #eef0f4;
       --bg-input: #ffffff;
-      --border: #e5e7eb;
-      --border-light: #eee;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-      --shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+      --bg-surface: #f0f2f5;
+      --bg-card: #ffffff;
+      --border: #dfe2e8;
+      --border-light: #ebedf2;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      --shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.1);
+      --nav-bg: rgba(247, 248, 250, 0.85);
+      --glow-1: rgba(13, 147, 115, 0.06);
+      --glow-2: rgba(59, 110, 210, 0.05);
 
-      --ink: #1a1a2e;
-      --ink-2: #374151;
-      --ink-3: #6b7280;
-      --ink-4: #9ca3af;
+      --ink: #1a1d26;
+      --ink-2: #3a3f4f;
+      --ink-3: #6b7185;
+      --ink-4: #9ca1b0;
 
-      --yellow: #ff9d00;
-      --yellow-hover: #e68e00;
-      --yellow-bg: #fff8ee;
-      --yellow-border: #ffe4b5;
-      --orange: #ff6b35;
-      --coral: #ff4b4b;
+      --accent: #0d9373;
+      --accent-hover: #0b7d63;
+      --accent-bg: rgba(13, 147, 115, 0.07);
+      --accent-border: rgba(13, 147, 115, 0.2);
+      --accent-glow: rgba(13, 147, 115, 0.12);
+      --accent-text: #ffffff;
 
-      --blue: #2563eb;
-      --blue-bg: rgba(37, 99, 235, 0.06);
-      --purple: #7c3aed;
-      --purple-bg: rgba(124, 58, 237, 0.05);
-      --green: #10b981;
-      --green-bg: rgba(16, 185, 129, 0.07);
-      --green-border: rgba(16, 185, 129, 0.2);
-      --red: #ef4444;
-      --red-bg: rgba(239, 68, 68, 0.06);
+      --blue: #3b6ed2;
+      --blue-bg: rgba(59, 110, 210, 0.08);
+      --purple: #7e5bc7;
+      --purple-bg: rgba(126, 91, 199, 0.06);
+      --cyan: #0e9aab;
+      --cyan-bg: rgba(14, 154, 171, 0.06);
+      --orange: #d97520;
+      --orange-bg: rgba(217, 117, 32, 0.06);
+      --pink: #c44e8a;
+      --pink-bg: rgba(196, 78, 138, 0.06);
+      --green: #0da574;
+      --green-bg: rgba(13, 165, 116, 0.07);
+      --green-border: rgba(13, 165, 116, 0.2);
+      --red: #dc3545;
+      --red-bg: rgba(220, 53, 69, 0.06);
 
+      --grad-1: linear-gradient(135deg, #0d9373, #3b6ed2);
+      --grad-2: linear-gradient(135deg, #7e5bc7, #c44e8a);
+      --grad-3: linear-gradient(135deg, #d97520, #dc3545);
+      --grad-4: linear-gradient(135deg, #0e9aab, #3b6ed2);
+      --grad-5: linear-gradient(135deg, #0da574, #0e9aab);
+      --title-grad: linear-gradient(135deg, #1a1d26 0%, #0d9373 100%);
+    }
+
+    :root {
       --r: 12px;
       --r-sm: 8px;
       --r-lg: 16px;
-      --font: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
-      --mono: 'JetBrains Mono', monospace;
+      --r-xl: 24px;
+      --font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'IBM Plex Mono', monospace;
       --ease: cubic-bezier(.4, 0, .2, 1);
     }
 
@@ -66,22 +141,39 @@
       color: var(--ink);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      transition: background .3s, color .3s;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 500px;
+      background: radial-gradient(ellipse at 20% 0%, var(--glow-1) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 0%, var(--glow-2) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+      transition: background .3s;
     }
 
     /* ═══ Top Nav Bar ═══ */
     .topnav {
-      background: var(--bg);
       border-bottom: 1px solid var(--border);
-      padding: 0 24px;
+      padding: 0 32px;
       position: sticky;
       top: 0;
       z-index: 100;
+      backdrop-filter: blur(16px);
+      background: var(--nav-bg);
+      transition: background .3s;
     }
 
     .topnav-inner {
-      max-width: 1280px;
+      max-width: 1200px;
       margin: 0 auto;
-      height: 52px;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -103,6 +195,8 @@
       font-weight: 700;
       color: var(--ink);
       text-decoration: none;
+      font-family: var(--mono);
+      letter-spacing: -0.02em;
     }
 
     .topnav-right {
@@ -127,9 +221,9 @@
     }
 
     .nav-link.active {
-      background: var(--yellow-bg);
-      color: var(--yellow-hover);
-      border: 1px solid var(--yellow-border);
+      background: var(--accent-bg);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
     }
 
     .lang-btn {
@@ -146,9 +240,9 @@
     }
 
     .lang-btn.active {
-      background: var(--yellow);
-      color: #fff;
-      border-color: var(--yellow);
+      background: var(--accent);
+      color: var(--accent-text);
+      border-color: var(--accent);
     }
 
     .lang-btn:hover:not(.active) {
@@ -156,35 +250,41 @@
       border-color: var(--border);
     }
 
-    /* ═══ Page Container — wider ═══ */
+    /* ═══ Page Container ═══ */
     .container {
-      max-width: 1280px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 0 24px;
+      padding: 0 32px;
     }
 
     .page-header {
-      padding: 28px 0 20px;
+      padding: 36px 0 24px;
     }
 
     .page-title {
-      font-size: 1.65rem;
+      font-size: 1.6rem;
       font-weight: 700;
-      color: var(--ink);
       margin-bottom: 4px;
+      letter-spacing: -0.02em;
+      background: var(--title-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .page-subtitle {
-      color: var(--ink-3);
-      font-size: .92rem;
+      color: var(--ink-4);
+      font-size: .88rem;
+      font-weight: 400;
     }
 
     /* ═══ Cards ═══ */
     .card {
-      background: var(--bg);
+      background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--r);
       padding: 20px;
+      transition: background .3s, border-color .3s;
     }
 
     .card-title {
@@ -199,28 +299,50 @@
 
     /* ═══ Input Section ═══ */
     .input-section {
-      background: var(--bg);
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 20px;
-      margin-bottom: 16px;
+      border-radius: var(--r-xl);
+      padding: 6px 6px 6px 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      transition: box-shadow .3s, border-color .3s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .input-section:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent), 0 0 20px var(--accent-glow), var(--shadow-lg);
     }
 
     .input-main-row {
       display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
+      align-items: center;
+      gap: 8px;
     }
 
     .input-main-row input {
       flex: 1;
+      border: none;
+      padding: 12px 4px;
+      font-size: .95rem;
+      background: transparent;
+      outline: none;
+    }
+
+    .input-main-row input:focus {
+      border: none;
+      box-shadow: none;
     }
 
     .input-options-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       flex-wrap: wrap;
+      padding: 8px 0 6px;
+      border-top: 1px solid var(--border-light);
+      margin-top: 2px;
     }
 
     .compact-select-group {
@@ -230,19 +352,22 @@
     }
 
     .compact-select-group label {
-      font-size: .75rem;
+      font-size: .72rem;
       font-weight: 600;
       color: var(--ink-4);
       margin-bottom: 0;
       white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: .03em;
     }
 
     .compact-select {
-      padding: 4px 24px 4px 8px;
+      padding: 4px 22px 4px 8px;
       font-size: .8rem;
       border-radius: 6px;
       border: 1px solid var(--border);
-      background: var(--bg);
+      background: var(--bg-surface);
+      color: var(--ink);
       cursor: pointer;
       appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M5 7L1 3h8z' fill='%239ca3af'/%3E%3C/svg%3E");
@@ -250,21 +375,30 @@
       background-position: right 6px center;
       color: var(--ink-2);
       min-width: 0;
+      transition: all .15s;
+    }
+
+    .compact-select:hover {
+      border-color: var(--border);
     }
 
     .compact-select:focus {
-      border-color: var(--yellow);
-      box-shadow: 0 0 0 2px rgba(255, 157, 0, 0.1);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(13, 147, 115, 0.08);
       outline: none;
     }
 
+    .options-spacer {
+      flex: 1;
+    }
+
     .no-config-hint {
-      font-size: .75rem;
+      font-size: .72rem;
       color: var(--ink-4);
     }
 
     .no-config-hint a {
-      color: var(--yellow-hover);
+      color: var(--accent);
       text-decoration: none;
       font-weight: 600;
     }
@@ -294,7 +428,7 @@
     select {
       width: 100%;
       padding: 8px 12px;
-      background: var(--bg-input);
+      background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: var(--r-sm);
       color: var(--ink);
@@ -306,8 +440,8 @@
 
     input:focus,
     select:focus {
-      border-color: var(--yellow);
-      box-shadow: 0 0 0 3px rgba(255, 157, 0, 0.12);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(13, 147, 115, 0.1);
     }
 
     input::placeholder {
@@ -323,7 +457,7 @@
     }
 
     select option {
-      background: var(--bg);
+      background: var(--bg-card);
     }
 
     /* ═══ Buttons ═══ */
@@ -342,14 +476,18 @@
     }
 
     .btn-primary {
-      background: var(--yellow);
-      color: #fff;
-      padding: 9px 20px;
+      background: var(--accent);
+      color: var(--accent-text);
+      padding: 10px 22px;
       white-space: nowrap;
+      border-radius: 20px;
+      font-weight: 700;
+      transition: all .2s var(--ease);
     }
 
     .btn-primary:hover:not(:disabled) {
-      background: var(--yellow-hover);
+      background: var(--accent-hover);
+      box-shadow: 0 0 16px var(--accent-glow);
     }
 
     .btn-primary:disabled {
@@ -358,7 +496,7 @@
     }
 
     .btn-outline {
-      background: var(--bg);
+      background: var(--bg-card);
       border: 1px solid var(--border);
       color: var(--ink-2);
       padding: 8px 14px;
@@ -366,9 +504,9 @@
     }
 
     .btn-outline:hover:not(:disabled) {
-      border-color: var(--yellow-border);
-      background: var(--yellow-bg);
-      color: var(--yellow-hover);
+      border-color: var(--accent-border);
+      background: var(--accent-bg);
+      color: var(--accent);
     }
 
     .btn-sm {
@@ -408,13 +546,13 @@
     }
 
     .papers-count {
-      background: var(--yellow-bg);
-      color: var(--yellow-hover);
+      background: var(--bg-surface);
+      color: var(--ink-3);
       font-size: .72rem;
-      font-weight: 700;
+      font-weight: 600;
       padding: 2px 8px;
       border-radius: 10px;
-      border: 1px solid var(--yellow-border);
+      border: 1px solid var(--border);
     }
 
     .papers-toolbar {
@@ -436,13 +574,14 @@
       font-size: .8rem;
       border-radius: 8px;
       border: 1px solid var(--border);
-      background: var(--bg);
+      background: var(--bg-card);
+      color: var(--ink);
       transition: border-color .15s, box-shadow .15s;
     }
 
     .papers-search input:focus {
-      border-color: var(--yellow);
-      box-shadow: 0 0 0 3px rgba(255, 157, 0, 0.12);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(13, 147, 115, 0.1);
     }
 
     .papers-search-icon {
@@ -476,7 +615,8 @@
     }
 
     .search-highlight {
-      background: rgba(255, 157, 0, 0.2);
+      background: rgba(34, 211, 167, 0.2);
+      color: var(--accent);
       border-radius: 2px;
       padding: 0 1px;
     }
@@ -488,7 +628,7 @@
       font-size: .85rem;
       border: 1px dashed var(--border);
       border-radius: var(--r);
-      background: var(--bg);
+      background: var(--bg-card);
     }
 
     /* View toggle */
@@ -521,8 +661,8 @@
     }
 
     .view-btn.active {
-      background: var(--yellow-bg);
-      color: var(--yellow-hover);
+      background: var(--accent-bg);
+      color: var(--accent);
     }
 
     /* Sort controls */
@@ -557,14 +697,14 @@
     }
 
     .sort-btn:hover {
-      border-color: #ccc;
+      border-color: #333650;
       color: var(--ink-2);
     }
 
     .sort-btn.active {
-      background: var(--yellow-bg);
-      border-color: var(--yellow-border);
-      color: var(--yellow-hover);
+      background: var(--accent-bg);
+      border-color: var(--accent-border);
+      color: var(--accent);
     }
 
     .sort-btn .sort-arrow {
@@ -579,32 +719,55 @@
 
     /* ═══ List View (default) ═══ */
     .paper-card {
-      background: var(--bg);
+      background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--r);
       padding: 14px;
       display: flex;
       gap: 14px;
-      transition: box-shadow .2s, border-color .2s;
+      transition: all .25s var(--ease);
       margin-bottom: 8px;
       position: relative;
+      overflow: hidden;
     }
 
+    .paper-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      border-radius: 3px 0 0 3px;
+      opacity: 0;
+      transition: opacity .25s;
+    }
+
+    .paper-card:nth-child(5n+1)::before { background: var(--grad-1); }
+    .paper-card:nth-child(5n+2)::before { background: var(--grad-2); }
+    .paper-card:nth-child(5n+3)::before { background: var(--grad-3); }
+    .paper-card:nth-child(5n+4)::before { background: var(--grad-4); }
+    .paper-card:nth-child(5n+5)::before { background: var(--grad-5); }
+
     .paper-card:hover {
-      box-shadow: var(--shadow);
-      border-color: #d5d5d5;
+      border-color: var(--accent-border);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-1px);
+    }
+
+    .paper-card:hover::before {
+      opacity: 1;
     }
 
     .paper-thumb {
       flex: 0 0 100px;
       height: 141px;
-      border-radius: 4px;
+      border-radius: 6px;
       overflow: hidden;
-      background: var(--bg-page);
-      border: 1px solid var(--border-light);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
       cursor: pointer;
       transition: transform .2s;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
     }
 
     .paper-thumb:hover {
@@ -615,6 +778,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: top;
       display: block;
     }
 
@@ -626,12 +790,19 @@
       justify-content: center;
       font-size: 1.8rem;
       opacity: .3;
-      background: linear-gradient(135deg, #fef3e2 0%, #fde8c8 100%);
+      background: var(--bg-surface);
     }
 
     .paper-info {
       flex: 1;
       min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .paper-info-top {
+      flex: 1;
       display: flex;
       flex-direction: column;
       gap: 3px;
@@ -651,7 +822,7 @@
     }
 
     .paper-title-link:hover {
-      color: var(--yellow-hover);
+      color: var(--accent);
     }
 
     .paper-meta-row {
@@ -669,7 +840,9 @@
 
     .paper-arxiv-id {
       font-weight: 600;
-      color: var(--ink-3);
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: .7rem;
     }
 
     .paper-abstract {
@@ -703,7 +876,7 @@
     }
 
     .paper-action-btn {
-      background: none;
+      background: var(--bg-surface);
       border: 1px solid var(--border);
       color: var(--ink-3);
       font-family: var(--font);
@@ -720,21 +893,21 @@
     }
 
     .paper-action-btn:hover {
-      border-color: var(--yellow-border);
-      color: var(--yellow-hover);
-      background: var(--yellow-bg);
+      border-color: var(--accent-border);
+      color: var(--accent);
+      background: var(--accent-bg);
     }
 
     .paper-action-btn.primary {
-      background: var(--green-bg);
-      border-color: var(--green-border);
-      color: var(--green);
+      background: var(--accent-bg);
+      border-color: var(--accent-border);
+      color: var(--accent);
     }
 
     .paper-action-btn.primary:hover {
-      background: var(--green);
-      border-color: var(--green);
-      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--accent-text);
     }
 
     .paper-action-btn.danger:hover {
@@ -768,30 +941,69 @@
 
     .paper-delete:hover {
       background: var(--red-bg);
-      border-color: rgba(239, 68, 68, 0.3);
+      border-color: rgba(248, 113, 113, 0.3);
       color: var(--red);
     }
 
     /* ═══ Grid View ═══ */
     .papers-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 12px;
     }
 
     .papers-grid .paper-card {
       flex-direction: column;
       margin-bottom: 0;
+      height: 100%;
+      padding: 0;
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+
+    .papers-grid .paper-card::before {
+      width: 100%;
+      height: 3px;
+      border-radius: 0;
+    }
+
+    .papers-grid .paper-card:hover::before {
+      opacity: 1;
     }
 
     .papers-grid .paper-thumb {
       flex: none;
       width: 100%;
-      height: 180px;
+      height: 160px;
+      border-radius: 0;
+      border: none;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .papers-grid .paper-info {
+      padding: 12px 14px;
+    }
+
+    .papers-grid .paper-title-link {
+      font-size: .82rem;
     }
 
     .papers-grid .paper-abstract {
-      -webkit-line-clamp: 3;
+      -webkit-line-clamp: 2;
+      font-size: .72rem;
+    }
+
+    .papers-grid .paper-meta-row {
+      font-size: .68rem;
+    }
+
+    .papers-grid .paper-actions {
+      flex-wrap: wrap;
+    }
+
+    .papers-grid .paper-action-btn {
+      font-size: .68rem;
+      padding: 2px 8px;
     }
 
     /* ═══ Table View ═══ */
@@ -799,14 +1011,14 @@
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
-      background: var(--bg);
+      background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--r);
       overflow: hidden;
     }
 
     .papers-table th {
-      background: var(--bg-page);
+      background: var(--bg-surface);
       font-size: .72rem;
       font-weight: 700;
       color: var(--ink-3);
@@ -843,7 +1055,7 @@
     }
 
     .papers-table .table-title:hover {
-      color: var(--yellow-hover);
+      color: var(--accent);
     }
 
     .papers-table .table-id {
@@ -872,6 +1084,7 @@
       font-size: .88rem;
       border: 1px dashed var(--border);
       border-radius: var(--r);
+      background: var(--bg-card);
       background: var(--bg);
     }
 
@@ -939,7 +1152,7 @@
     }
 
     .log-tool-end {
-      background: var(--bg-page);
+      background: var(--bg-surface);
       color: var(--ink-3);
       font-size: .72rem;
       max-height: 90px;
@@ -957,10 +1170,10 @@
     }
 
     .log-status {
-      color: var(--yellow-hover);
+      color: var(--accent);
       font-weight: 600;
-      border-left: 2px solid var(--yellow);
-      background: var(--yellow-bg);
+      border-left: 2px solid var(--accent);
+      background: var(--accent-bg);
     }
 
     .log-error {
@@ -980,7 +1193,7 @@
     }
 
     .log-tool-streaming {
-      background: var(--bg-page);
+      background: var(--bg-surface);
       border-left: 2px solid var(--green);
       color: var(--ink-3);
       font-size: .72rem;
@@ -1031,15 +1244,15 @@
     .status-bar {
       display: none;
       padding: 10px 14px;
-      border-radius: var(--r-sm);
-      margin-bottom: 12px;
-      background: var(--yellow-bg);
-      border: 1px solid var(--yellow-border);
+      border-radius: var(--r);
+      margin-bottom: 14px;
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-border);
       font-weight: 500;
       font-size: .84rem;
       align-items: center;
       gap: 8px;
-      color: var(--yellow-hover);
+      color: var(--accent);
     }
 
     .status-bar.active {
@@ -1049,8 +1262,8 @@
     .spinner {
       width: 14px;
       height: 14px;
-      border: 2px solid var(--yellow-border);
-      border-top-color: var(--yellow);
+      border: 2px solid var(--accent-border);
+      border-top-color: var(--accent);
       border-radius: 50%;
       animation: spin .6s linear infinite;
     }
@@ -1094,31 +1307,75 @@
     }
 
     .btn-download {
-      background: var(--green);
-      color: #fff;
-      padding: 8px 18px;
+      background: var(--accent);
+      color: var(--accent-text);
+      padding: 9px 20px;
       text-decoration: none;
       font-size: .85rem;
-      font-weight: 600;
-      border-radius: var(--r-sm);
+      font-weight: 700;
+      border-radius: 20px;
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      transition: background .15s;
+      transition: all .2s;
     }
 
     .btn-download:hover {
-      background: #0da574;
+      background: var(--accent-hover);
+      box-shadow: 0 0 16px var(--accent-glow);
     }
+
+    /* ═══ Theme Toggle ═══ */
+    .theme-toggle {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all .2s;
+      position: relative;
+      overflow: hidden;
+      color: var(--ink-3);
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent-border);
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+
+    .theme-icon-sun,
+    .theme-icon-moon {
+      position: absolute;
+      transition: transform .3s var(--ease), opacity .3s;
+    }
+
+    /* Dark mode: show sun (to switch to light) */
+    [data-theme="dark"] .theme-icon-sun { opacity: 1; transform: rotate(0deg); }
+    [data-theme="dark"] .theme-icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+
+    /* Light mode: show moon (to switch to dark) */
+    [data-theme="light"] .theme-icon-sun { opacity: 0; transform: rotate(90deg) scale(0.5); }
+    [data-theme="light"] .theme-icon-moon { opacity: 1; transform: rotate(0deg); }
 
     /* ═══ Responsive ═══ */
     @media (max-width: 640px) {
       .container {
-        padding: 0 12px;
+        padding: 0 16px;
       }
 
       .topnav {
-        padding: 0 12px;
+        padding: 0 16px;
+      }
+
+      .input-section {
+        border-radius: var(--r);
+        padding: 12px 14px;
       }
 
       .page-title {
@@ -1142,7 +1399,13 @@
       }
 
       .papers-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .papers-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
   </style>
@@ -1163,6 +1426,11 @@
         <a href="/" class="nav-link active" data-i18n="nav_home">Home</a>
         <a href="/settings" class="nav-link" data-i18n="nav_settings">Settings</a>
         <span style="width:1px;height:20px;background:var(--border);margin:0 4px"></span>
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
+          <span class="theme-icon-sun">&#9788;</span>
+          <span class="theme-icon-moon">&#9790;</span>
+        </button>
+        <span style="width:1px;height:20px;background:var(--border);margin:0 4px"></span>
         <button class="lang-btn active" onclick="switchLang('zh')" id="langBtnZh">中文</button>
         <button class="lang-btn" onclick="switchLang('en')" id="langBtnEn">EN</button>
       </div>
@@ -1176,13 +1444,13 @@
       <div class="page-subtitle" data-i18n="subtitle">arXiv 论文智能解读 — LangGraph ReAct Agent</div>
     </div>
 
-    <!-- ═══ Input Section with compact model picker ═══ -->
+    <!-- ═══ Input Section ═══ -->
     <div class="input-section">
       <div class="input-main-row">
         <input type="text" id="arxivUrl" data-i18n-placeholder="placeholder_arxiv"
-          placeholder="https://arxiv.org/abs/2603.03251 或直接输入 ID">
+          placeholder="https://arxiv.org/abs/2603.03251 or enter paper ID...">
         <button class="btn btn-primary" id="runBtn" onclick="startAgent()">
-          🚀 <span data-i18n="btn_run">开始解读</span>
+          <span data-i18n="btn_run">Interpret</span> →
         </button>
       </div>
       <div class="input-options-row">
@@ -1210,8 +1478,9 @@
             <option value="Español">Español</option>
           </select>
         </div>
+        <div class="options-spacer"></div>
         <span class="no-config-hint" id="configHint" style="display:none">
-          <a href="/settings" data-i18n="config_hint_link">Configure API keys in Settings</a>
+          <a href="/settings" data-i18n="config_hint_link">Configure API keys in Settings →</a>
         </span>
       </div>
     </div>
@@ -1273,6 +1542,21 @@
   </div>
 
   <script>
+    // ─── Theme ──────────────────────────────────
+    function initTheme() {
+      const saved = localStorage.getItem('scholar_granny_theme');
+      const theme = saved || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+    initTheme();
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('scholar_granny_theme', next);
+    }
+
     // ─── i18n ──────────────────────────────────
     const I18N = {
       zh: {
@@ -1390,6 +1674,7 @@
     let savedProviders = {};
     let defaultProvider = 'openai';
     let defaultModel = '';
+    let defaultTemplate = 'ModernColorful';
     let currentView = localStorage.getItem('scholar_granny_view') || 'list';
     let currentSort = 'generated';
     let sortAsc = false;
@@ -1421,85 +1706,75 @@
         savedProviders = cfg.providers || {};
         defaultProvider = cfg.provider || 'openai';
         defaultModel = cfg.model || '';
+        defaultTemplate = cfg.template || 'ModernColorful';
+
+        // Backward compatibility: older configs may only store the active model globally.
+        if (defaultProvider && !savedProviders[defaultProvider] && defaultModel) {
+          savedProviders[defaultProvider] = { model: defaultModel };
+        } else if (defaultProvider && savedProviders[defaultProvider] && !savedProviders[defaultProvider].model && defaultModel) {
+          savedProviders[defaultProvider].model = defaultModel;
+        }
 
         buildProviderSelect();
         buildModelSelect();
 
         // Show hint if no providers configured
-        const hasAnyKey = Object.values(savedProviders).some(p => p.api_key);
-        document.getElementById('configHint').style.display = hasAnyKey ? 'none' : '';
+        const hasProviders = Object.keys(savedProviders).length > 0;
+        document.getElementById('configHint').style.display = hasProviders ? 'none' : '';
       } catch (e) {
         buildProviderSelect();
       }
     }
 
+    const PROVIDER_LABELS = {
+      openai: 'OpenAI', claude: 'Claude', gemini: 'Gemini', openrouter: 'OpenRouter',
+      deepseek: 'DeepSeek', kimi: 'Kimi', dashscope: 'Qwen', 'dashscope-coding': 'Bailian Coding',
+      siliconflow: 'SiliconFlow', ollama: 'Ollama', vllm: 'vLLM',
+    };
+
     function buildProviderSelect() {
       const sel = document.getElementById('provider');
-      const providers = [
-        { group: 'Commercial', items: [['openai', 'OpenAI'], ['claude', 'Claude'], ['gemini', 'Gemini'], ['openrouter', 'OpenRouter']] },
-        { group: 'China', items: [['deepseek', 'DeepSeek'], ['kimi', 'Kimi'], ['dashscope', 'Qwen'], ['dashscope-coding', 'Bailian Coding'], ['siliconflow', 'SiliconFlow']] },
-        { group: 'Local', items: [['ollama', 'Ollama'], ['vllm', 'vLLM']] },
-      ];
+      const keys = Object.keys(savedProviders);
       sel.innerHTML = '';
-      for (const g of providers) {
-        const optgroup = document.createElement('optgroup');
-        optgroup.label = g.group;
-        for (const [val, label] of g.items) {
-          const opt = document.createElement('option');
-          opt.value = val;
-          const configured = savedProviders[val] && savedProviders[val].api_key;
-          opt.textContent = label + (configured ? ' ✓' : '');
-          optgroup.appendChild(opt);
-        }
-        sel.appendChild(optgroup);
-      }
-      sel.value = defaultProvider;
-    }
 
-    const PROVIDER_MODELS = {
-      openai: ['gpt-5.4', 'gpt-5.4-mini', 'gpt-5.4-nano', 'gpt-4o', 'gpt-4o-mini'],
-      claude: ['claude-sonnet-4-20250514', 'claude-opus-4-20250514', 'claude-haiku-4-5-20251001'],
-      gemini: ['gemini-2.5-flash', 'gemini-2.5-pro'],
-      openrouter: ['google/gemini-2.5-flash', 'anthropic/claude-sonnet-4', 'openai/gpt-4o'],
-      deepseek: ['deepseek-chat', 'deepseek-reasoner'],
-      kimi: ['moonshot-v1-128k', 'moonshot-v1-32k'],
-      dashscope: ['qwen-plus', 'qwen-max', 'qwen-turbo'],
-      'dashscope-coding': ['qwen-plus', 'qwen-max'],
-      siliconflow: ['Qwen/Qwen3-8B', 'deepseek-ai/DeepSeek-V3'],
-      ollama: ['llama3', 'qwen2.5', 'gemma2'],
-      vllm: [],
-    };
+      if (!keys.length) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = currentLang === 'zh' ? '— 请先在设置中配置 —' : '— Configure in Settings —';
+        opt.disabled = true;
+        sel.appendChild(opt);
+        sel.value = '';
+        return;
+      }
+
+      for (const key of keys) {
+        const opt = document.createElement('option');
+        opt.value = key;
+        const label = PROVIDER_LABELS[key] || key;
+        const model = savedProviders[key]?.model;
+        opt.textContent = label;
+        sel.appendChild(opt);
+      }
+      sel.value = keys.includes(defaultProvider) ? defaultProvider : keys[0];
+    }
 
     function buildModelSelect() {
       const provider = document.getElementById('provider').value;
       const sel = document.getElementById('model');
-      const models = PROVIDER_MODELS[provider] || [];
-      const savedModel = savedProviders[provider]?.model;
-
       sel.innerHTML = '';
-      for (const m of models) {
+
+      if (!provider || !savedProviders[provider]) return;
+
+      const savedModel = savedProviders[provider]?.model;
+      if (savedModel) {
         const opt = document.createElement('option');
-        opt.value = m;
-        opt.textContent = m;
+        opt.value = savedModel;
+        opt.textContent = savedModel;
         sel.appendChild(opt);
       }
-      // Add custom option
-      const customOpt = document.createElement('option');
-      customOpt.value = '__custom__';
-      customOpt.textContent = 'Custom...';
-      sel.appendChild(customOpt);
-
       // Select saved model or default
-      const target = savedModel || (provider === defaultProvider ? defaultModel : models[0] || '');
-      if (target && models.includes(target)) {
-        sel.value = target;
-      } else if (target) {
-        // Add as custom
-        const opt = document.createElement('option');
-        opt.value = target;
-        opt.textContent = target;
-        sel.insertBefore(opt, customOpt);
-        sel.value = target;
+      if (savedModel) {
+        sel.value = savedModel;
       }
     }
 
@@ -1518,6 +1793,9 @@
           opt.textContent = t.name;
           sel.appendChild(opt);
         });
+        if (defaultTemplate) {
+          sel.value = defaultTemplate;
+        }
       } catch (e) { }
     }
 
@@ -1729,15 +2007,17 @@
             <div class="paper-thumb-placeholder" style="display:none">📄</div>
           </div>
           <div class="paper-info">
-            <a class="paper-title-link" href="${arxivUrl}" target="_blank">${displayTitle}</a>
-            <div class="paper-meta-row">
-              <span class="paper-arxiv-id">${displayId}</span>
-              ${p.has_pdf ? `<span class="sep">·</span><span class="paper-pdf-badge">PDF</span>` : ''}
-              ${p.authors ? `<span class="sep">·</span><span>${displayAuthors}</span>` : ''}
-              ${p.published ? `<span class="sep">·</span><span>${p.published}</span>` : ''}
-              ${p.generated ? `<span class="sep">·</span><span>⏱ ${p.generated}</span>` : ''}
+            <div class="paper-info-top">
+              <a class="paper-title-link" href="${arxivUrl}" target="_blank">${displayTitle}</a>
+              <div class="paper-meta-row">
+                <span class="paper-arxiv-id">${displayId}</span>
+                ${p.has_pdf ? `<span class="sep">·</span><span class="paper-pdf-badge">PDF</span>` : ''}
+                ${p.authors ? `<span class="sep">·</span><span>${displayAuthors}</span>` : ''}
+                ${p.published ? `<span class="sep">·</span><span>${p.published}</span>` : ''}
+                ${p.generated ? `<span class="sep">·</span><span>⏱ ${p.generated}</span>` : ''}
+              </div>
+              ${hasAbstract ? `<div class="paper-abstract">${displayAbstract}</div>` : ''}
             </div>
-            ${hasAbstract ? `<div class="paper-abstract">${displayAbstract}</div>` : ''}
             <div class="paper-actions">
               <a class="paper-action-btn" href="${arxivUrl}" target="_blank">📄 ${t('read_original')}</a>
               ${p.has_pdf
@@ -1810,11 +2090,12 @@
       document.getElementById('agentLog').innerHTML = '';
 
       const provider = document.getElementById('provider').value;
-      let model = document.getElementById('model').value;
-      if (model === '__custom__') {
-        model = prompt('Enter model name:') || '';
-        if (!model) { onFinish(); return; }
+      if (!provider) {
+        window.location.href = '/settings';
+        onFinish();
+        return;
       }
+      let model = document.getElementById('model').value;
 
       // Get API key from saved providers
       const providerCfg = savedProviders[provider] || {};
